@@ -1,0 +1,30 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from bs4 import BeautifulSoup
+import os
+
+
+# # Instantiate options
+# opts = Options()
+# # opts.add_argument(" — headless") # Uncomment if the headless version needed
+# opts.binary_location = "<path to Chrome executable>"
+
+# # Set the location of the webdriver
+# chrome_driver = os.getcwd() + "<Chrome webdriver filename>"
+
+# # Instantiate a webdriver
+# driver = webdriver.Chrome(options=opts, executable_path=chrome_driver)
+
+#path = os.getcwd() + "/Chromedriver" /Users/ericchantland/Documents/GitHub/Boyer_eHRAF_Misery
+path = "/Users/ericchantland/Documents/GitHub/Boyer_eHRAF_Misery/Chromedriver"
+driver = webdriver.Chrome(executable_path = path)
+
+
+# Load the HTML page
+
+driver.get('https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF')
+
+# Parse processed webpage with BeautifulSoup
+soup = BeautifulSoup(driver.page_source)
+tables_more_specific = soup.find_all('div',
+{'class':'results__container hierarchy'})
