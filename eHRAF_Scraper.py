@@ -73,6 +73,10 @@ path = os.getcwd() + "/chromedriver"
 driver = webdriver.Chrome(executable_path = path, options=options)
 # driver.maximize_window()
 
+# Demo if there is no URL entered
+if URL == '':
+    URL = r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF'
+
 homeURL = "https://ehrafworldcultures.yale.edu/"
 searchTokens = URL.split('/')[-1]
 
@@ -228,7 +232,7 @@ for key in culture_dict.keys():
                 ocmTags = soupOCM[0].find_all('a', recursive=False)
                 OCM_list = []
                 for ocmTag in ocmTags:
-                    OCM_list.append(ocmTag.span.text)
+                    OCM_list.append(int(ocmTag.span.text))
                 # OWC
                 OWC = soupOCM[1].a['name']
 
@@ -310,10 +314,10 @@ URL_name = URL
 
 for i in remove_list:
     URL_name = re.sub(i, '', URL_name)
-print(URL_name)
+# print(URL_name)
 for key, val in replace_dict.items():
     URL_name = re.sub(key, val, URL_name)
-print(URL_name)
+# print(URL_name)
 
 
 URL_name_nonPlussed = re.sub('\+', ' ', URL_name)
@@ -338,19 +342,5 @@ try:
 except:
     print("Unable to save the title of the document, please rename it or risk overwriting")
     df_eHRAF.to_excel('Data/' + user + str(now.strftime("%m_%d_%y")) + '_web_data.xlsx', index=False)
-
-# %% [markdown]
-# ## Optional dataframe manipulation
-
-# %%
-# for searching by OCM in the list
-lst = ["753", "583", "435"]
-msk = df_eHRAF['OCM'].apply(lambda x: not set(x).isdisjoint(lst))
-out = df_eHRAF.loc[msk]
-out
-
-# %%
-# Make each OCM have its own row by exploding (you can reset the index with .reset_index(drop=True))
-df_eHRAF.explode(column='OCM')
 
 
