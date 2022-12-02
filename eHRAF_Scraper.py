@@ -13,14 +13,20 @@
 import pandas as pd                 # dataframe storing
 from bs4 import BeautifulSoup       # parsing web content in a nice way
 import os                           # Find where this file is located.
+import sys                          # Also for finding file location (for saving)
 import re                           # regex for searching through strings
 import time                         # for waiting for the page to load
-import libpythonpro
+import selenium
+import webdriver_manager
+
+
 from selenium import webdriver      # load and run the webpage dynamically.
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
 # for wait times
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -49,10 +55,8 @@ class Scraper:
         options = Options()
         options.headless = headless
 
-        # Unless you want to change to location, make sure the chromedriver program is located within the same file folder that you run this application in.
-        # You must have chrome (or download another browser driver and change the path). Download the chrome software here: https://chromedriver.chromium.org/downloads
-        path = os.getcwd() + "/chromedriver"
-        self.driver = webdriver.Chrome(executable_path=path, options=options)
+
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
         self.homeURL = "https://ehrafworldcultures.yale.edu/"
         searchTokens = self.URL.split('/')[-1]
@@ -66,7 +70,7 @@ class Scraper:
         # Elements must be individually clicked backwards. I do not know why this is a thing but my guess is each
         # clicked tab adds HTML pushing future tabs to a new location thereby making some indexing no longer point to a retrieved tab.
         # Loading backwards avoids this.
-        country_tab = self.driver.find_elements_by_class_name('trad-overview__result')
+        country_tab = self.driver.find_elements(By.CLASS_NAME,"trad-overview__result")
         for ct_i in range(len(country_tab)-1,-1,-1):
             try:
                 country_tab[ct_i].click()
@@ -153,7 +157,7 @@ class Scraper:
                 # Try to make the program wait until the wepage is loaded
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mdc-data-table__row")))
                 #Click every source tab
-                sourceTabs = self.driver.find_elements_by_class_name('mdc-data-table__row')
+                sourceTabs = self.driver.find_elements(By.CLASS_NAME, 'mdc-data-table__row')
                 for source_i in sourceTabs:
                     self.driver.execute_script("arguments[0].click();", source_i)
 
@@ -171,12 +175,12 @@ class Scraper:
                 time.sleep(.1)
 
                 #get the results tab(which is basically the source tab but contained within a different HTML element) for sub indexing sources
-                resultsTabs = self.driver.find_elements_by_class_name('trad-data__results')
+                resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
                 # if the resultsTabs did not all load, reload as necessary
                 reload_protect = 0
                 while len(sourceCount_list) != len(resultsTabs) and reload_protect<=10:
                     time.sleep(.1)
-                    resultsTabs = self.driver.find_elements_by_class_name('trad-data__results')
+                    resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
                     reload_protect += 1
                 if reload_protect != 0:
                     self.culture_dict[key]["Reloads"]["Source_reload"] += reload_protect
@@ -190,7 +194,7 @@ class Scraper:
 
                     # loop until the program can click and find every piece of information for each document (this is probably where things will break if times are off)
                     while True:
-                        docTabs = resultsTabs[i].find_elements_by_class_name('sre-result__title')
+                        docTabs = resultsTabs[i].find_elements(By.CLASS_NAME, 'sre-result__title')
                         #Click all the tabs within a source
                         for doc in docTabs:
                             self.driver.execute_script("arguments[0].click();", doc)
@@ -234,16 +238,16 @@ class Scraper:
                         # NOTE that we have to search for the resultsTabs again because the page refreshed and the points
                         # originally found above no longer point to the same location and therefore will not work
                         if total >0:
-                            SourceTabFooter = resultsTabs[i].find_elements_by_class_name('trad-data__results--pagination')
-                            buttons = SourceTabFooter[0].find_elements_by_class_name('rmwc-icon--ligature')
+                            SourceTabFooter = resultsTabs[i].find_elements(By.CLASS_NAME, 'trad-data__results--pagination')
+                            buttons = SourceTabFooter[0].find_elements(By.CLASS_NAME, 'rmwc-icon--ligature')
                             self.driver.execute_script("arguments[0].click();", buttons[-1])
                             time.sleep(.1)
-                            resultsTabs = self.driver.find_elements_by_class_name('trad-data__results')
+                            resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
                             # in case .1 was not enough time, redo until the entire page is loaded again.
                             reload_protect = 0
                             while len(resultsTabs) < resultsTabs_count and reload_protect<=10:
                                 time.sleep(.1)
-                                resultsTabs = self.driver.find_elements_by_class_name('trad-data__results')
+                                resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
                                 reload_protect += 1
                             # else:
                             #     raise Exception("failed to load all results tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
@@ -262,7 +266,7 @@ class Scraper:
                 # Run to the next page if necessary. Check to see if there are more source tabs left, if so, click the next page and continue scraping the page
                 source_total -= len(resultsTabs)
                 if source_total >0:
-                    next_page = self.driver.find_element_by_xpath("//button[@title='Next Page']")
+                    next_page = self.driver.find_element(By.XPATH, "//button[@title='Next Page']")
                     self.driver.execute_script("arguments[0].click();", next_page)
 
 
@@ -306,12 +310,25 @@ class Scraper:
         df_eHRAF.loc[3, 'run_Info'] = "Run Input: " + URL_name_nonPlussed
         df_eHRAF.loc[4, 'run_Info'] = "Run URL: " + self.URL
 
+        # Find path
+        # determine if application is a script file or frozen exe
+        if getattr(sys, 'frozen', False):
+            application_path = os.path.dirname(sys.executable)
+        elif __file__:
+            application_path = os.path.dirname(__file__)
+        else:
+            raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
+
+        output_dir = "Data"  # output directory
+        output_dir_path = application_path + '/' + output_dir  # output directory path
+        os.makedirs(output_dir_path, exist_ok=True)  # make Data folder if it does not exist
 
         try:
-            df_eHRAF.to_excel('Data/' + URL_name + '_web_data.xlsx', index=False)
+            df_eHRAF.to_excel(output_dir_path + '/' + URL_name + '_web_data.xlsx', index=False)
         except:
             print("Unable to save the title of the document, please rename it or risk overwriting")
-            df_eHRAF.to_excel('Data/' + self.user + str(now.strftime("%m_%d_%y")) + '_web_data.xlsx', index=False)
+            df_eHRAF.to_excel(output_dir_path + '/' + self.user + str(now.strftime("%m_%d_%y")) + '_web_data.xlsx', index=False)
+        print(f'saved to {output_dir_path}')
 
     def web_close(self):
         # close the webpage
@@ -319,5 +336,8 @@ class Scraper:
 
     # if the class gets overwrittten,  remove the webpage
     def __del__(self):
-        self.driver.close()
+        try:
+            self.driver.close()
+        except:
+            pass
 
