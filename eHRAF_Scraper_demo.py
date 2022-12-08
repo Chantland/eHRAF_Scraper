@@ -11,7 +11,6 @@
 
 
 import pandas as pd                 # dataframe storing
-import numpy as np
 from bs4 import BeautifulSoup       # parsing web content in a nice way
 import os                           # Find where this file is located.
 import sys                          # Also for finding file location (for saving)
@@ -133,9 +132,8 @@ class Scraper:
             link = culture_list[1].a.attrs['href']
             region = culture_i.findParent('table', {'role':'region'}).attrs['id']
             source_count = int(culture_list[-2].text)
-            doc_count = int(culture_list[-1].text)
 
-            self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Doc_Count": doc_count,  "Reloads": {"Source_reload": 0, "Doc_reload": 0}}
+            self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Reloads": {"Source_reload": 0, "Doc_reload": 0}}
         # print(f"Number of cultures extracted {len(culture_dict)}")
     def doc_scraper(self):
         doc_count_total = 0
@@ -150,35 +148,16 @@ class Scraper:
             self.driver.get(self.homeURL + self.culture_dict[key]['link'])
             doc_count = 0
 
-            # Preallocate space to save on speed
-            Year = list(i for i in range(self.culture_dict[key]['Doc_Count']))
-            docPassage = Year.copy()
-            DocTitle = Year.copy()
-            OCM_list = Year.copy()
-            OWC = Year.copy()
+            # dataframe for each culture
+            df_eHRAFCulture = pd.DataFrame({"Region":[], "SubRegion":[], "Culture":[], 'DocTitle':[], 'Year':[], "OCM":[], "OWC":[], "Passage":[]})
+
             # loop until every page containing a source tab is clicked
             source_total = self.culture_dict[key]['Source_count']
             while source_total > 0:
-                # try to determine the source count on the page
-                # NOTE maximum page number at time of writing is 25. If this ever changes the code will break and you
-                # will have to update this number or find a good way to systematiclaly check if the new tabs are loaded
-                sourceCount_page = source_total
-                if sourceCount_page > 25:
-                    sourceCount_page = 25
-
-                # # Try to make the program wait until the webpage is loaded (outdated)
+                # Try to make the program wait until the wepage is loaded
                 WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mdc-data-table__row")))
-                # reload until the "correct" number of source tabs are retrived
+                #Click every source tab
                 sourceTabs = self.driver.find_elements(By.CLASS_NAME, 'mdc-data-table__row')
-                reload_protect = 0
-                while len(sourceTabs) != sourceCount_page:
-                    time.sleep(.1)
-                    sourceTabs = self.driver.find_elements(By.CLASS_NAME, 'mdc-data-table__row')
-                    reload_protect += 1
-                    if reload_protect > 30:
-                        raise Exception("Failed to retrieve correct number of sources")
-
-                # Click every source tab
                 for source_i in sourceTabs:
                     self.driver.execute_script("arguments[0].click();", source_i)
 
@@ -189,6 +168,9 @@ class Scraper:
                 sourceCount_list = list(map(lambda x: int(x.text), sourceCount[0::3]))
 
 
+
+                # WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "trad-data__results")))
+
                 # wait to make sure the page is loaded. CHANGE to a higher time if it runs indefinately
                 time.sleep(.1)
 
@@ -196,67 +178,60 @@ class Scraper:
                 resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
                 # if the resultsTabs did not all load, reload as necessary
                 reload_protect = 0
-                while len(sourceCount_list) != len(resultsTabs) and reload_protect <=20:
+                while len(sourceCount_list) != len(resultsTabs) and reload_protect<=10:
                     time.sleep(.1)
                     resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
                     reload_protect += 1
-                if reload_protect > 20:
-                    raise Exception(
-                        "failed to load all results tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
-                else:
+                if reload_protect != 0:
                     self.culture_dict[key]["Reloads"]["Source_reload"] += reload_protect
 
 
                 resultsTabs_count = len(resultsTabs) #For later reload checking
 
                 # click and extract information from each document within the result/source tabs
-                for i in range(len(resultsTabs)-1, -1, -1):
+                for i in range(len(resultsTabs)):
                     total = sourceCount_list[i]
 
                     # loop until the program can click and find every piece of information for each document (this is probably where things will break if times are off)
+                    # NOTE: technically this could be optimized by using .find_element instead of find elements as we only want the first result tab. HOWEVER,
+                    # doing so makes it hard to check if the tab we wanted loaded correctly.
                     while True:
-                        docTabs = resultsTabs[i].find_elements(By.CLASS_NAME, 'sre-result__title')
+                        docTabs = resultsTabs[0].find_elements(By.CLASS_NAME, 'sre-result__title')
                         #Click all the tabs within a source
                         for doc in docTabs:
                             self.driver.execute_script("arguments[0].click();", doc)
-
+                            doc_count +=1
 
 
                         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
                         #Extract the document INFO here
-                        soupDocs = soup.find_all('section',{'class':'sre-result__sre-result'}, limit=len(docTabs))
+                        soupDocs = soup.find_all('section',{'class':'sre-result__sre-result'}, limit=total)
                         for soupDoc in soupDocs:
-                            docPassage[doc_count] = soupDoc.find('div',{'class':'sre-result__sre-content'}).text
+                            docPassage = soupDoc.find('div',{'class':'sre-result__sre-content'}).text
 
                             soupOCM = soupDoc.find_all('div',{'class':'sre-result__ocms'})
                             # OCMs
                             # find all direct children a tags then extract the text
                             ocmTags = soupOCM[0].find_all('a', recursive=False)
-                            OCM_list[doc_count] = []
+                            OCM_list = []
                             for ocmTag in ocmTags:
-                                OCM_list[doc_count].append(int(ocmTag.span.text))
+                                OCM_list.append(int(ocmTag.span.text))
                             # OWC
-                            OWC[doc_count] = soupOCM[1].a['name']
+                            OWC = soupOCM[1].a['name']
 
-                            DocTitle[doc_count] = soupDoc.find('div',{'class':'sre-result__sre-content-metadata'})
-                            DocTitle[doc_count] = DocTitle[doc_count].div.text
+                            DocTitle = soupDoc.find('div',{'class':'sre-result__sre-content-metadata'})
+                            DocTitle = DocTitle.div.text
                             # Search for the document's year of creation
-                            Year[doc_count] = re.search('\(([0-9]{0,4})\)', DocTitle[doc_count])
-                            if Year[doc_count] is not None:
+                            Year = re.search('\(([0-9]{0,4})\)', DocTitle)
+                            if Year is not None:
                                 # remove the date then strip white space at the end and start to give the document's title
-                                DocTitle[doc_count] = re.sub(f'\({Year[doc_count].group()}\)', '', DocTitle[doc_count]).strip()
+                                DocTitle = re.sub(f'\({Year.group()}\)', '', DocTitle).strip()
                                 # get the year without the parenthesis
-                                Year[doc_count] = int(Year[doc_count].group()[1:-1])
+                                Year = int(Year.group()[1:-1])
 
-                            # OCM_list_array[doc_count] = OCM_list
-                            # OWC_array[doc_count] = OWC
-                            # DocTitle_array[doc_count] = DocTitle
-                            # Year_array[doc_count] = Year_array
-                            # docPassage_array[doc_count] = docPassage
                             # dataframe for each document
-                            # df_Doc = pd.DataFrame({'OCM':[OCM_list], 'OWC':[OWC], 'DocTitle':[DocTitle], 'Year':[Year],  'Passage':[docPassage]})
-                            doc_count += 1
-                            # df_eHRAFCulture = pd.concat([df_eHRAFCulture, df_Doc], ignore_index=True)
+                            df_Doc = pd.DataFrame({'OCM':[OCM_list], 'OWC':[OWC], 'DocTitle':[DocTitle], 'Year':[Year],  'Passage':[docPassage]})
+                            df_eHRAFCulture = pd.concat([df_eHRAFCulture, df_Doc], ignore_index=True)
                         # set remaining docs in a source tab (for clicking the "next" button if not all of them are shown)
                         total -= len(docTabs)
 
@@ -279,16 +254,23 @@ class Scraper:
                             # else:
                             #     raise Exception("failed to load all results tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
                             if reload_protect != 0:
-                                if reload_protect > 20:
+                                if reload_protect > 10:
                                     raise Exception("failed to load all results tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
                                 else:
                                     self.culture_dict[key]["Reloads"]["Doc_reload"] += reload_protect
 
                         else:
                             ## close sourcetab(this might save time in the long run)
-                            ## NOTE: commented out because it will not work anymore with multi sources (sources with more than 10 passages).
                             ## If you want it to close the tabs, you could copy the above resultsTabs reload and put it right after this line of code then chnage docTabs = resultsTabs[i] above to docTabs = resultsTabs[0]
-                            # driver.execute_script("arguments[0].click();", sourceTabs[i])
+                            self.driver.execute_script("arguments[0].click();", source_i)
+                            resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
+                            # in case enough time, redo until the entire page is loaded again.
+                            reload_protect = 0
+                            while len(resultsTabs) < resultsTabs_count and reload_protect <= 10:
+                                time.sleep(.1)
+                                resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
+                                reload_protect += 1
+
                             break
                 # Run to the next page if necessary. Check to see if there are more source tabs left, if so, click the next page and continue scraping the page
                 source_total -= len(resultsTabs)
@@ -296,14 +278,13 @@ class Scraper:
                     next_page = self.driver.find_element(By.XPATH, "//button[@title='Next Page']")
                     self.driver.execute_script("arguments[0].click();", next_page)
 
-            # append the attributes to the dataframe
-            df_eHRAFCulture = pd.DataFrame({'DocTitle': DocTitle, 'Year': Year, "OCM": OCM_list,
-                                            "OWC": OWC, "Passage": docPassage})
+
+
             df_eHRAFCulture[['Region','SubRegion',"Culture"]] = [self.culture_dict[key]['Region'], self.culture_dict[key]['SubRegion'], key ]
             df_eHRAF = pd.concat([df_eHRAF, df_eHRAFCulture], ignore_index=True)
             doc_count_total += doc_count
-            if doc_count != self.culture_dict[key]['Doc_Count']:
-                print(f"WARNING {doc_count} out of {self.culture_dict[key]['Doc_Count']} documents loaded for {key}")
+            if doc_count < sum(sourceCount_list):
+                print(f"WARNING {doc_count} out of {sum(sourceCount_list)} documents loaded for {key}")
 
         self.save_file(df_eHRAF)
         self.web_close()

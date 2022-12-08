@@ -1,7 +1,7 @@
 import sys
 import os
 
-import numpy as np
+
 from PyQt6 import uic
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import (
@@ -15,7 +15,6 @@ from PyQt6.QtWidgets import (
     QPushButton)
 from PyQt6.QtGui import QPalette, QColor 
 
-x = np.zeros(3)
 # app = QtWidgets.QApplication(sys.argv)
 
 # window = uic.loadUi("untitled1/form.ui")
@@ -37,7 +36,7 @@ class MainWindow(QMainWindow):
             application_path = os.path.dirname(__file__)
         else:
             raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
-        ui_file = uic.loadUi(application_path+ "/form.ui", self)
+        ui_file = uic.loadUi(application_path+ "/eHRAF_Scraper_Creator/form.ui", self)
     def widgit_hub(self):
         self.pushButton_URLSubmit.clicked.connect(self.set_text_box)
 
