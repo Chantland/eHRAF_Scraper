@@ -58,12 +58,19 @@ class Scraper:
 
 
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
+        # here for later gui integration
         self.homeURL = "https://ehrafworldcultures.yale.edu/"
         searchTokens = self.URL.split('/')[-1]
 
         # Load the HTML page (note that this should be updated to allow for modular input)
         self.driver.get(self.homeURL + searchTokens)
+
+        # if a partial file is already present, append to that file
+        self.output_dir_path()
+        self.querySkipper = False
+        if os.path.isfile(self.file_Path):
+            print("File with the same search query found, skipping successfully scraped cultures")
+            self.querySkipper = True
 
     def region_scraper(self):
 
@@ -81,17 +88,17 @@ class Scraper:
         # Parse processed webpage with BeautifulSoup
         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
 
-        # extract the number of documents intended to be found
-        self.document_count = soup.find_all("span", {'class':'found__results'})
-        self.document_count = self.document_count[0].small.em.next_element
-        self.document_count = int(self.document_count.split()[1])
+        # extract the number of passages in documents intended to be found
+        self.pas_count = soup.find_all("span", {'class': 'found__results'})
+        self.pas_count = self.pas_count[0].small.em.next_element
+        self.pas_count = int(self.pas_count.split()[1])
 
         self.doc_URL_finder(soup=soup)
 
     def time_req(self):
         # estimate the time this will take
         import math
-        time_sec = self.document_count/4.33
+        time_sec = self.pas_count / 4.33
         time_min = ""
         time_hour = ""
         if time_sec > 3600:
@@ -104,8 +111,7 @@ class Scraper:
             time_min = f"{time_min} minute(s), and "
 
         time_sec = f"{math.floor(time_sec)} second(s)"
-        # return f"This will scrape up to {self.document_count} documents and take roughly \n{time_hour}{time_min}{time_sec}"
-        return f"This will scrape up to {self.document_count} documents and take roughly \n{time_hour}{time_min}{time_sec}"
+        return f"This will scrape up to {self.pas_count} passages and take roughly \n{time_hour}{time_min}{time_sec}"
 
     def doc_URL_finder(self, soup):
         # Create a dictionary to store all cultures and their links for later use
@@ -138,17 +144,18 @@ class Scraper:
             self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Doc_Count": doc_count,  "Reloads": {"Source_reload": 0, "Doc_reload": 0}}
         # print(f"Number of cultures extracted {len(culture_dict)}")
     def doc_scraper(self):
-        doc_count_total = 0
 
-        # create dataframe to hold all the data
-        df_eHRAF = pd.DataFrame({"Region":[], "SubRegion":[], "Culture":[], 'DocTitle':[], 'Year':[], "OCM":[], "OWC":[], "Passage":[]})
-
-
+        # If we have a partial file, load it, otherwise # create dataframe to hold all the data
+        if self.querySkipper:
+            df_eHRAF, pas_count_total = self.partial_file_return()
+        else:
+            pas_count_total = 0
+            df_eHRAF = pd.DataFrame({"Region":[], "SubRegion":[], "Culture":[], 'DocTitle':[], 'Year':[], "OCM":[], "OWC":[], "Passage":[]})
 
         # For each Culture, go to their webpage link then scrape the document data
         for key in self.culture_dict.keys():
             self.driver.get(self.homeURL + self.culture_dict[key]['link'])
-            doc_count = 0
+            pas_count = 0
 
             # Preallocate space to save on speed
             Year = list(i for i in range(self.culture_dict[key]['Doc_Count']))
@@ -156,7 +163,7 @@ class Scraper:
             DocTitle = Year.copy()
             OCM_list = Year.copy()
             OWC = Year.copy()
-            # loop until every page containing a source tab is clicked
+            # loop for every page within a culture
             source_total = self.culture_dict[key]['Source_count']
             while source_total > 0:
                 # try to determine the source count on the page
@@ -175,7 +182,8 @@ class Scraper:
                     time.sleep(.1)
                     sourceTabs = self.driver.find_elements(By.CLASS_NAME, 'mdc-data-table__row')
                     reload_protect += 1
-                    if reload_protect > 30:
+                    if reload_protect > 150:
+                        self.reload_fail(pas_count_total, df_eHRAF)
                         raise Exception("Failed to retrieve correct number of sources")
 
                 # Click every source tab
@@ -196,11 +204,12 @@ class Scraper:
                 resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
                 # if the resultsTabs did not all load, reload as necessary
                 reload_protect = 0
-                while len(sourceCount_list) != len(resultsTabs) and reload_protect <=20:
+                while len(sourceCount_list) != len(resultsTabs) and reload_protect <=150:
                     time.sleep(.1)
                     resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
                     reload_protect += 1
-                if reload_protect > 20:
+                if reload_protect > 150:
+                    self.reload_fail(pas_count_total, df_eHRAF)
                     raise Exception(
                         "failed to load all results tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
                 else:
@@ -209,44 +218,42 @@ class Scraper:
 
                 resultsTabs_count = len(resultsTabs) #For later reload checking
 
-                # click and extract information from each document within the result/source tabs
+                # click and extract information from each passage within the result/source tabs
                 for i in range(len(resultsTabs)-1, -1, -1):
                     total = sourceCount_list[i]
 
-                    # loop until the program can click and find every piece of information for each document (this is probably where things will break if times are off)
+                    # loop until the program can click and find every piece of information for each passage (this is probably where things will break if times are off)
                     while True:
                         docTabs = resultsTabs[i].find_elements(By.CLASS_NAME, 'sre-result__title')
                         #Click all the tabs within a source
                         for doc in docTabs:
                             self.driver.execute_script("arguments[0].click();", doc)
-
-
-
                         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
-                        #Extract the document INFO here
+
+                        #Extract the passage INFO here
                         soupDocs = soup.find_all('section',{'class':'sre-result__sre-result'}, limit=len(docTabs))
                         for soupDoc in soupDocs:
-                            docPassage[doc_count] = soupDoc.find('div',{'class':'sre-result__sre-content'}).text
+                            docPassage[pas_count] = soupDoc.find('div',{'class':'sre-result__sre-content'}).text
 
                             soupOCM = soupDoc.find_all('div',{'class':'sre-result__ocms'})
                             # OCMs
                             # find all direct children a tags then extract the text
                             ocmTags = soupOCM[0].find_all('a', recursive=False)
-                            OCM_list[doc_count] = []
+                            OCM_list[pas_count] = []
                             for ocmTag in ocmTags:
-                                OCM_list[doc_count].append(int(ocmTag.span.text))
+                                OCM_list[pas_count].append(int(ocmTag.span.text))
                             # OWC
-                            OWC[doc_count] = soupOCM[1].a['name']
+                            OWC[pas_count] = soupOCM[1].a['name']
 
-                            DocTitle[doc_count] = soupDoc.find('div',{'class':'sre-result__sre-content-metadata'})
-                            DocTitle[doc_count] = DocTitle[doc_count].div.text
+                            DocTitle[pas_count] = soupDoc.find('div',{'class':'sre-result__sre-content-metadata'})
+                            DocTitle[pas_count] = DocTitle[pas_count].div.text
                             # Search for the document's year of creation
-                            Year[doc_count] = re.search('\(([0-9]{0,4})\)', DocTitle[doc_count])
-                            if Year[doc_count] is not None:
+                            Year[pas_count] = re.search('\(([0-9]{0,4})\)', DocTitle[pas_count])
+                            if Year[pas_count] is not None:
                                 # remove the date then strip white space at the end and start to give the document's title
-                                DocTitle[doc_count] = re.sub(f'\({Year[doc_count].group()}\)', '', DocTitle[doc_count]).strip()
+                                DocTitle[pas_count] = re.sub(f'\({Year[pas_count].group()}\)', '', DocTitle[pas_count]).strip()
                                 # get the year without the parenthesis
-                                Year[doc_count] = int(Year[doc_count].group()[1:-1])
+                                Year[pas_count] = int(Year[pas_count].group()[1:-1])
 
                             # OCM_list_array[doc_count] = OCM_list
                             # OWC_array[doc_count] = OWC
@@ -255,11 +262,12 @@ class Scraper:
                             # docPassage_array[doc_count] = docPassage
                             # dataframe for each document
                             # df_Doc = pd.DataFrame({'OCM':[OCM_list], 'OWC':[OWC], 'DocTitle':[DocTitle], 'Year':[Year],  'Passage':[docPassage]})
-                            doc_count += 1
+                            pas_count += 1
                             # df_eHRAFCulture = pd.concat([df_eHRAFCulture, df_Doc], ignore_index=True)
                         # set remaining docs in a source tab (for clicking the "next" button if not all of them are shown)
                         total -= len(docTabs)
 
+                        # tab switch
                         # If there are more tabs hidden away, find the button, click it, and then refresh the results
                         # otherwise, end the loop and close the source tab to make search for information easier
                         # NOTE that we have to search for the resultsTabs again because the page refreshed and the points
@@ -268,18 +276,17 @@ class Scraper:
                             SourceTabFooter = resultsTabs[i].find_elements(By.CLASS_NAME, 'trad-data__results--pagination')
                             buttons = SourceTabFooter[0].find_elements(By.CLASS_NAME, 'rmwc-icon--ligature')
                             self.driver.execute_script("arguments[0].click();", buttons[-1])
-                            time.sleep(.1)
                             resultsTabs = self.driver.find_elements(By.CLASS_NAME,'trad-data__results')
-                            # in case .1 was not enough time, redo until the entire page is loaded again.
+                            # in case was not enough time, redo until the entire page is loaded again.
                             reload_protect = 0
-                            while len(resultsTabs) < resultsTabs_count and reload_protect<=10:
+                            while len(resultsTabs) < resultsTabs_count and reload_protect<=150:
                                 time.sleep(.1)
                                 resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
                                 reload_protect += 1
-                            # else:
                             #     raise Exception("failed to load all results tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
                             if reload_protect != 0:
-                                if reload_protect > 20:
+                                if reload_protect > 150:
+                                    self.reload_fail(pas_count_total, df_eHRAF)
                                     raise Exception("failed to load all results tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
                                 else:
                                     self.culture_dict[key]["Reloads"]["Doc_reload"] += reload_protect
@@ -301,22 +308,43 @@ class Scraper:
                                             "OWC": OWC, "Passage": docPassage})
             df_eHRAFCulture[['Region','SubRegion',"Culture"]] = [self.culture_dict[key]['Region'], self.culture_dict[key]['SubRegion'], key ]
             df_eHRAF = pd.concat([df_eHRAF, df_eHRAFCulture], ignore_index=True)
-            doc_count_total += doc_count
-            if doc_count != self.culture_dict[key]['Doc_Count']:
-                print(f"WARNING {doc_count} out of {self.culture_dict[key]['Doc_Count']} documents loaded for {key}")
+            pas_count_total += pas_count
+            if pas_count != self.culture_dict[key]['Doc_Count']:
+                print(f"WARNING {pas_count} out of {self.culture_dict[key]['Doc_Count']} passages loaded for {key}")
 
         self.save_file(df_eHRAF)
         self.web_close()
-        print(f'{doc_count_total} documents out of a possible {self.document_count} loaded (also check dataframe)')
+        print(f'{pas_count_total} passages out of a possible {self.pas_count} loaded (also check dataframe)')
+
+    # if there already exists a file that contains this specific search pattern, then reload the data
+    def partial_file_return(self):
+        df_eHRAF = pd.read_excel(self.file_Path)
+        doc_counts = df_eHRAF["Passage"].count()
+        skip_cultures = set(df_eHRAF["Culture"])
+
+        # delete cultures in the dictionary already present
+        delete_key_list = []
+        for key in self.culture_dict.keys():
+            if key in skip_cultures:
+                delete_key_list.append(key)
+        for key in delete_key_list:
+            del self.culture_dict[key]
 
 
-    def save_file(self, df):
-        # get time and date that this program was run
-        from datetime import datetime
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-        current_date = now.strftime("%m/%d/%y")
+        return df_eHRAF, doc_counts
 
+
+        pass
+    def reload_fail(self, pas_count_total, df=None):
+        if len(df) < 1 or df is None:
+            print("Not enough data to create a saved file")
+        else:
+            self.save_file(df)
+            self.web_close()
+            print("Partial saving has occurred, please rerun the program to restart at the culture left off")
+            print(
+                f'{pas_count_total} passages out of a possible {self.pas_count} loaded (also check dataframe)')
+    def output_dir_path(self):
         # clean and strip the URL to be put into the excel document
         replace_dict = {'%28':'(', '%29':')', '%3A':'~', '%7C':'|', '%3B':';'}
         remove_list = [self.homeURL, 'search', '\?q=', 'fq=', '&', 'culture_level_samples']
@@ -328,15 +356,7 @@ class Scraper:
         for key, val in replace_dict.items():
             URL_name = re.sub(key, val, URL_name)
 
-        URL_name_nonPlussed = re.sub('\+', ' ', URL_name)
-        df_eHRAF = df
-        # place run information within the "run_info" column
-        df_eHRAF['run_Info'] = None
-        df_eHRAF.loc[0, 'run_Info'] = "User: " + self.user
-        df_eHRAF.loc[1, 'run_Info'] = "Run Time: " + str(current_time)
-        df_eHRAF.loc[2, 'run_Info'] = "Run Date: " + str(current_date)
-        df_eHRAF.loc[3, 'run_Info'] = "Run Input: " + URL_name_nonPlussed
-        df_eHRAF.loc[4, 'run_Info'] = "Run URL: " + self.URL
+        self.URL_name_nonPlussed = re.sub('\+', ' ', URL_name)
 
         # Find path
         # determine if application is a script file or frozen exe
@@ -347,16 +367,32 @@ class Scraper:
         else:
             raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
 
-        output_dir = "Data"  # output directory
-        output_dir_path = application_path + '/' + output_dir  # output directory path
-        os.makedirs(output_dir_path, exist_ok=True)  # make Data folder if it does not exist
+        self.output_dir = "Data"  # output directory
+        self.output_dir_path = application_path + '/' + self.output_dir  # output directory path
+        os.makedirs(self.output_dir_path, exist_ok=True)  # make Data folder if it does not exist
 
-        try:
-            df_eHRAF.to_excel(output_dir_path + '/' + URL_name + '_web_data.xlsx', index=False)
-        except:
-            print("Unable to save the title of the document, please rename it or risk overwriting")
-            df_eHRAF.to_excel(output_dir_path + '/' + self.user + str(now.strftime("%m_%d_%y")) + '_web_data.xlsx', index=False)
-        print(f'saved to {output_dir_path}')
+        self.file_Path = self.output_dir_path + '/' + URL_name + '_web_data.xlsx'
+
+    def save_file(self, df):
+        # get time and date that this program was run
+        from datetime import datetime
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        current_date = now.strftime("%m/%d/%y")
+
+
+        df_eHRAF = df
+        if self.querySkipper is False:
+            # place run information within the "run_info" column
+            df_eHRAF['run_Info'] = None
+            df_eHRAF.loc[0, 'run_Info'] = "User: " + self.user
+            df_eHRAF.loc[1, 'run_Info'] = "Run Time: " + str(current_time)
+            df_eHRAF.loc[2, 'run_Info'] = "Run Date: " + str(current_date)
+            df_eHRAF.loc[3, 'run_Info'] = "Run Input: " + self.URL_name_nonPlussed
+            df_eHRAF.loc[4, 'run_Info'] = "Run URL: " + self.URL
+
+        df_eHRAF.to_excel(self.file_Path, index=False)
+        print(f'saved to {self.output_dir_path}')
 
     def web_close(self):
         # close the webpage
