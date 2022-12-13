@@ -32,7 +32,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Scraper:
-    def __init__(self, user=None, url=None, param_dict=None, headless=False):
+    def __init__(self, user=None, url=None, param_dict=None, rerun=False, headless=False):
         if url is not None:
             self.URL = url
         # if no inputs are received,set URL to the default Apple demo
@@ -65,11 +65,12 @@ class Scraper:
         self.driver.get(self.homeURL + searchTokens)
 
         # if a partial file is already present, append to that file
-        self.output_dir_path()
         self.querySkipper = False
-        if os.path.isfile(self.file_Path):
-            print("File with the same search query found, skipping successfully scraped cultures")
-            self.querySkipper = True
+        self.output_dir_path()
+        if rerun is False:
+            if os.path.isfile(self.file_Path):
+                print("File with the same search query found, skipping successfully scraped cultures")
+                self.querySkipper = True
 
     def region_scraper(self):
 
@@ -144,7 +145,7 @@ class Scraper:
         # print(f"Number of cultures extracted {len(culture_dict)}")
     def doc_scraper(self):
 
-        # If we have a partial file, load it, otherwise # create dataframe to hold all the data
+        # If we have a partial file, load it, otherwise  create dataframe to hold all the data
         if self.querySkipper:
             df_eHRAF, pas_count_total = self.partial_file_return()
         else:
@@ -178,7 +179,7 @@ class Scraper:
                 sourceTabs = self.driver.find_elements(By.CLASS_NAME, 'mdc-data-table__row')
                 if len(sourceTabs) != sourceCount_page:
                     try:
-                        sourceTabs = self.reload_retry(sourceCount_page, sourceTabs, 'mdc-data-table__row')
+                        sourceTabs = self.reload_retry(sourceCount_page, 'mdc-data-table__row')
                     except RuntimeError:
                         self.reload_fail(df_eHRAF, pas_count_total, "Sources")
 
@@ -191,45 +192,88 @@ class Scraper:
                 soup = BeautifulSoup(self.driver.page_source, features="html.parser")
                 sourceCount = soup.find_all('td',{'class':'mdc-data-table__cell mdc-data-table__cell--numeric'})
                 sourceCount_list = list(map(lambda x: int(x.text), sourceCount[0::3]))
-
+                resultsTabs_total = len(sourceCount_list)
                 # click and extract information from each passage within the result/source tabs
-                for i in range(len(sourceCount_list)-1, -1, -1):
+                for i in range(0, len(sourceCount_list)):
                     total = sourceCount_list[i]
                     tab_switch_count = 0
-
+                    reload_page_save = 0
+                    reload_tab_save = 0
                     # get the results tab(which is basically the source tab but contained within a different HTML element) for sub indexing sources
                     resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
                     # in case was not enough time, redo until all the result tabs are loaded again.
-                    if len(resultsTabs) < len(sourceCount_list):
+                    # Otherwise, try clicking and reseting the tab to try again
+                    if len(resultsTabs) != resultsTabs_total:
                         try:
-                            resultsTabs = self.reload_retry(len(sourceCount_list), resultsTabs, 'trad-data__results')
+                            resultsTabs = self.reload_retry(resultsTabs_total, 'trad-data__results')
                         except RuntimeError:
-                            self.reload_fail(df_eHRAF, pas_count_total, "results")
+                            # Attempt to save the run by resetting the tab
+                            while reload_tab_save <= 2:
+                                try:
+                                    self.driver.execute_script("arguments[0].click();", sourceTabs[i])
+                                    time.sleep(1)  # Buffering time, just in case
+                                    self.driver.execute_script("arguments[0].click();", sourceTabs[i])
+                                    resultsTabs = self.reload_retry(resultsTabs_total, 'trad-data__results')
+                                except RuntimeError:
+                                    reload_tab_save += 1
+                                else:
+                                    reload_tab_save += 1
+                                    break
+                            else:
+                                self.reload_fail(df_eHRAF, pas_count_total, "results")
 
                     # If there are a lot of passages to run through, this may cause a problem with loading new sets of
                     # 10 passages (as the default is 10 at a time.) Therefore, expand to the greater number of passages
-                    if sourceCount_list[i] > 20:
-                        expander = resultsTabs[i].find_elements(By.CLASS_NAME, 'mdc-list-item')
+                    if sourceCount_list[i] > 10:
+                        expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
                         self.driver.execute_script("arguments[0].click();", expander[-1])
-
-
-
 
                     # loop until the program can click and find every piece of information for each passage (this is probably where things will break if times are off)
                     while True:
                         # reload the result tab as necessary
                         resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
-                        # in case was not enough time, redo until all the result tabs are loaded again.
-                        if len(resultsTabs) < len(sourceCount_list):
+                        # in case there is not enough time, attempt to extract result tabs.
+                        # IF the tabs will not load properly within the HTML ebpage, close them
+                        # then re-open them then find where was left off.
+                        if len(resultsTabs) != resultsTabs_total:
                             try:
-                                resultsTabs = self.reload_retry(len(sourceCount_list), resultsTabs,
+                                resultsTabs = self.reload_retry(resultsTabs_total,
                                                                 'trad-data__results')
                             except RuntimeError:
-                                self.reload_fail(df_eHRAF, pas_count_total, "results")
+                                # try reloading the page and run through the tabs
+                                # It should repat this loading until either it runs out of loops or it gets the correct results tab.
+                                while reload_page_save <=2:
+                                    try:
+                                        self.driver.execute_script("arguments[0].click();", sourceTabs[i])
+                                        time.sleep(1) #Buffering time, just in case
+                                        self.driver.execute_script("arguments[0].click();", sourceTabs[i])
+                                        resultsTabs = self.reload_retry(resultsTabs_total,
+                                                                        'trad-data__results')
+                                        if sourceCount_list[i] > 10:
+                                            expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
+                                            self.driver.execute_script("arguments[0].click();", expander[-1])
+                                        resultsTabs = self.reload_retry(resultsTabs_total,
+                                                                        'trad-data__results')
+                                        for j in range(tab_switch_count):
+                                            SourceTabFooter = resultsTabs[0].find_elements(By.CLASS_NAME,'trad-data__results--pagination')
+                                            buttons = SourceTabFooter[0].find_elements(By.CLASS_NAME, 'rmwc-icon--ligature')
+                                            self.driver.execute_script("arguments[0].click();", buttons[-1])
+                                            resultsTabs = self.reload_retry(resultsTabs_total,
+                                                                            'trad-data__results')
+                                    except RuntimeError:
+                                        reload_page_save += 1
+                                    else:
+                                        reload_page_save += 1
+                                        break
+                                else:
+                                    self.reload_fail(df_eHRAF, pas_count_total, "results")
                         # explicitly wait until the doctabs can be seen (probably not necessary but can't hurt)
-                        WebDriverWait(resultsTabs[i], 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'sre-result__title')))
-                        docTabs = resultsTabs[i].find_elements(By.CLASS_NAME, 'sre-result__title')
+                        try:
+                            WebDriverWait(resultsTabs[0], 10).until(
+                                EC.presence_of_element_located((By.CLASS_NAME, 'sre-result__title')))
+                        except:
+                            self.reload_fail(df_eHRAF, pas_count_total, "document")
+                        docTabs = resultsTabs[0].find_elements(By.CLASS_NAME, 'sre-result__title')
                         #Click all the tabs within a source
                         for doc in docTabs:
                             self.driver.execute_script("arguments[0].click();", doc)
@@ -259,14 +303,6 @@ class Scraper:
                                 DocTitle[pas_count] = re.sub(f'\({Year[pas_count].group()}\)', '', DocTitle[pas_count]).strip()
                                 # get the year without the parenthesis
                                 Year[pas_count] = int(Year[pas_count].group()[1:-1])
-
-                            # OCM_list_array[doc_count] = OCM_list
-                            # OWC_array[doc_count] = OWC
-                            # DocTitle_array[doc_count] = DocTitle
-                            # Year_array[doc_count] = Year_array
-                            # docPassage_array[doc_count] = docPassage
-                            # dataframe for each document
-                            # df_Doc = pd.DataFrame({'OCM':[OCM_list], 'OWC':[OWC], 'DocTitle':[DocTitle], 'Year':[Year],  'Passage':[docPassage]})
                             pas_count += 1
                             # df_eHRAFCulture = pd.concat([df_eHRAFCulture, df_Doc], ignore_index=True)
                         # set remaining docs in a source tab (for clicking the "next" button if not all of them are shown)
@@ -276,18 +312,17 @@ class Scraper:
                         # If there are more tabs hidden away, find the button, click it, and then refresh the results
                         # otherwise, end the loop and close the source tab to make search for information easier
                         if total >0:
-                            SourceTabFooter = resultsTabs[i].find_elements(By.CLASS_NAME, 'trad-data__results--pagination')
+                            SourceTabFooter = resultsTabs[0].find_elements(By.CLASS_NAME, 'trad-data__results--pagination')
                             buttons = SourceTabFooter[0].find_elements(By.CLASS_NAME, 'rmwc-icon--ligature')
                             self.driver.execute_script("arguments[0].click();", buttons[-1])
-
+                            tab_switch_count += 1
                         else:
                             ## close sourcetab(this might save time in the long run)
-                            ## NOTE: commented out because it will not work anymore with multi sources (sources with more than 10 passages).
-                            ## If you want it to close the tabs, you could copy the above resultsTabs reload and put it right after this line of code then chnage docTabs = resultsTabs[i] above to docTabs = resultsTabs[0]
-                            # driver.execute_script("arguments[0].click();", sourceTabs[i])
-                            break
+                            self.driver.execute_script("arguments[0].click();", sourceTabs[i])
+                            resultsTabs_total -= 1
+                            break #break from loop
                 # Run to the next page if necessary. Check to see if there are more source tabs left, if so, click the next page and continue scraping the page
-                source_total -= len(resultsTabs)
+                source_total -= len(sourceCount_list)
                 if source_total >0:
                     next_page = self.driver.find_element(By.XPATH, "//button[@title='Next Page']")
                     self.driver.execute_script("arguments[0].click();", next_page)
@@ -321,10 +356,9 @@ class Scraper:
 
 
         return df_eHRAF, pas_count_total
-
-
-    def reload_retry(self, idealCount, reloadTab, searchText):
+    def reload_retry(self, idealCount, searchText):
         reload_protect = 0
+        reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
         while idealCount != len(reloadTab) and reload_protect <= 150:
             time.sleep(.1)
             reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
@@ -371,7 +405,6 @@ class Scraper:
         os.makedirs(self.output_dir_path, exist_ok=True)  # make Data folder if it does not exist
 
         self.file_Path = self.output_dir_path + '/' + URL_name + '_web_data.xlsx'
-
     def save_file(self, df):
         # get time and date that this program was run
         from datetime import datetime
@@ -392,11 +425,9 @@ class Scraper:
 
         df_eHRAF.to_excel(self.file_Path, index=False)
         print(f'saved to {self.output_dir_path}')
-
     def web_close(self):
         # close the webpage
         self.driver.close()
-
     # if the class gets overwrittten,  remove the webpage
     def __del__(self):
         try:
