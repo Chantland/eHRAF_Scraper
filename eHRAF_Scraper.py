@@ -48,7 +48,7 @@ class Scraper:
             except Exception as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
-
+        
 
         # (optional) iniate "headless" which stops chrome from showing itself when this is run,
         # switch headless to False if you want to see the webpage or True if you want it to run in the background

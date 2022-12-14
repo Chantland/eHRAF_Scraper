@@ -3,7 +3,7 @@ import os
 
 
 from PyQt6 import uic
-from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtCore import QSize, Qt, QRect
 from PyQt6.QtWidgets import (
     QApplication, 
     QMainWindow, 
@@ -13,7 +13,8 @@ from PyQt6.QtWidgets import (
     QGridLayout, 
     QLineEdit,
     QPushButton)
-from PyQt6.QtGui import QPalette, QColor 
+from PyQt6.QtGui import QPalette, QColor, QRegion, QPainter
+
 
 # app = QtWidgets.QApplication(sys.argv)
 
@@ -38,8 +39,8 @@ class MainWindow(QMainWindow):
             raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
         ui_file = uic.loadUi(application_path+ "/eHRAF_Scraper_Creator/form.ui", self)
     def widgit_hub(self):
+        # demo to update another label dynamically when submit is clicked
         self.pushButton_URLSubmit.clicked.connect(self.set_text_box)
-
     def set_text_box(self):
         self.label.setText(self.plainTextEdit_URL.toPlainText())
         
