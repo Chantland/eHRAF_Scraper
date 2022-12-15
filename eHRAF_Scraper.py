@@ -61,9 +61,9 @@ class Scraper:
         self.homeURL = "https://ehrafworldcultures.yale.edu/"
         searchTokens = self.URL.split('/')[-1]
 
-        # Load the HTML page (note that this should be updated to allow for modular input)
+        # Load the HTML page and make it full screen to account for responsive webpage sizes
         self.driver.get(self.homeURL + searchTokens)
-
+        self.driver.fullscreen_window()  
         # if a partial file is already present, append to that file
         self.querySkipper = False
         self.output_dir_path()
@@ -81,9 +81,10 @@ class Scraper:
         country_tab = self.driver.find_elements(By.CLASS_NAME,"trad-overview__result")
         for ct_i in range(len(country_tab)-1,-1,-1):
             try:
+                # self.driver.execute_script("arguments[0].click();", country_tab[ct_i])
                 country_tab[ct_i].click()
             except:
-                print(f"WARNING tab {ct_i} failed to be clicked")
+                print(f"WARNING region {ct_i} failed to be clicked, possibly because unrelated regions were initially found")
 
         # Parse processed webpage with BeautifulSoup
         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
@@ -380,14 +381,15 @@ class Scraper:
     def output_dir_path(self):
         # clean and strip the URL to be put into the excel document
         replace_dict = {'%28':'(', '%29':')', '%3A':'~', '%7C':'|', '%3B':';'}
-        remove_list = [self.homeURL, 'search', '\?q=', 'fq=', '&', 'culture_level_samples']
+        remove_list = [self.homeURL, 'search', '\?q=', 'fq=', '\&', '\|', 'culture_level_samples'] #some characters are redundantly changed above so that it is easier to see what the characters mean (like %7C)
 
         URL_name = self.URL
 
-        for i in remove_list:
-            URL_name = re.sub(i, '', URL_name)
         for key, val in replace_dict.items():
             URL_name = re.sub(key, val, URL_name)
+        for i in remove_list:
+            URL_name = re.sub(i, '', URL_name)
+        
 
         self.URL_name_nonPlussed = re.sub('\+', ' ', URL_name)
 

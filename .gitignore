@@ -2,3 +2,6 @@
 venv
 Data
 eHRAF_Scraper_Creator
+*.pyc
+.idea
+
