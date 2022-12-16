@@ -85,8 +85,9 @@ class Scraper:
                 country_tab[ct_i].click()
             except:
                 print(f"WARNING region {ct_i} failed to be clicked, possibly because unrelated regions were initially found")
-
-        # Parse processed webpage with BeautifulSoup
+        # Parse processed webpage with BeautifulSoup (wait to make sure they are there first)
+        WebDriverWait(self.driver, 10).until(
+                                EC.presence_of_element_located((By.CLASS_NAME, 'mdc-data-table__row')))
         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
 
         # extract the number of passages in documents intended to be found
