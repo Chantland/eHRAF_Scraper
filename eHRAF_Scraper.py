@@ -243,7 +243,7 @@ class Scraper:
                                                                 'trad-data__results')
                             except RuntimeError:
                                 # try reloading the page and run through the tabs
-                                # It should repat this loading until either it runs out of loops or it gets the correct results tab.
+                                # It should repeat this loading until either it runs out of loops or it gets the correct results tab.
                                 while reload_page_save <=2:
                                     try:
                                         self.driver.execute_script("arguments[0].click();", sourceTabs[i])

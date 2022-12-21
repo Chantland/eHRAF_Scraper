@@ -14,14 +14,14 @@ from eHRAF_Scraper import Scraper
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF', rerun=True) #standard Apple
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Serbs%22+AND+text%3AApple', rerun=True) #standard Apple one culture
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22%29&fq=culture_level_samples%7CPSF', rerun=True) # Demo scraper for 750 (actually does 750-759)
-# Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22+OR+%22preventive+medicine%22+OR+%22bodily+injuries%22+OR+%22sorcery%22%29&fq=culture_level_samples%7CPSF')#Actual scraping, 2.6 hours for OCM's 750-754
+Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22+OR+%22preventive+medicine%22+OR+%22bodily+injuries%22+OR+%22sorcery%22%29&fq=culture_level_samples%7CPSF')#Actual scraping, 2.6 hours for OCM's 750-754
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22+AND+%22preventive+medicine%22+OR+%22bodily+injuries%22+OR+%22theory+of+disease%22+OR+%22sorcery%22%29&fq=culture_level_samples%7CPSF',rerun=True) #750-754 but test to see the use of "AND"
-Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=+-text%3AGallyhow') #simply to extract each culture and region DO NOT ACTUALLY RUN THE WHOLE THING
+# Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=+-text%3AGallyhow') #simply to extract each culture and region DO NOT ACTUALLY RUN THE WHOLE THING
 
 # #
 Scraper1.region_scraper()
-# print(Scraper1.time_req())
-# Scraper1.doc_scraper()
+print(Scraper1.time_req())
+Scraper1.doc_scraper()
 
 
 # import time
@@ -43,14 +43,14 @@ Scraper1.region_scraper()
 
 
 # Used for saving all the cultures found the the list, use with  url=r'https://ehrafworldcultures.yale.edu/search?q=+-text%3AGallyhow' but COMMENT OUT SOME OF THE ABOVE LINES SO IT DOES NOT RUN FOR 5 DAYS
-import pandas as pd
-culture_list =[]
-regn_list = []
-subregion_list = []
-for key, val in Scraper1.culture_dict.items():
-    culture_list.append(key.lower())
-    regn_list.append(val["Region"].lower())
-    subregion_list.append(val["SubRegion"].lower())
+# import pandas as pd
+# culture_list =[]
+# regn_list = []
+# subregion_list = []
+# for key, val in Scraper1.culture_dict.items():
+#     culture_list.append(key.lower())
+#     regn_list.append(val["Region"].lower())
+#     subregion_list.append(val["SubRegion"].lower())
 
-df = pd.DataFrame({"Region":regn_list, "SubRegion":subregion_list,  "Culture":culture_list})
-df.to_excel("Resources/Culture_Names.xlsx", index=None)
+# df = pd.DataFrame({"Region":regn_list, "SubRegion":subregion_list,  "Culture":culture_list})
+# df.to_excel("Resources/Culture_Names.xlsx", index=None)
