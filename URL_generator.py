@@ -154,8 +154,8 @@ class URL_generator:
     def invalid_inputs(self):
         if len(self.Search_dict['culture']['invalid']) + \
                 len(self.Search_dict['subject']['invalid']) + \
-                len(self.Search_dict['keyword']['invalid']) <=1:
-            return None
+                len(self.Search_dict['keyword']['invalid']) <1:
+            return "All inputs are valid"
         # create a single paragraph with invalid culture, subject and keyword as necessary
         invalidParagraph = 'The following inputs could not be searched:\n'
         if len(self.Search_dict['culture']['invalid']) >= 1:

@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
             application_path = os.path.dirname(__file__)
         else:
             raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
-        ui_file = uic.loadUi(application_path+ "/eHRAF_Scraper_Creator/form.ui", self)
+        uic.loadUi(application_path+ "/eHRAF_Scraper_Creator/form.ui", self)
     def widgit_setup(self):
         # Set up the Id's to beter match what is used in the URL generator and for esear indexing
         # 0 None
@@ -63,14 +63,20 @@ class MainWindow(QMainWindow):
         self.buttonGroup_SubjKey_Conj.setId(self.pushButton_SubKeyOr, 1)
         self.buttonGroup_SubjKey_Conj.setId(self.pushButton_SubKeyAnd, 2)
 
+        self.continueButton = QPushButton(self)
+        self.continueButton.setText("Continue")
+        self.stopButton = QPushButton(self)
+        self.stopButton.move(120,0)
         # self.buttonGroup_filter_CulturalLevel.setId(self.checkBox_EA, 0)
         # self.buttonGroup_filter_CulturalLevel.setId(self.checkBox_SCCS, 1)
         # self.buttonGroup_filter_CulturalLevel.setId(self.checkBox_PSF, 2)
         # self.buttonGroup_filter_CulturalLevel.setId(self.checkBox_SRS, 3)
 
     def widgit_hub(self):
+        
         self.pushButton_URLSubmit.clicked.connect(self.set_URL)
         self.pushButton_AdvSubmit.clicked.connect(self.create_URL)
+        
     def set_text_box(self):
         self.textBrowser.setText(self.plainTextEdit_URL.toPlainText())
     def textBox_descript_append(self, string:str):
@@ -78,7 +84,6 @@ class MainWindow(QMainWindow):
         self.textBrowser_Descript.setText(self.descript)
     def textBox_URL_set(self, string:str):
         string = "URL in use:\n" + self.URL
-        self.text_clear()
         self.textBrowser_URL.setText(string)
     def textBox_warning(self, warning:str):
         self.text_clear()
@@ -128,13 +133,25 @@ class MainWindow(QMainWindow):
             self.textBox_warning("No viable search terms were found, please check for spelling mistakes")
             return
         self.URL = URL
+        self.text_clear() #if success, clear out the windows
+        self.textBox_descript_append(URL_gen.invalid_inputs())
         self.textBox_URL_set("URL in use:\n" + self.URL)
         self.web_scraper()
     def web_scraper(self):
-        web_scraper = Scraper(self.URL)
-        web_scraper.region_scraper()
-        print(web_scraper.time_req())
-        web_scraper.doc_scraper()
+        self.scraper = Scraper(url=self.URL)
+        region_info = self.scraper.region_scraper()
+        if region_info is not None:
+            self.textBrowser_Descript.setText(region_info)
+            self.scraper.web_close()
+            return
+        
+        self.textBox_descript_append(self.scraper.time_req())
+        self.textBox_descript_append('Press CONTINUE button or else choose a new query')
+        self.continueButton.clicked.connect(self.web_continue())
+    def web_continue(self):
+        save_message = self.scraper.doc_scraper()
+        self.textBox_descript_append('Complete scraping. check the terminal for more info')
+        self.textBox_descript_append(save_message)
 
 
 def main():

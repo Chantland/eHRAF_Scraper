@@ -32,7 +32,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Scraper:
-    def __init__(self, user=None, url=None, param_dict=None, rerun=False, headless=False):
+    def __init__(self, url=None, user=None, param_dict=None, rerun=False, headless=False):
         if url is not None:
             self.URL = url
         # if no inputs are received,set URL to the default Apple demo
@@ -79,6 +79,8 @@ class Scraper:
         # clicked tab adds HTML pushing future tabs to a new location thereby making some indexing no longer point to a retrieved tab.
         # Loading backwards avoids this.
         country_tab = self.driver.find_elements(By.CLASS_NAME,"trad-overview__result")
+        if len(country_tab) <1:
+            return "No search results found, be sure you are not over filtering"
         for ct_i in range(len(country_tab)-1,-1,-1):
             try:
                 # self.driver.execute_script("arguments[0].click();", country_tab[ct_i])
@@ -427,7 +429,7 @@ class Scraper:
             df_eHRAF.loc[4, 'run_Info'] = "Run URL: " + self.URL
 
         df_eHRAF.to_excel(self.file_Path, index=False)
-        print(f'saved to {self.output_dir_path}')
+        return f'saved to {self.output_dir_path}'
     def web_close(self):
         # close the webpage
         self.driver.close()
