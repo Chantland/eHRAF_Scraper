@@ -4,7 +4,7 @@
 # DONE: initialize the options for headless and rerun
 # TODO: standardize the save files so that similar search terms (pear, grandma vs. grandma, pear) are regarded as the same.
 # TODO: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
-# TODO: implement better looking continue button which is unclicakble until the right time
+# DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: implement a stop button
 # TODO: if possible make the terminal print out to the GUI's terminal but this is optional.
 
@@ -14,18 +14,13 @@ from URL_generator import URL_generator as ug
 import re
 from eHRAF_Scraper import Scraper
 
+import PyQt6
 from PyQt6 import uic
-from PyQt6.QtCore import QSize, Qt, QRect
+from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import (
     QApplication, 
-    QMainWindow, 
-    QWidget, 
-    QHBoxLayout, 
-    QVBoxLayout, 
-    QGridLayout, 
-    QLineEdit,
-    QPushButton)
-from PyQt6.QtGui import QPalette, QColor, QRegion, QPainter
+    QMainWindow)
+from PyQt6.QtGui import QIcon
 
 
 # app = QtWidgets.QApplication(sys.argv)
@@ -53,7 +48,7 @@ class MainWindow(QMainWindow):
             application_path = os.path.dirname(__file__)
         else:
             raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
-        uic.loadUi(application_path+ "/eHRAF_Scraper_Creator/form.ui", self)
+        uic.loadUi(application_path+ "/Resources/eHRAF_Scraper_Creator/form.ui", self)
     def widgit_setup(self):
         # Set up the Id's to beter match what is used in the URL generator and for easier indexing
         # 0 None
@@ -218,10 +213,20 @@ def color_app(string, *args):
     text += color.END
     return text
 
+# get path to images
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 # execute and update the GUI window
 def main():
     app = QApplication(sys.argv)
     main = MainWindow()
+    app.setWindowIcon(QIcon(resource_path("/Resources/favicon.icns")))
     main.show()
     sys.exit(app.exec())
 

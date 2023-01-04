@@ -1,7 +1,6 @@
 # URL generator
 import re
 import pandas as pd
-from itertools import compress
 
 class URL_generator:
     def __init__(self):
