@@ -32,14 +32,12 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Scraper:
-    def __init__(self, url=None, user=None, param_dict=None, rerun=False, headless=False):
+    def __init__(self, url=None, user=None, rerun=False, headless=False):
         if url is not None:
             self.URL = url
         # if no inputs are received,set URL to the default Apple demo
-        if url is None and param_dict is None:
+        if url is None:
             self.URL = r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF'
-        if param_dict is not None:
-            pass
         if user is None:
             self.user = "No Name Specified"
         else:
@@ -63,7 +61,10 @@ class Scraper:
 
         # Load the HTML page and make it full screen to account for responsive webpage sizes
         self.driver.get(self.homeURL + searchTokens)
-        self.driver.fullscreen_window()  
+        try:
+            self.driver.set_window_size(1100,1100)
+        except: #in case a computer cannot handle the set size (which it should but still)
+            self.driver.fullscreen_window()
         # if a partial file is already present, append to that file
         self.querySkipper = False
         self.output_dir_path()
@@ -98,7 +99,6 @@ class Scraper:
         self.pas_count = int(self.pas_count.split()[1])
 
         self.doc_URL_finder(soup=soup)
-
     def time_req(self):
         # estimate the time this will take
         import math
