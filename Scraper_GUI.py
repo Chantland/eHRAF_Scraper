@@ -2,7 +2,7 @@
 # TODO: check scraper for crashes. There is one which I thought was fixed but maybe not. It happens when the initial source tabs are clicked but cannot load yet seem to not initialize the reclick feature. Currently the error will save a partial file.
 # TODO: fix scraper info which returns the number of rows of the excel file rather than the number of passages.
 # DONE: initialize the options for headless and rerun
-# TODO: standardize the save files so that similar search terms (pear, grandma vs. grandma, pear) are regarded as the same.
+# DONE: standardize the save files so that similar search terms (pear, grandma vs. grandma, pear) are regarded as the same.
 # TODO: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
 # DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: implement a stop button

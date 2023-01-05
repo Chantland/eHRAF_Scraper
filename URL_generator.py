@@ -29,6 +29,7 @@ class URL_generator:
                     Search_dict['culture']['valid'].add(found_culture['Culture'].values[0]) #could be one line but split to reduce confusion
                 else:
                     Search_dict['culture']['invalid'].add(str(culture))
+            Search_dict['culture']['valid'] = sorted(Search_dict['culture']['valid']) #sort the inputs/values
             # create phrase for culture (will be combined with the rest and then turned in a URL
             if len(Search_dict['culture']['valid']) > 0:
                 Search_dict['culture']['phrase'] += 'cultures:('
@@ -63,6 +64,7 @@ class URL_generator:
                     Search_dict['subject']['valid'].add(meaning['Meaning'].values[0]) #could be one line but split to reduce confusion
                 else:
                     Search_dict['subject']['invalid'].add(str(sub))
+            Search_dict['subject']['valid'] = sorted(Search_dict['subject']['valid']) #sort the inputs/values
             if len(Search_dict['subject']['valid']) > 0:
                 Search_dict['subject']['phrase'] += 'subjects:('
                 multi_term = False
@@ -81,6 +83,7 @@ class URL_generator:
         if keywords != '':
             keyword_list = self.word_strip(keywords)
             Search_dict['keyword']['valid'] = set(keyword_list)
+            Search_dict['keyword']['valid'] = sorted(Search_dict['keyword']['valid']) #sort the inputs/values
             #At this point, I am not sure what would be an invalid keword.
             if len(Search_dict['keyword']['valid']) > 0:
                 Search_dict['keyword']['phrase'] += 'text:('
@@ -104,7 +107,7 @@ class URL_generator:
 
         # Construct the passage
         final_phrase = ''
-        # combine subject and keywords together by using a conjunction specified. Otherwise get a one or the other (or neither)
+        # combine subject and keywords together by using a conjunction specified. Otherwise get one or the other (or neither)
         if Search_dict['subject']['phrase'] != '' and Search_dict['keyword']['phrase'] != '':
             final_phrase += '(' + Search_dict['subject']['phrase'] + conj_list[concat_conj] + Search_dict['keyword']['phrase'] + ')'
         else: # else combine the blank subject/keyword with the real text (if it is also not blank)
@@ -129,7 +132,7 @@ class URL_generator:
         URL += URL_final_phrase
 
         #Add in optional filters like cultural level camples
-        # &fq=culture_level_samples%7CEA%3Bculture_level_samples%7CPSF%3Bculture_level_samples%7CSCCS%3Bculture_level_samples%7CSRS
+        # &fq=culture_level_samples%7CEA%3Bculture_level_samples%7CPSF%3Bculture_level_samples%7CSCCS%3Bculture_level_samples%7CSRS.
 
         # cultureSamplesText_list = ['EA', 'SCCS', 'PSF', 'SRS']
         # filteredCST_list = [i for (i, v) in zip(cultureSamplesText_list, cultural_level_samples) if v]

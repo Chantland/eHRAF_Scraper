@@ -67,7 +67,7 @@ class Scraper:
             self.driver.fullscreen_window()
         # if a partial file is already present, append to that file
         self.querySkipper = False
-        self.output_dir_path()
+        self.output_dir_cons()
         if rerun is False:
             if os.path.isfile(self.file_Path):
                 print("File with the same search query found, skipping successfully scraped cultures")
@@ -381,20 +381,30 @@ class Scraper:
                 f'{pas_count_total} passages out of a possible {self.pas_count} loaded (also check dataframe)')
         raise Exception(
             f"failed to load all {text} tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
-    def output_dir_path(self):
+    def output_dir_cons(self):
         # clean and strip the URL to be put into the excel document
-        replace_dict = {'%28':'(', '%29':')', '%3A':'~', '%7C':'|', '%3B':';'}
-        remove_list = [self.homeURL, 'search', '\?q=', 'fq=', '\&', '\|', 'culture_level_samples'] #some characters are redundantly changed above so that it is easier to see what the characters mean (like %7C)
+        replace_dict = {'%28':'(', '%29':')', '%3A':':', '%7C':'|', '%3B':';', '%22':'\"', '%27':'\'', '\+':' '}
+        remove_list = [self.homeURL, 'search', '\?q=', 'fq=', '\&', '\|', '\"', '\'', 'culture_level_samples'] #some characters are redundantly changed above so that it is easier to see what the characters mean (like %7C)
+        remove_list_file = ['\"', '\'', ':']
 
-        URL_name = self.URL
-
-        for key, val in replace_dict.items():
-            URL_name = re.sub(key, val, URL_name)
-        for i in remove_list:
-            URL_name = re.sub(i, '', URL_name)
+        file_name = self.URL
         
+        for key, val in replace_dict.items():
+            file_name = re.sub(key, val, file_name)
+        for i in remove_list:
+            file_name = re.sub(i, '', file_name)
+        self.input_name = file_name
+        # remove the extra filter items at the end of input (but keep it for the file name)
+        reg = re.findall('.*\)(.*)', self.input_name)
+        self.input_name = re.sub(reg[0], '', self.input_name)
 
-        self.URL_name_nonPlussed = re.sub('\+', ' ', URL_name)
+        # remove the rest of the characters not good for a file name
+        for i in remove_list_file:
+            file_name = re.sub(i, '', file_name)
+        if len(reg) <1:
+            self.filterAdditions = "No Filtering"
+        else:
+            self.filterAdditions = reg[0]
 
         # Find path
         # determine if application is a script file or frozen exe
@@ -409,7 +419,7 @@ class Scraper:
         self.output_dir_path = application_path + '/' + self.output_dir  # output directory path
         os.makedirs(self.output_dir_path, exist_ok=True)  # make Data folder if it does not exist
 
-        self.file_Path = self.output_dir_path + '/' + URL_name + '_web_data.xlsx'
+        self.file_Path = self.output_dir_path + '/' + file_name + '_web_data.xlsx'
     def save_file(self, df):
         # get time and date that this program was run
         from datetime import datetime
@@ -418,6 +428,7 @@ class Scraper:
         current_date = now.strftime("%m/%d/%y")
 
 
+        
         df_eHRAF = df
         if self.querySkipper is False:
             # place run information within the "run_info" column
@@ -425,8 +436,9 @@ class Scraper:
             df_eHRAF.loc[0, 'run_Info'] = "User: " + self.user
             df_eHRAF.loc[1, 'run_Info'] = "Run Time: " + str(current_time)
             df_eHRAF.loc[2, 'run_Info'] = "Run Date: " + str(current_date)
-            df_eHRAF.loc[3, 'run_Info'] = "Run Input: " + self.URL_name_nonPlussed
-            df_eHRAF.loc[4, 'run_Info'] = "Run URL: " + self.URL
+            df_eHRAF.loc[3, 'run_Info'] = "Run Input: " + self.input_name
+            df_eHRAF.loc[4, 'run_Info'] = "Filter: " + self.filterAdditions
+            df_eHRAF.loc[5, 'run_Info'] = "Run URL: " + self.URL
 
         df_eHRAF.to_excel(self.file_Path, index=False)
         return f'saved to {self.output_dir_path}'
