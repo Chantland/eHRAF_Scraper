@@ -171,14 +171,29 @@ class Scraper:
             source_total = self.culture_dict[key]['Source_count']
             while source_total > 0:
                 # try to determine the source count on the page
-                # NOTE maximum page number at time of writing is 25. If this ever changes the code will break and you
-                # will have to update this number or find a good way to systematiclaly check if the new tabs are loaded
+                # NOTE maximum sources per page at time of writing is 25. If this ever changes the code will break and you
+                # will have to update this number or find a good way to systematically check if the new tabs are loaded
                 sourceCount_page = source_total
                 if sourceCount_page > 25:
                     sourceCount_page = 25
 
-                # # Try to make the program wait until the webpage is loaded (outdated)
-                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mdc-data-table__row")))
+                # # Try to make the program wait until the webpage is loaded. This usually will only crash if you lose internet, but still try to save the data
+                page_reload_count = 0
+                while page_reload_count <3:
+                    try:
+                        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mdc-data-table__row")))
+                    except:
+                        try: #try to reload, otherwise, pass
+                            self.driver.get(self.homeURL + self.culture_dict[key]['link'])
+                        except:
+                            pass
+                        page_reload_count += 1
+                    else:
+                        page_reload_count += 1
+                        break
+                else:
+                    self.reload_fail(df_eHRAF, pas_count_total, "Page")
+                
                 # reload until the "correct" number of source tabs are retrived
                 sourceTabs = self.driver.find_elements(By.CLASS_NAME, 'mdc-data-table__row')
                 if len(sourceTabs) != sourceCount_page:
@@ -363,11 +378,11 @@ class Scraper:
     def reload_retry(self, idealCount, searchText):
         reload_protect = 0
         reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
-        while idealCount != len(reloadTab) and reload_protect <= 150:
+        while idealCount != len(reloadTab) and reload_protect <= 100:
             time.sleep(.1)
             reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
             reload_protect += 1
-        if reload_protect > 150:
+        if reload_protect > 100:
             raise RuntimeError("Too many reloads")
         return reloadTab
     def reload_fail(self, df, pas_count_total, text):
