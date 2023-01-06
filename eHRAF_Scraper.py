@@ -16,9 +16,9 @@ import os                           # Find where this file is located.
 import sys                          # Also for finding file location (for saving)
 import re                           # regex for searching through strings
 import time                         # for waiting for the page to load
-import selenium
-import webdriver_manager
-
+import selenium                     #package for loading an autnomous browser
+import webdriver_manager            # manager, I am not sure what it does in relation to selenium but it is important, perhaps this is used to avoid downloading chrome
+from datetime import datetime
 
 from selenium import webdriver      # load and run the webpage dynamically.
 from selenium.webdriver.chrome.service import Service
@@ -46,7 +46,8 @@ class Scraper:
             except Exception as err:
                 print(f"Unexpected {err=}, {type(err)=}")
                 raise
-        
+        # The program may need to be saved multiple times, Make it so it only overwrites the input info once
+        self.repeatSave = False
 
         # (optional) iniate "headless" which stops chrome from showing itself when this is run,
         # switch headless to False if you want to see the webpage or True if you want it to run in the background
@@ -147,11 +148,19 @@ class Scraper:
 
             self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Doc_Count": doc_count,  "Reloads": {"source_reload": 0, "results_reload": 0}}
         # print(f"Number of cultures extracted {len(culture_dict)}")
-    def doc_scraper(self):
+    def doc_scraper(self, saveRate:int=5000):
 
+        #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
+        if not isinstance(saveRate, int) or saveRate <1:
+            saveRate = None
+            print("Not a valid interval for saving, Must supply a positive integer for saveRate, defaulting to None")
+        else:
+            saveRate_count = 0
+            
         # If we have a partial file, load it, otherwise  create dataframe to hold all the data
         if self.querySkipper:
             df_eHRAF, pas_count_total = self.partial_file_return()
+            print(f'{pas_count_total} passages loaded from partial file')
         else:
             pas_count_total = 0
             df_eHRAF = pd.DataFrame({"Region":[], "SubRegion":[], "Culture":[], 'DocTitle':[], 'Year':[], "OCM":[], "OWC":[], "Passage":[]})
@@ -205,6 +214,7 @@ class Scraper:
                 # Click every source tab
                 for source_i in sourceTabs:
                     self.driver.execute_script("arguments[0].click();", source_i)
+                # PUT CLICK RESET HERE SUCH THAT IT CHECKS IF THERE ARE ENOUGH RESULT TABS(OR SOMETHING ELSE), IF NOT, RESET THE CLICK 
 
                 #Log the source table's results number in order to know where to start and stop clicking.
                 # Skip every 2 logs as they do not contain the information desired
@@ -354,15 +364,21 @@ class Scraper:
             pas_count_total += pas_count
             if pas_count != self.culture_dict[key]['Doc_Count']:
                 print(f"WARNING {pas_count} out of {self.culture_dict[key]['Doc_Count']} passages loaded for {key}")
-
+            # Save the file over a set interval in case there is an unforseen failure which did not allow partial saving
+            if saveRate is not None:
+                saveRate_count += pas_count
+                if saveRate_count >= saveRate:
+                    self.save_file(df_eHRAF)
+                    print(f'Routine partial saving has occurred, {pas_count_total} documents saved')
+                    saveRate_count = 0
         self.save_file(df_eHRAF)
         self.web_close()
-        print(f'{pas_count_total} passages out of a possible {self.pas_count} loaded (also check dataframe)')
+        print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
 
     # if there already exists a file that contains this specific search pattern, then reload the data
     def partial_file_return(self):
         df_eHRAF = pd.read_excel(self.file_Path)
-        pas_count_total = len(df_eHRAF)
+        pas_count_total = sum(~df_eHRAF['Region'].isna())
         skip_cultures = set(df_eHRAF["Culture"])
 
         # delete cultures in the dictionary already present
@@ -393,33 +409,62 @@ class Scraper:
             self.web_close()
             print("Partial saving has occurred, please rerun the program to restart at the culture left off")
             print(
-                f'{pas_count_total} passages out of a possible {self.pas_count} loaded (also check dataframe)')
+                f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
         raise Exception(
-            f"failed to load all {text} tabs, please contact ericchantland@gmail.com for info on fixing the time waits")
+            f"failed to load all {text} tabs, please contact ericchantland@gmail.com for info on fixing")
     def output_dir_cons(self):
         # clean and strip the URL to be put into the excel document
         replace_dict = {'%28':'(', '%29':')', '%3A':':', '%7C':'|', '%3B':';', '%22':'\"', '%27':'\'', '\+':' '}
-        remove_list = [self.homeURL, 'search', '\?q=', 'fq=', '\&', '\|', '\"', '\'', 'culture_level_samples'] #some characters are redundantly changed above so that it is easier to see what the characters mean (like %7C)
-        remove_list_file = ['\"', '\'', ':']
+        remove_list = [self.homeURL, 'search', '\?q='] #some characters are redundantly changed above so that it is easier to see what the characters mean (like %7C)
+        replace_dict_file = {'fq=':'_FILTERS-', ':':'-', ' ':'_'}
+        remove_list_file = ['\"', '\'', ':','\|','&']
 
         file_name = self.URL
-        
+
+        # replace HTML characters with their corresponding characters
         for key, val in replace_dict.items():
             file_name = re.sub(key, val, file_name)
+        #remove common undesirable characters 
         for i in remove_list:
             file_name = re.sub(i, '', file_name)
-        self.input_name = file_name
-        # remove the extra filter items at the end of input (but keep it for the file name)
-        reg = re.findall('.*\)(.*)', self.input_name)
-        self.input_name = re.sub(reg[0], '', self.input_name)
 
-        # remove the rest of the characters not good for a file name
+        self.input_name = file_name #save a copy before extra filtering as this will be sued later in the file
+        self.input_filters = 'No filters'
+
+        # regex for finding filters if they are there
+        reg = re.findall('.*&fq=(.*)', file_name)
+        # if filters are present, reshape and beautify
+        if len(reg) >0:
+            self.input_name = re.sub('&fq='+re.escape(reg[0]),'',self.input_name)
+            self.input_filters = reg[0]
+            file_filter = reg[0] #same as reg but now we can update it to fix the filtername
+            # # second regex for finding the actual filter names, Use if you want to extract only the filters themselves
+            # filter_names = ["".join(x) for x in re.findall('\|(.*?);|\|(.*?)$', reg[0])]
+            # # if using above, you can replace the filters with those in parenthesis, I removed this since it parenthesis words multiple times each if there were duplicates
+            # for i in filter_names:
+            #     file_filters = re.sub(i, f'({i})', file_filters)
+
+            # a few substitutions to get parenthesis around each of the filters
+            file_filter = re.sub('\|','(',file_filter)
+            file_filter = re.sub(';','),',file_filter)
+            file_filter += ')'
+
+            # Give a space between input filters for readability (and maybe splitting later)
+            self.input_filters = re.sub(';', ';\n', self.input_filters)
+            self.input_filters = re.sub('_', ' ', self.input_filters)
+
+
+            # now add the corrected filters back to the URL file name,
+            file_name = re.sub(re.escape(reg[0]), file_filter, file_name)
+
+
+        # remove and replace the characters not good for a file name
+        for key, val in replace_dict_file.items():
+            file_name = re.sub(key, val, file_name)
         for i in remove_list_file:
             file_name = re.sub(i, '', file_name)
-        if len(reg) <1:
-            self.filterAdditions = "No Filtering"
-        else:
-            self.filterAdditions = reg[0]
+
+
 
         # Find path
         # determine if application is a script file or frozen exe
@@ -437,7 +482,6 @@ class Scraper:
         self.file_Path = self.output_dir_path + '/' + file_name + '_web_data.xlsx'
     def save_file(self, df):
         # get time and date that this program was run
-        from datetime import datetime
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
         current_date = now.strftime("%m/%d/%y")
@@ -445,17 +489,22 @@ class Scraper:
 
         
         df_eHRAF = df
-        if self.querySkipper is False:
+        if self.querySkipper is False and self.repeatSave is False:
             # place run information within the "run_info" column
             df_eHRAF['run_Info'] = None
             df_eHRAF.loc[0, 'run_Info'] = "User: " + self.user
             df_eHRAF.loc[1, 'run_Info'] = "Run Time: " + str(current_time)
             df_eHRAF.loc[2, 'run_Info'] = "Run Date: " + str(current_date)
             df_eHRAF.loc[3, 'run_Info'] = "Run Input: " + self.input_name
-            df_eHRAF.loc[4, 'run_Info'] = "Filter: " + self.filterAdditions
+            df_eHRAF.loc[4, 'run_Info'] = "Filter: " + self.input_filters
             df_eHRAF.loc[5, 'run_Info'] = "Run URL: " + self.URL
+        
+        try:
+            df_eHRAF.to_excel(self.file_Path, index=False)
+        except:
+            raise Exception('unable to save to file, make sure the file is not currently open')
 
-        df_eHRAF.to_excel(self.file_Path, index=False)
+        self.repeatSave = True
         return f'saved to {self.output_dir_path}'
     def web_close(self):
         # close the webpage
