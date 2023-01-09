@@ -178,6 +178,8 @@ class Scraper:
             OWC = Year.copy()
             # loop for every page within a culture
             source_total = self.culture_dict[key]['Source_count']
+            page_reload_count = 0 #for reload protection
+            next_page_count = 0 # for counting the number of pages ran through in case we need to return to that page
             while source_total > 0:
                 # try to determine the source count on the page
                 # NOTE maximum sources per page at time of writing is 25. If this ever changes the code will break and you
@@ -187,23 +189,22 @@ class Scraper:
                     sourceCount_page = 25
 
                 # # Try to make the program wait until the webpage is loaded. This usually will only crash if you lose internet, but still try to save the data
-                page_reload_count = 0
                 while page_reload_count <3:
                     try:
                         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "mdc-data-table__row")))
                     except:
-                        try: #try to reload, otherwise, pass
-                            self.driver.get(self.homeURL + self.culture_dict[key]['link'])
+                        try: #try to reload the page, otherwise, pass
+                            self.reload_page(key, next_page_count)
                         except:
                             pass
                         page_reload_count += 1
                     else:
-                        page_reload_count += 1
+                        # page_reload_count += 1
                         break
                 else:
                     self.reload_fail(df_eHRAF, pas_count_total, "Page")
                 
-                # reload until the "correct" number of source tabs are retrived
+                # retry finding the source tabs until the "correct" number of source tabs are retrieved
                 sourceTabs = self.driver.find_elements(By.CLASS_NAME, 'mdc-data-table__row')
                 if len(sourceTabs) != sourceCount_page:
                     try:
@@ -214,7 +215,6 @@ class Scraper:
                 # Click every source tab
                 for source_i in sourceTabs:
                     self.driver.execute_script("arguments[0].click();", source_i)
-                # PUT CLICK RESET HERE SUCH THAT IT CHECKS IF THERE ARE ENOUGH RESULT TABS(OR SOMETHING ELSE), IF NOT, RESET THE CLICK 
 
                 #Log the source table's results number in order to know where to start and stop clicking.
                 # Skip every 2 logs as they do not contain the information desired
@@ -222,6 +222,21 @@ class Scraper:
                 sourceCount = soup.find_all('td',{'class':'mdc-data-table__cell mdc-data-table__cell--numeric'})
                 sourceCount_list = list(map(lambda x: int(x.text), sourceCount[0::3]))
                 resultsTabs_total = len(sourceCount_list)
+                # Check to make sure every source tab was clicked correctly by comparing the result tab numbers
+                try:
+                    resultsTabs = self.reload_retry(resultsTabs_total, 'trad-data__results')
+                except:
+                    #try to reload the page, otherwise, pass
+                    try: 
+                        self.reload_page(key, next_page_count)
+                    except:
+                        pass # reload the webpage
+                    page_reload_count += 1
+                    if page_reload_count >=3:
+                        self.reload_fail(df_eHRAF, pas_count_total, "Sources")
+                    else:
+                        continue # reset the while loop
+
                 # click and extract information from each passage within the result/source tabs
                 for i in range(0, len(sourceCount_list)):
                     total = sourceCount_list[i]
@@ -259,7 +274,7 @@ class Scraper:
 
                     # loop until the program can click and find every piece of information for each passage (this is probably where things will break if times are off)
                     while True:
-                        # reload the result tab as necessary
+                        # retry finding the result tab as necessary
                         resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
                         # in case there is not enough time, attempt to extract result tabs.
                         # IF the tabs will not load properly within the HTML ebpage, close them
@@ -269,7 +284,7 @@ class Scraper:
                                 resultsTabs = self.reload_retry(resultsTabs_total,
                                                                 'trad-data__results')
                             except RuntimeError:
-                                # try reloading the page and run through the tabs
+                                # try retry results tabs and run through the tabs
                                 # It should repeat this loading until either it runs out of loops or it gets the correct results tab.
                                 while reload_page_save <=2:
                                     try:
@@ -355,6 +370,7 @@ class Scraper:
                 if source_total >0:
                     next_page = self.driver.find_element(By.XPATH, "//button[@title='Next Page']")
                     self.driver.execute_script("arguments[0].click();", next_page)
+                    next_page_count += 1
 
             # append the attributes to the dataframe
             df_eHRAFCulture = pd.DataFrame({'DocTitle': DocTitle, 'Year': Year, "OCM": OCM_list,
@@ -375,7 +391,7 @@ class Scraper:
         self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
 
-    # if there already exists a file that contains this specific search pattern, then reload the data
+    # if there already exists a file that contains this specific search pattern, then load the data
     def partial_file_return(self):
         df_eHRAF = pd.read_excel(self.file_Path)
         pas_count_total = sum(~df_eHRAF['Region'].isna())
@@ -412,6 +428,16 @@ class Scraper:
                 f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
         raise Exception(
             f"failed to load all {text} tabs, please contact ericchantland@gmail.com for info on fixing")
+    def reload_page(self, key, next_page_count): #reload the page and try to start at the page number left off for the culture
+        self.driver.get(self.homeURL + self.culture_dict[key]['link'])
+        # return to the page where this failed originally
+        if next_page_count >0:
+            next_page_count_loop = next_page_count
+            while next_page_count_loop >0:
+                time.sleep(3)
+                next_page = self.driver.find_element(By.XPATH, "//button[@title='Next Page']")
+                self.driver.execute_script("arguments[0].click();", next_page)
+                next_page_count_loop -= 1
     def output_dir_cons(self):
         # clean and strip the URL to be put into the excel document
         replace_dict = {'%28':'(', '%29':')', '%3A':':', '%7C':'|', '%3B':';', '%22':'\"', '%27':'\'', '\+':' '}
