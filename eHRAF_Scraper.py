@@ -73,7 +73,6 @@ class Scraper:
             if os.path.isfile(self.file_Path):
                 print("File with the same search query found, skipping successfully scraped cultures")
                 self.querySkipper = True
-
     def region_scraper(self):
 
         # Find then click on each tab to reveal content for scraping
@@ -151,9 +150,11 @@ class Scraper:
     def doc_scraper(self, saveRate:int=5000):
 
         #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
-        if not isinstance(saveRate, int) or saveRate <1:
+        if not isinstance(saveRate, int) or saveRate <0 or saveRate is None:
             saveRate = None
             print("Not a valid interval for saving, Must supply a positive integer for saveRate, defaulting to None")
+        elif saveRate == 0:
+            saveRate = None
         else:
             saveRate_count = 0
             
@@ -390,7 +391,6 @@ class Scraper:
         self.save_file(df_eHRAF)
         self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
-
     # if there already exists a file that contains this specific search pattern, then load the data
     def partial_file_return(self):
         df_eHRAF = pd.read_excel(self.file_Path)
@@ -531,7 +531,7 @@ class Scraper:
             raise Exception('unable to save to file, make sure the file is not currently open')
 
         self.repeatSave = True
-        return f'saved to {self.output_dir_path}'
+        print(f'Saved to {self.file_Path}')
     def web_close(self):
         # close the webpage
         self.driver.close()

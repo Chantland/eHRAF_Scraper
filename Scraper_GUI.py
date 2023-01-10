@@ -1,9 +1,9 @@
 # DONE: Cannot run two subsequent runs of the scraper without it crashing. Perhaps due to issues with initializing and deleting the driver.
-# TODO: check scraper for crashes. There is one which I thought was fixed but maybe not. It happens when the initial source tabs are clicked but cannot load yet seem to not initialize the reclick feature. Currently the error will save a partial file.
-# TODO: fix scraper info which returns the number of rows of the excel file rather than the number of passages.
+# DONE: check scraper for crashes. There is one which I thought was fixed but maybe not. It happens when the initial source tabs are clicked but cannot load yet seem to not initialize the reclick feature. Currently the error will save a partial file.
+# DONE: fix scraper info which returns the number of rows of the excel file rather than the number of passages.
 # DONE: initialize the options for headless and rerun
 # DONE: standardize the save files so that similar search terms (pear, grandma vs. grandma, pear) are regarded as the same.
-# TODO: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
+# DONE: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
 # DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: implement a stop button
 # TODO: if possible make the terminal print out to the GUI's terminal but this is optional.
@@ -35,11 +35,10 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         self.descript = ''
         self.URL = ''
-        self.setFixedSize(QSize(850, 750))
+        self.setFixedSize(QSize(880, 780))
         self.load_ui()
         self.widgit_setup()
         self.widgit_hub()
-
     def load_ui(self):
         # path = Path(__file__).resolve().parent / "form.ui"
         if getattr(sys, 'frozen', False):
@@ -103,8 +102,8 @@ class MainWindow(QMainWindow):
         if URL == '':
             self.textBox_warning("No URL submitted")
             return
-        eHRAF_URL = re.match(r'^https://ehrafworldcultures.yale.edu/search?q=', URL)
-        if not eHRAF_URL:
+        eHRAF_URL = re.match(r'^https://ehrafworldcultures.yale.edu/search', URL)
+        if not eHRAF_URL:    
             self.textBox_warning("Error, must be a search URL from eHRAF")
             return
         self.URL = URL
@@ -146,13 +145,12 @@ class MainWindow(QMainWindow):
         self.textBox_URL_set("URL in use:\n" + self.URL)
         self.web_scraper()
     def web_scraper(self):
-        # I believe the old scraper only deletes istelf after being initialized so at one point there are two chrome drivers at once and the program does not like that, deleting it here may solve the issue
-        # try:
-        #     self.scraper.web_close()
-        # except:
-        #     pass
 
-
+        # Set Info
+        user = self.plainTextEdit_NameInput.toPlainText()
+        if user == '':
+            user = None
+        
         # set options
         # if "Show Browser?" is marked as "No" then do not show the browser upon launch
         if self.buttonGroup_Options_ShowBrowser.id(self.buttonGroup_Options_ShowBrowser.checkedButton()) == -2:
@@ -166,7 +164,7 @@ class MainWindow(QMainWindow):
             rerun = False
 
         # initialize the scraper
-        self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun)
+        self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun, user=user)
         # If there is nothing the scrape, then escape
         warning = self.scraper.region_scraper() 
         if warning is not None:
@@ -183,7 +181,15 @@ class MainWindow(QMainWindow):
         self.pushButton_Continue.setEnabled(True)
         
     def web_continue(self):
-        self.scraper.doc_scraper()
+        # Doc_save count
+        if self.pushButton_PartialSave_None.isChecked():
+            saveRate = None
+        else: 
+            try: #turn to integer if possible
+                saveRate = int(self.plainTextEdit_PartialSave_DocCount.toPlainText())
+            except:
+                saveRate = None
+        self.scraper.doc_scraper(saveRate=saveRate)
         self.textBox_descript_append('Completed scraping. Check the terminal for more info')
         self.pushButton_Continue.setEnabled(False)
         return
