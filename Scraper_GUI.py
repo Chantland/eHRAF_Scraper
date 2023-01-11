@@ -93,6 +93,7 @@ class MainWindow(QMainWindow):
     def textBox_warning(self, warning:str): #give warning flag if user does something wrong
         self.text_clear()
         self.textBrowser_Descript.setText(warning)
+        self.pushButton_Continue.setEnabled(False)
     def text_clear(self): #clear both boxes of text
         self.descript = ''
         self.textBrowser_Descript.setText('')

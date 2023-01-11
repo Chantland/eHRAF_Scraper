@@ -6,8 +6,12 @@ and runs through each of the document passages, obtaining OCM's, passage texts, 
 
 Currently, you should run the Scraper_GUI as this is the most up to date and friendly version of the scraper. If you wish to run the other applications THEY MUST BE OUTSIDE OF THE "Build" FOLDER. the "Build folder was used to help to declutter but is not where the build files should actually be localized (as to build the gui they need to be in the same place that the GUI will be ran)
 
-To use the eHRAF_Scraper.py, consider using main_demo.py which has preset commented out demos to try.
+Scraper_GUI (the executable) must be ran on a mac (currently) and must have the subfolder "resources" in its path. Do not change any file within resources.
 
+
+
+
+To use the eHRAF_Scraper.py, consider using main_demo.py which has preset commented out demos to try.
 
 ## eHRAF_Scraper initial inputs:
 url =         <string: eHRAF URL>

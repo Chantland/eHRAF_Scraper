@@ -48,7 +48,7 @@ Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3AApp
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28apple+AND+grandma+AND+pear%29', rerun=False)#single scraping
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28apple+AND+grandma%29&fq=culture_level_samples%7CSCCS%3Bculture_level_samples%7CSRS', rerun=True, headless=False)# rapid 7 doc text with filters
 # #
-Scraper1.region_scraper()   # Scrape the region
+print(Scraper1.region_scraper())   # Scrape the region
 print(Scraper1.time_req())  #Scrape
 Scraper1.doc_scraper()
 
