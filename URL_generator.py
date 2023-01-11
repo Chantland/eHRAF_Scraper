@@ -109,7 +109,7 @@ class URL_generator:
                     # if NONE is selected for subject, add a -
                     if keywords_conj == 0:
                         Search_dict['keyword']['phrase'] += '-'
-                    Search_dict['keyword']['phrase'] += '\"' + search_i + '\"'
+                    Search_dict['keyword']['phrase'] += search_i
                 Search_dict['keyword']['phrase'] += ')'
 
 

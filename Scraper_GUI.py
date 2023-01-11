@@ -232,7 +232,7 @@ def resource_path(relative_path):
 def main():
     app = QApplication(sys.argv)
     main = MainWindow()
-    app.setWindowIcon(QIcon(resource_path("/Resources/favicon.icns")))
+    app.setWindowIcon(QIcon(resource_path("Resources/favicon.icns")))
     main.show()
     sys.exit(app.exec())
 
