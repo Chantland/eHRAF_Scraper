@@ -270,8 +270,16 @@ class Scraper:
                     # If there are a lot of passages to run through, this may cause a problem with loading new sets of
                     # 10 passages (as the default is 10 at a time.) Therefore, expand to the greater number of passages
                     if sourceCount_list[i] > 10:
-                        expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
-                        self.driver.execute_script("arguments[0].click();", expander[-1])
+                        # I think something jossles the webpage making it transition to a new dynamic webpage size and therefore chnaging the drop down list
+                        # I am not sure why this would happen since we are just lloking for the results tabs above but perhpas searching for them again upon a failure might help
+                        try:
+                            expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
+                            self.driver.execute_script("arguments[0].click();", expander[-1])
+                        except:
+                            resultsTabs = self.reload_retry(resultsTabs_total, 'trad-data__results')
+                            expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
+                            self.driver.execute_script("arguments[0].click();", expander[-1])
+
 
                     # loop until the program can click and find every piece of information for each passage (this is probably where things will break if times are off)
                     while True:
@@ -385,7 +393,7 @@ class Scraper:
             if saveRate is not None:
                 saveRate_count += pas_count
                 if saveRate_count >= saveRate:
-                    self.save_file(df_eHRAF)
+                    self.save_file(df_eHRAF, routine=True)
                     print(f'Routine partial saving has occurred, {pas_count_total} documents saved')
                     saveRate_count = 0
         self.save_file(df_eHRAF)
@@ -506,7 +514,7 @@ class Scraper:
         os.makedirs(self.output_dir_path, exist_ok=True)  # make Data folder if it does not exist
 
         self.file_Path = self.output_dir_path + '/' + file_name + '_web_data.xlsx'
-    def save_file(self, df):
+    def save_file(self, df, routine = False):
         # get time and date that this program was run
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
@@ -530,8 +538,11 @@ class Scraper:
         except:
             raise Exception('unable to save to file, make sure the file is not currently open')
 
+        # Only update the run_info the first time
         self.repeatSave = True
-        print(f'Saved to {self.file_Path}')
+        # print out the file name if this is not a routine save
+        if routine == False:
+            print(f'Saved to {self.file_Path}')
     def web_close(self):
         # close the webpage
         self.driver.close()
