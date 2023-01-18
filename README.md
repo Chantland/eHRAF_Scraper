@@ -46,6 +46,6 @@ NOTE: It is likely the requirements file is bloated with packages you do not nee
 ## Installing
 If you would like to reinstall the GUI for whatever reason, the files URL_generator.py, Scraper_GUI.py, and eHRAF_Scraper.py MUST be in the main folder outside of "Build". This is where the Scraper_GUI is located. You may install the application through PYinstaller using this prompt: 
 
-'Resources/favicon.icns:.' --add-data 'Resources/eHRAF_Scraper_Creator:eHRAF_Scraper_Creator'  --icon=Resources/favicon.icns Scraper_GUI.py
+        'Resources/favicon.icns:.' --add-data 'Resources/eHRAF_Scraper_Creator:eHRAF_Scraper_Creator'  --icon=Resources/favicon.icns Scraper_GUI.py
 
 You may need to change the file's icon manually if it does not set.
