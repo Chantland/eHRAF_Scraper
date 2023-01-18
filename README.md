@@ -38,7 +38,7 @@ When venv is created, select it as your preferred kernal (in VS code, it should 
 
         pip install -r requirements.txt -v
         
-NOTE: It is likely the requirements file is bloated with packages you do not need. I have not tried to slim it down so feel free to just install packages as you see fit with
+NOTE: In some circumstances packages may be missed. To manually add packages, consider using:
 
         pip install <your package name>
 
