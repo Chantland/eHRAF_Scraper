@@ -1,7 +1,7 @@
 # eHRAF_Scraper
 
 To use this Scraper, please click on Scraper_GUI and follow GUI_Instructions.docx 
-
+Note that currently there is only a MAC version of the GUI application. If you want Windows or Linux, consider installing it on your desired Machine.
 
 
 Autonomous scraper of eHRAF webpage that through URL_generator.py can mimic the search parameters in eHRAF and through eHRAF_Scraper.py can extract document information from the website, systematically scraping each culture's defined documents.
@@ -44,3 +44,8 @@ NOTE: It is likely the requirements file is bloated with packages you do not nee
 
 
 ## Installing
+If you would like to reinstall the GUI for whatever reason, the files URL_generator.py, Scraper_GUI.py, and eHRAF_Scraper.py MUST be in the main folder outside of "Build". This is where the Scraper_GUI is located. You may install the application through PYinstaller using this prompt: 
+
+'Resources/favicon.icns:.' --add-data 'Resources/eHRAF_Scraper_Creator:eHRAF_Scraper_Creator'  --icon=Resources/favicon.icns Scraper_GUI.py
+
+You may need to change the file's icon manually if it does not set.
