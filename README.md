@@ -18,13 +18,13 @@ Scraper_GUI (the executable) must be ran on a mac (currently) and must have the 
 To use the eHRAF_Scraper.py, consider using main_demo.py which has preset commented out demos to try.
 
 ## eHRAF_Scraper initial inputs:
-url =         <string: eHRAF URL>
-user =        <string: your name>
-rerun =       <bool: disregard any previously ran files (TRUE) or try to start from last crashed (FALSE)>
-headless =    <bool: do not show the scraped chrome browser (TRUE) or show the scraped Chrome Browser (FALSE)>
+* url =         <string: eHRAF URL>
+* user =        <string: your name>
+* rerun =       <bool: disregard any previously ran files (TRUE) or try to start from last crashed (FALSE)>
+* headless =    <bool: do not show the scraped chrome browser (TRUE) or show the scraped Chrome Browser (FALSE)>
 
 ## Doc_Scraper inputs:
-saveRate =    <int: iteration of files scraped before a routine "safety save" occurs>
+* saveRate =    <int: iteration of files scraped before a routine "safety save" occurs>
 
 
 
