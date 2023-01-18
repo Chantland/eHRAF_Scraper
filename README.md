@@ -17,7 +17,7 @@ Scraper_GUI (the executable) must be ran on a mac (currently) and must have the 
 
 To use the eHRAF_Scraper.py, consider using main_demo.py which has preset commented out demos to try.
 
-## eHRAF_Scraper initial inputs:
+## eHRAF_Scraper.py initial inputs:
         url =         <string: eHRAF URL>
         user =        <string: your name>
         rerun =       <bool: disregard any previously ran files (TRUE) or try to start from last crashed (FALSE)>
