@@ -54,6 +54,8 @@ class Scraper:
         options = Options()
         options.headless = headless
 
+        # set up culture dict here to make sure later functions know it does not exist yet
+        self.culture_dict = None
 
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         # here for later gui integration
@@ -116,7 +118,6 @@ class Scraper:
 
         time_sec = f"{math.floor(time_sec)} second(s)"
         return f"This will scrape up to {self.pas_count} passages and take roughly \n{time_hour}{time_min}{time_sec}"
-
     def doc_URL_finder(self, soup):
         # Create a dictionary to store all cultures and their links for later use
         self.culture_dict = {}
@@ -143,10 +144,29 @@ class Scraper:
             link = culture_list[1].a.attrs['href']
             region = culture_i.findParent('table', {'role':'region'}).attrs['id']
             source_count = int(culture_list[-2].text)
-            doc_count = int(culture_list[-1].text)
+            pas_count = int(culture_list[-1].text)
 
-            self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Doc_Count": doc_count,  "Reloads": {"source_reload": 0, "results_reload": 0}}
+            self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Pas_Count": pas_count,  "Reloads": {"source_reload": 0, "results_reload": 0}}
         # print(f"Number of cultures extracted {len(culture_dict)}")
+    def cult_count(self, by:str='culture'):
+        # Check to make sure there is a dictionary to even run
+        if self.culture_dict is None:
+            raise Exception("Must initiate function region_scraper()")
+
+        text = 'Passage counts for the following cultures:\n'
+        if by == 'culture':
+            myKeys = list(self.culture_dict.keys())
+            myKeys.sort()
+            self.culture_dict = {i: self.culture_dict[i] for i in myKeys}
+        elif by == 'count':
+            self.culture_dict = dict(sorted(self.culture_dict.items(), key=lambda item: item[1]['Pas_Count']))
+        else:
+            raise Exception("Not a valid input for 'by'")
+        for key in self.culture_dict.keys():
+            space_buffer = 25 - len(key) - len(str(self.culture_dict[key]["Pas_Count"]))
+            text += key + (space_buffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
+        return text
+
     def doc_scraper(self, saveRate:int=5000):
 
         #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
@@ -172,7 +192,7 @@ class Scraper:
             pas_count = 0
 
             # Preallocate space to save on speed
-            Year = list(i for i in range(self.culture_dict[key]['Doc_Count']))
+            Year = list(i for i in range(self.culture_dict[key]['Pas_Count']))
             docPassage = Year.copy()
             DocTitle = Year.copy()
             OCM_list = Year.copy()
@@ -329,14 +349,14 @@ class Scraper:
                                 EC.presence_of_element_located((By.CLASS_NAME, 'sre-result__title')))
                         except:
                             self.reload_fail(df_eHRAF, pas_count_total, "document")
-                        docTabs = resultsTabs[0].find_elements(By.CLASS_NAME, 'sre-result__title')
+                        pasTabs = resultsTabs[0].find_elements(By.CLASS_NAME, 'sre-result__title')
                         #Click all the tabs within a source
-                        for doc in docTabs:
-                            self.driver.execute_script("arguments[0].click();", doc)
+                        for pas in pasTabs:
+                            self.driver.execute_script("arguments[0].click();", pas)
                         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
 
                         #Extract the passage INFO here
-                        soupDocs = soup.find_all('section',{'class':'sre-result__sre-result'}, limit=len(docTabs))
+                        soupDocs = soup.find_all('section',{'class':'sre-result__sre-result'}, limit=len(pasTabs))
                         for soupDoc in soupDocs:
                             docPassage[pas_count] = soupDoc.find('div',{'class':'sre-result__sre-content'}).text
 
@@ -362,7 +382,7 @@ class Scraper:
                             pas_count += 1
                             # df_eHRAFCulture = pd.concat([df_eHRAFCulture, df_Doc], ignore_index=True)
                         # set remaining docs in a source tab (for clicking the "next" button if not all of them are shown)
-                        total -= len(docTabs)
+                        total -= len(pasTabs)
 
                         # tab switch
                         # If there are more tabs hidden away, find the button, click it, and then refresh the results
@@ -390,21 +410,21 @@ class Scraper:
             df_eHRAFCulture[['Region','SubRegion',"Culture"]] = [self.culture_dict[key]['Region'], self.culture_dict[key]['SubRegion'], key ]
             df_eHRAF = pd.concat([df_eHRAF, df_eHRAFCulture], ignore_index=True)
             pas_count_total += pas_count
-            if pas_count != self.culture_dict[key]['Doc_Count']:
-                print(f"WARNING {pas_count} out of {self.culture_dict[key]['Doc_Count']} passages loaded for {key}")
+            if pas_count != self.culture_dict[key]['Pas_Count']:
+                print(f"WARNING {pas_count} out of {self.culture_dict[key]['Pas_Count']} passages loaded for {key}")
             # Save the file over a set interval in case there is an unforseen failure which did not allow partial saving
             if saveRate is not None:
                 saveRate_count += pas_count
                 if saveRate_count >= saveRate:
                     self.save_file(df_eHRAF, routine=True)
-                    print(f'Routine partial saving has occurred, {pas_count_total} documents saved')
+                    print(f'Routine partial saving has occurred, {pas_count_total} passages saved')
                     saveRate_count = 0
         self.save_file(df_eHRAF)
         self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
     # if there already exists a file that contains this specific search pattern, then load the data
     def partial_file_return(self):
-        df_eHRAF = pd.read_excel(self.file_Path)
+        df_eHRAF = pd.read_excel(self.file_Path, index_col=0)
         pas_count_total = sum(~df_eHRAF['Region'].isna())
         skip_cultures = set(df_eHRAF["Culture"])
 
@@ -518,26 +538,28 @@ class Scraper:
 
         self.file_Path = self.output_dir_path + '/' + file_name + '_web_data.xlsx'
     def save_file(self, df, routine = False):
-        # get time and date that this program was run
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-        current_date = now.strftime("%m/%d/%y")
+      
 
-
-        
-        df_eHRAF = df
+        # only add run info to the dataframe if saving for the first time and not starting from a partial file.
         if self.querySkipper is False and self.repeatSave is False:
+            # get time and date that this program was run
+            now = datetime.now()
+            current_time = now.strftime("%H:%M:%S")
+            current_date = now.strftime("%m/%d/%y")
+
             # place run information within the "run_info" column
-            df_eHRAF['run_Info'] = None
-            df_eHRAF.loc[0, 'run_Info'] = "User: " + self.user
-            df_eHRAF.loc[1, 'run_Info'] = "Run Time: " + str(current_time)
-            df_eHRAF.loc[2, 'run_Info'] = "Run Date: " + str(current_date)
-            df_eHRAF.loc[3, 'run_Info'] = "Run Input: " + self.input_name
-            df_eHRAF.loc[4, 'run_Info'] = "Filter: " + self.input_filters
-            df_eHRAF.loc[5, 'run_Info'] = "Run URL: " + self.URL
-        
+            df['run_Info'] = None
+            df.loc[0, 'run_Info'] = "User: " + self.user
+            df.loc[1, 'run_Info'] = "Run Time: " + str(current_time)
+            df.loc[2, 'run_Info'] = "Run Date: " + str(current_date)
+            df.loc[3, 'run_Info'] = "Run Input: " + self.input_name
+            df.loc[4, 'run_Info'] = "Filter: " + self.input_filters
+            df.loc[5, 'run_Info'] = "Run URL: " + self.URL
+        # Add Passage
+        # df.reset_index(inplace=True)
+        # df = df.rename(columns = {'index':'Passage Number'})
         try:
-            df_eHRAF.to_excel(self.file_Path, index=False)
+            df.to_excel(self.file_Path, index=True, index_label = "Passage Number")
         except:
             raise Exception('unable to save to file, make sure the file is not currently open')
 

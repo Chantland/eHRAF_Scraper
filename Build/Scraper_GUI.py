@@ -14,7 +14,7 @@
 
 import sys
 import os
-from URL_generator import URL_generator as ug
+from URL_Generator import URL_Generator as ug
 import re
 from eHRAF_Scraper import Scraper
 
@@ -91,9 +91,8 @@ class MainWindow(QMainWindow):
     def textBox_descript_append(self, string:str): #update the description box
         self.descript += string + "\n\n"
         self.textBrowser_Descript.setText(self.descript)
-    def textBox_URL_set(self, string:str): #update the URL box
-        string = "URL in use:\n" + self.URL
-        self.textBrowser_URL.setText(string)
+    def textBox_URL_set(self): #update the URL box
+        self.textBrowser_URL.setText(self.URL)
     def textBox_warning(self, warning:str): #give warning flag if user does something wrong
         self.text_clear()
         self.textBrowser_Descript.setText(warning)
@@ -112,7 +111,8 @@ class MainWindow(QMainWindow):
             self.textBox_warning("Error, must be a search URL from eHRAF")
             return
         self.URL = URL
-        self.textBox_URL_set("URL in use:\n"+ self.URL)
+        self.text_clear() #if success, clear out the windows
+        self.textBox_URL_set()
         self.web_scraper()
     def create_URL(self): #construct the URL from the inputs of the advanced search
         # extract all the advanced search input boxes and buttons
@@ -146,8 +146,8 @@ class MainWindow(QMainWindow):
             return
         self.URL = URL
         self.text_clear() #if success, clear out the windows
-        self.textBox_descript_append(URL_gen.invalid_inputs())
-        self.textBox_URL_set("URL in use:\n" + self.URL)
+        self.textBox_descript_append(URL_gen.invalid_inputs()) #Add invalid inputs and scraper count
+        self.textBox_URL_set()
         self.web_scraper()
     def web_scraper(self):
 
@@ -195,7 +195,7 @@ class MainWindow(QMainWindow):
             except:
                 saveRate = None
         self.scraper.doc_scraper(saveRate=saveRate)
-        self.textBox_descript_append('Completed scraping. Check the terminal for more info')
+        self.textBox_descript_append('Completed scraping. Check the terminal for more info\n\n\n')
         self.pushButton_Continue.setEnabled(False)
         return
 

@@ -17,16 +17,31 @@ Scraper_GUI (the executable) must be ran on a mac (currently) and must have the 
 
 To use the eHRAF_Scraper.py, consider using main_demo.py which has preset commented out demos to try.
 
-## eHRAF_Scraper.py initial inputs:
-        url =         <string: eHRAF URL>
-        user =        <string: your name>
-        rerun =       <bool: disregard any previously ran files (TRUE) or try to start from last crashed (FALSE)>
-        headless =    <bool: do not show the scraped chrome browser (TRUE) or show the scraped Chrome Browser (FALSE)>
+## eHRAF_Scraper.py 
+Autonomous scraper which takes in a url input and scrapes eHRAF. Outputs and saves excel file(s).
+### Initial inputs:
+        url =                   <string: eHRAF URL>
+        user =                  <string: your name>
+        rerun =                 <bool: disregard any previously ran files (TRUE) or try to start from last crashed (FALSE)>
+        headless =              <bool: do not show the scraped chrome browser (TRUE) or show the scraped Chrome Browser (FALSE)>
 
-## Doc_Scraper inputs:
-        saveRate =    <int: iteration of files scraped before a routine "safety save" occurs>
+### Doc_Scraper function inputs:
+        saveRate =              <int: iteration of files scraped before a routine "safety save" occurs>
 
-
+## URL_Generator.py
+Extract a URL based on Advanced Search which is able to be inputted into the URL of eHRAF_Scraper.py. Include the following optional inputs. Note that all string defaults are ‘’ while all int defaults are 1:
+### Initial inputs
+        none
+### URL_generator function inputs
+	cultures =		<string: Culture names separated by a comma>
+        cult_conj =		<int: Decide how the cultures will be included using values 0 for none or 1 for any/OR >
+        subjects =		<string: Subject names and/or OCM numbers separated by a comma>
+        subjects_conj =		<int: Decide how the Subjects will be included using values 0 for none, 1 for any/OR, or  2 for all/AND >
+        concat_conj =		<int: Decide how the subjects and keyword search terms will be paired. Would you like either the subjects OR (Value 1) the keywords to be searched or would you like both (Value 2)>
+        keywords =		<string: Lexical search keywords separated by a comma>
+        keywords_conj =	        <int: Decide how the Keywords will be included using values 0 for none, 1 for any/OR, or  2 for all/AND >
+        cultural_level_samples =<list: include a list of “Cultural Level Sample” strings like “PSF”, “EA”, SCCS”, and/or “SRS”>
+### 
 
 ## Packages requirements
 
@@ -34,7 +49,7 @@ If you are loading this for the first time (AND THE VENV IS MISSING), you will n
 
         python - m venv venv
         
-When venv is created, select it as your preferred kernal (in VS code, it should give you a prompt to do so, otherwise, select it in the to right corner). Then create a new terminal (should be able to do so at the top of the mac screen under "terminal"). Each line in your terminal should start with "venv" or whatever you named the environment if you called it something else. Now you can install the requirments in the terminal using:
+When venv is created, select it as your preferred kernal (in VS code, it should give you a prompt to do so, otherwise, select it in the to right corner). Then create a new terminal (should be able to do so at the top of the mac screen under "terminal"). Each line in your terminal should start with "venv" or whatever you named the environment if you called it something else. Now you can install the requirements in the terminal using:
 
         pip install -r requirements.txt -v
         

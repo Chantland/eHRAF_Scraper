@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import sys
 
-class URL_generator:
+class URL_Generator:
     def __init__(self):
         self.Search_dict = {'culture': {'valid': set(), 'invalid': set(), 'phrase': ''},
                        'subject': {'valid': set(), 'invalid': set(), 'phrase': ''},
@@ -23,8 +23,15 @@ class URL_generator:
             string_list[i] = re.sub("\"|\'", '', string)
         string_list = [i for i in string_list if i !=''] #remove blanks
         return string_list
-    def URL_generator(self, cultures:str, cult_conj:int, subjects:str, subjects_conj:int,
-                      concat_conj:int, keywords:str, keywords_conj:int, cultural_level_samples:list):
+    def URL_generator(self, 
+                    cultures:str = '', 
+                    cult_conj:int = 1, 
+                    subjects:str = '', 
+                    subjects_conj:int = 1,
+                    concat_conj:int = 1, 
+                    keywords:str = '', 
+                    keywords_conj:int = 1, 
+                    cultural_level_samples:list = []):
 
         conj_list = ["  ", " OR ", " AND "]
         Search_dict = {'culture': {'valid':set(), 'invalid':set(), 'phrase':''},

@@ -1166,13 +1166,13 @@ color: black;</string>
      <attribute name="title">
       <string>Options</string>
      </attribute>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>21</y>
-        <width>501</width>
-        <height>211</height>
+        <x>20</x>
+        <y>23</y>
+        <width>531</width>
+        <height>361</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -1203,7 +1203,7 @@ color: black;</string>
            <string notr="true">color: rgb(60, 180, 170);</string>
           </property>
           <property name="text">
-           <string>Show browser?</string>
+           <string>Show browser</string>
           </property>
          </widget>
          <widget class="QWidget" name="layoutWidget">
@@ -1285,7 +1285,7 @@ color: black;</string>
            <string notr="true">color: rgb(60, 180, 170);</string>
           </property>
           <property name="text">
-           <string>Use partial files if present?</string>
+           <string>Use partial files if present</string>
           </property>
           <property name="textFormat">
            <enum>Qt::AutoText</enum>
@@ -1347,9 +1347,229 @@ color: black;</string>
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="groupBox_8">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose whether to display the passage count for each culture.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <widget class="QLabel" name="label_DisplayPassages">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>191</width>
+            <height>38</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(60, 180, 170);</string>
+          </property>
+          <property name="text">
+           <string>Display number of passages per culture</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::AutoText</enum>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_5">
+          <property name="geometry">
+           <rect>
+            <x>300</x>
+            <y>20</y>
+            <width>118</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QRadioButton" name="radioButton_DisplayPassages_NO">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>NO</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_DisplayPassages_YES">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>YES</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QPushButton" name="pushButton">
+          <property name="geometry">
+           <rect>
+            <x>440</x>
+            <y>8</y>
+            <width>71</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Display cultures alphabetically&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Culture</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
+         </widget>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="geometry">
+           <rect>
+            <x>440</x>
+            <y>32</y>
+            <width>71</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>Display cultures by passage count</string>
+          </property>
+          <property name="text">
+           <string>Count</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>21</height>
+           </size>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create a folder containing a file for each culture scraped. This will also include an &amp;quot;Altogether Dataset&amp;quot; which holds all the cultures together.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <widget class="QLabel" name="label_CultureIndividualFiles">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>191</width>
+            <height>38</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(60, 180, 170);</string>
+          </property>
+          <property name="text">
+           <string>Save separate culture files</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::AutoText</enum>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_6">
+          <property name="geometry">
+           <rect>
+            <x>300</x>
+            <y>20</y>
+            <width>118</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QRadioButton" name="radioButton_CultureIndividualFiles_NO">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>NO</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_CultureIndividualFiles_YES">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>YES</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="groupBox_6">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the iteration of passages you want scraped before a partial save will occur (note that the number will never be exact when actually saving).&lt;/p&gt;&lt;p&gt;Because Scraping a website is incredibly beholden to the website working, sometimes there can be unexpected crashes that bypass even the partial save feature of the Scraper. Saving is quick but it takes time. If you trust in this program, select &amp;quot;None&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;NOTE: If the number is small (like 5) in rare circumstances, &lt;/span&gt;the run_info column may create extra rows. The data, however, is not affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the iteration of passages you want scraped before a partial save will occur (note that the number will never be exact when actually saving). If chose to save separate culture files, this only relates to the &amp;quot;Altogether Dataset&amp;quot;.&lt;/p&gt;&lt;p&gt;Because Scraping a website is incredibly beholden to the website working, sometimes there can be unexpected crashes that bypass even the partial save feature of the Scraper. Saving is quick but it takes time. If you trust in this program, select &amp;quot;None&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;NOTE: If the number is small (like 5) in rare circumstances, &lt;/span&gt;the run_info column may create extra rows. The data, however, is not affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string/>
@@ -1477,9 +1697,9 @@ color: black;</string>
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>570</y>
+      <y>590</y>
       <width>841</width>
-      <height>81</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="font">
@@ -1525,6 +1745,19 @@ border-color: rgba(80, 110, 106, 80);
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>570</y>
+      <width>161</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>URL in use:</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -1541,24 +1774,25 @@ border-color: rgba(80, 110, 106, 80);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Culture">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
   <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_Culture">
+   <property name="exclusive">
+    <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_Subject"/>
   <buttongroup name="buttonGroup_Filter_CulturalLevel">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Subject"/>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
-  <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
