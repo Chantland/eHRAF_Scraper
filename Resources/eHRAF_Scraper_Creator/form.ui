@@ -44,7 +44,13 @@ QPushButton:pressed {
 	background-color: rgb(190, 220, 220);
 border-color: rgb(82, 120, 120);
      border-style: inset;
- }</string>
+ }
+
+QPushButton:disabled{
+color:rgba(0, 0, 0, 80);
+background-color: rgba(225, 255, 254, 80);
+border-color: rgba(80, 110, 106, 80);
+}</string>
   </property>
   <property name="documentMode">
    <bool>false</bool>
@@ -1166,11 +1172,32 @@ color: black;</string>
      <attribute name="title">
       <string>Options</string>
      </attribute>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>521</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+       </font>
+      </property>
+      <property name="text">
+       <string>Hover your mouse over an option/button to get more info.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
      <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>23</y>
+        <y>40</y>
         <width>531</width>
         <height>361</height>
        </rect>
@@ -1261,7 +1288,7 @@ color: black;</string>
        <item>
         <widget class="QGroupBox" name="groupBox_5">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If a file already exists with the same search paramters, the file will be loaded and start off where you left off. &lt;/p&gt;&lt;p&gt;Switching this to &amp;quot;NO&amp;quot; will allow the scraper to rerun the entire scraping even if a partial file with those same search parameters exists. &lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;WARNING this will overwrite the saved file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If a file already exists with the same search parameters, the file will be loaded and start off where you left off. &lt;/p&gt;&lt;p&gt;Switching this to &amp;quot;NO&amp;quot; will allow the scraper to rerun the entire scraping even if a partial file with those same search parameters exists. &lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;WARNING this will overwrite the saved file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string/>
@@ -1426,7 +1453,10 @@ color: black;</string>
            </item>
           </layout>
          </widget>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="pushButton_DisplayPassages_Culture">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="geometry">
            <rect>
             <x>440</x>
@@ -1445,13 +1475,16 @@ color: black;</string>
            <bool>true</bool>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroup</string>
+           <string notr="true">buttonGroup_DisplayPass</string>
           </attribute>
          </widget>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="pushButton_DisplayPassages_Count">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="geometry">
            <rect>
             <x>440</x>
@@ -1476,10 +1509,10 @@ color: black;</string>
            <bool>true</bool>
           </property>
           <property name="checked">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroup</string>
+           <string notr="true">buttonGroup_DisplayPass</string>
           </attribute>
          </widget>
         </widget>
@@ -1487,7 +1520,7 @@ color: black;</string>
        <item>
         <widget class="QGroupBox" name="groupBox_7">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create a folder containing a file for each culture scraped. This will also include an &amp;quot;Altogether Dataset&amp;quot; which holds all the cultures together.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create separate files for each culture in addition to the altogether file created&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string/>
@@ -1544,6 +1577,9 @@ color: black;</string>
              <property name="checked">
               <bool>true</bool>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_CultureIndividualFiles</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -1560,6 +1596,9 @@ color: black;</string>
              <property name="checked">
               <bool>false</bool>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_CultureIndividualFiles</string>
+             </attribute>
             </widget>
            </item>
           </layout>
@@ -1569,7 +1608,7 @@ color: black;</string>
        <item>
         <widget class="QGroupBox" name="groupBox_6">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the iteration of passages you want scraped before a partial save will occur (note that the number will never be exact when actually saving). If chose to save separate culture files, this only relates to the &amp;quot;Altogether Dataset&amp;quot;.&lt;/p&gt;&lt;p&gt;Because Scraping a website is incredibly beholden to the website working, sometimes there can be unexpected crashes that bypass even the partial save feature of the Scraper. Saving is quick but it takes time. If you trust in this program, select &amp;quot;None&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;NOTE: If the number is small (like 5) in rare circumstances, &lt;/span&gt;the run_info column may create extra rows. The data, however, is not affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the iteration of passages you want scraped before a partial save will occur (note that the number will never be exact when actually saving). If you chose to save separate culture files, this only relates to the &amp;quot;Altogether Dataset&amp;quot;.&lt;/p&gt;&lt;p&gt;Because Scraping a website is incredibly beholden to the website working, sometimes there can be unexpected crashes that bypass even the partial save feature of the Scraper. Saving is quick but it takes time. If you trust in this program, select &amp;quot;None&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;NOTE: If the number is small (like 6 or less) in rare circumstances, &lt;/span&gt;the run_info column may create extra rows. The data, however, is not affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string/>
@@ -1689,7 +1728,7 @@ color: black;</string>
     </property>
     <property name="font">
      <font>
-      <family>Arial</family>
+      <family>Courier New</family>
      </font>
     </property>
    </widget>
@@ -1793,6 +1832,7 @@ border-color: rgba(80, 110, 106, 80);
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_DisplayPass"/>
+  <buttongroup name="buttonGroup_CultureIndividualFiles"/>
  </buttongroups>
 </ui>

@@ -29,7 +29,7 @@ from eHRAF_Scraper import Scraper
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28Apple+OR+pear+OR+banana%29&fq=culture_level_samples%7CPSF') #medium scraping (11 minutes!)
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Trobriands%22+AND+text%3A%28Apple+OR+pear+OR+banana%29') #long test for next page
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Navajo%22+AND+text%3A%28Apple+OR+pear+OR+banana%29', rerun = True) #Quick test for next page
-Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF', user="Eric", rerun=True) #standard Apple
+Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF', user="Eric", rerun=True, cultureFiles=False) #standard Apple
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Serbs%22+AND+text%3AApple', rerun=True) #standard Apple one culture
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22%29&fq=culture_level_samples%7CPSF', rerun=True) # Demo scraper for 750 (actually does 750-759)
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22+OR+%22preventive+medicine%22+OR+%22bodily+injuries%22+OR+%22sorcery%22%29&fq=culture_level_samples%7CPSF')#Actual scraping, 2.6 hours for OCM's 750-754
@@ -37,8 +37,10 @@ Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3AApp
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=+-text%3AGallyhow') #simply to extract each culture and region DO NOT ACTUALLY RUN THE WHOLE THING
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28apple+AND+grandma+AND+pear%29', rerun=False)#single scraping
 # Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28apple+AND+grandma%29&fq=culture_level_samples%7CSCCS%3Bculture_level_samples%7CSRS', rerun=True, headless=False)# rapid 7 doc text with filters
-# #
+# Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22preventive+medicine%22+OR+%22theory+of+disease%22%29&fq=culture_level_samples%7CPSF', user="Eric", rerun=True) # check OCM 751 and 753 with PSF filter
+# Scraper1 = Scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22preventive+medicine%22+OR+%22theory+of+disease%22%29', user="Eric", rerun=True) # check OCM 751 and 753 without PSF filter
+
 Scraper1.region_scraper()   # Scrape the region
-print(Scraper1.cult_count(by='count'))
 print(Scraper1.time_req()) #return the time required (optional)
-Scraper1.doc_scraper() #scrape the documents taken from the region
+print(Scraper1.cult_count(by='count'))
+Scraper1.doc_scraper(saveRate=50) #scrape the documents taken from the region

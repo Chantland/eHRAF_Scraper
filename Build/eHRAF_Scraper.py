@@ -32,7 +32,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Scraper:
-    def __init__(self, url=None, user=None, rerun=False, headless=False):
+    def __init__(self, url=None, user=None, rerun=False, headless=False, cultureFiles= False):
         if url is not None:
             self.URL = url
         # if no inputs are received,set URL to the default Apple demo
@@ -48,6 +48,9 @@ class Scraper:
                 raise
         # The program may need to be saved multiple times, Make it so it only overwrites the input info once
         self.repeatSave = False
+        
+        # For saving individual culture files
+        self.cultureFiles = cultureFiles
 
         # (optional) iniate "headless" which stops chrome from showing itself when this is run,
         # switch headless to False if you want to see the webpage or True if you want it to run in the background
@@ -72,8 +75,8 @@ class Scraper:
         self.querySkipper = False
         self.output_dir_cons()
         if rerun is False:
-            if os.path.isfile(self.file_Path):
-                print("File with the same search query found, skipping successfully scraped cultures")
+            if os.path.isfile(self.folder_path):
+                print("Folder with the same search query found, skipping successfully scraped cultures")
                 self.querySkipper = True
     def region_scraper(self):
 
@@ -148,7 +151,10 @@ class Scraper:
 
             self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Pas_Count": pas_count,  "Reloads": {"source_reload": 0, "results_reload": 0}}
         # print(f"Number of cultures extracted {len(culture_dict)}")
-    def cult_count(self, by:str='culture'):
+    def cult_count(self, by:str=None):
+        
+        if by is None:
+            return None
         # Check to make sure there is a dictionary to even run
         if self.culture_dict is None:
             raise Exception("Must initiate function region_scraper()")
@@ -162,12 +168,39 @@ class Scraper:
             self.culture_dict = dict(sorted(self.culture_dict.items(), key=lambda item: item[1]['Pas_Count']))
         else:
             raise Exception("Not a valid input for 'by'")
+        
+        # go through each of the passage text within the keys and append it to the text
+        lineLength = 26
         for key in self.culture_dict.keys():
-            space_buffer = 25 - len(key) - len(str(self.culture_dict[key]["Pas_Count"]))
-            text += key + (space_buffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
-        return text
+            # get the spaces between the number and the cultural passage
+            spaceBuffer = lineLength - len(key) - len(str(self.culture_dict[key]["Pas_Count"])) 
+            # if space buffer is not large enough, try to refit
+            if spaceBuffer <0:
+                # split into individual words and create a textBuffer to make sure we do not overflow
+                pasWord = key.split()
+                textBuffer = ''
+                for count, word in enumerate(pasWord):
+                    # if there is no room start a new line
+                    if len(textBuffer) + 1 + len(word) >= lineLength:
+                        text += textBuffer.strip() + '\n' #remove the trailing white space and append to text
+                        textBuffer = ''
 
-    def doc_scraper(self, saveRate:int=5000):
+                    # if the last word, append the number value, otherwise, just add the word
+                    if count == len(pasWord)-1:
+                        spaceBuffer = lineLength - len(textBuffer) - len(word) - len(str(self.culture_dict[key]["Pas_Count"]))
+                        # if space buffer is not large enough for the number, make the number and the new word go to a different line otherwise include the word
+                        if spaceBuffer <0:
+                            text += textBuffer.strip() + '\n'
+                            spaceBuffer = lineLength -  len(word) - len(str(self.culture_dict[key]["Pas_Count"]))
+                            text += word + (spaceBuffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
+                        else:
+                            text += textBuffer + word + (spaceBuffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
+                    else:
+                        textBuffer += word + ' '
+            else:
+                text += key + (spaceBuffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
+        return text
+    def doc_scraper(self, saveRate:int=5000, cultureFiles=False):
 
         #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
         if not isinstance(saveRate, int) or saveRate <0 or saveRate is None:
@@ -184,7 +217,7 @@ class Scraper:
             print(f'{pas_count_total} passages loaded from partial file')
         else:
             pas_count_total = 0
-            df_eHRAF = pd.DataFrame({"Region":[], "SubRegion":[], "Culture":[], 'DocTitle':[], 'Year':[], "OCM":[], "OWC":[], "Passage":[]})
+            df_eHRAF = pd.DataFrame({"Region":[], "SubRegion":[], "Culture":[], 'DocTitle':[], 'Section':[], 'Author':[], 'Page':[], 'Year':[], "OCM":[], "OWC":[], "Passage":[]})
 
         # For each Culture, go to their webpage link then scrape the document data
         for key in self.culture_dict.keys():
@@ -195,8 +228,12 @@ class Scraper:
             Year = list(i for i in range(self.culture_dict[key]['Pas_Count']))
             docPassage = Year.copy()
             DocTitle = Year.copy()
+            section = Year.copy()
+            author =  Year.copy()
+            pageNum = Year.copy()
             OCM_list = Year.copy()
             OWC = Year.copy()
+
             # loop for every page within a culture
             source_total = self.culture_dict[key]['Source_count']
             page_reload_count = 0 #for reload protection
@@ -369,16 +406,38 @@ class Scraper:
                                 OCM_list[pas_count].append(int(ocmTag.span.text))
                             # OWC
                             OWC[pas_count] = soupOCM[1].a['name']
-
-                            DocTitle[pas_count] = soupDoc.find('div',{'class':'sre-result__sre-content-metadata'})
-                            DocTitle[pas_count] = DocTitle[pas_count].div.text
-                            # Search for the document's year of creation
+                            
+                            # Document title
+                            docMetadata = soupDoc.find('div',{'class':'sre-result__sre-content-metadata'})
+                            DocTitle[pas_count] = docMetadata.div.text
+                            DocTitle[pas_count] = re.sub('\s+', ' ', DocTitle[pas_count]) #for removing extra spaces and new line characters
+                            # Search document's title for the document's year of creation
                             Year[pas_count] = re.search('\(([0-9]{0,4})\)', DocTitle[pas_count])
                             if Year[pas_count] is not None:
                                 # remove the date then strip white space at the end and start to give the document's title
                                 DocTitle[pas_count] = re.sub(f'\({Year[pas_count].group()}\)', '', DocTitle[pas_count]).strip()
                                 # get the year without the parenthesis
                                 Year[pas_count] = int(Year[pas_count].group()[1:-1])
+
+                            # search document's title for section
+                            section[pas_count] = re.search('Section:(.*)', DocTitle[pas_count])
+                            if section[pas_count] is not None: #if a section exists and can be scraped, then put it into the list for the dataframe and remove it from the document's title
+                                section[pas_count] = section[pas_count].group(1).strip() #extract the match
+                                DocTitle[pas_count] = re.sub('Section:.*', '',DocTitle[pas_count]).strip() #remove the section text
+
+                            # extract Author
+                            author[pas_count] = docMetadata.span.text
+                            author[pas_count] = re.search('By:(.*)', author[pas_count])
+                            if author[pas_count] is not None:
+                                author[pas_count] = author[pas_count].group(1).strip() #extract the match
+                                # sometimes the author has a year attributed to them at the end
+
+                            # extract page
+                            pageNum[pas_count] = docMetadata.span.next_sibling.text
+                            pageNum[pas_count] = re.search('Page:(.*)', pageNum[pas_count])
+                            if pageNum[pas_count] is not None:
+                                pageNum[pas_count] = pageNum[pas_count].group(1).strip() #extract the match
+
                             pas_count += 1
                             # df_eHRAFCulture = pd.concat([df_eHRAFCulture, df_Doc], ignore_index=True)
                         # set remaining docs in a source tab (for clicking the "next" button if not all of them are shown)
@@ -405,13 +464,17 @@ class Scraper:
                     next_page_count += 1
 
             # append the attributes to the dataframe
-            df_eHRAFCulture = pd.DataFrame({'DocTitle': DocTitle, 'Year': Year, "OCM": OCM_list,
-                                            "OWC": OWC, "Passage": docPassage})
+            df_eHRAFCulture = pd.DataFrame({'DocTitle': DocTitle, 'Section':section, 'Author':author, 'Page':pageNum, 'Year': Year, 
+                                            "OCM": OCM_list, "OWC": OWC, "Passage": docPassage})
             df_eHRAFCulture[['Region','SubRegion',"Culture"]] = [self.culture_dict[key]['Region'], self.culture_dict[key]['SubRegion'], key ]
             df_eHRAF = pd.concat([df_eHRAF, df_eHRAFCulture], ignore_index=True)
             pas_count_total += pas_count
             if pas_count != self.culture_dict[key]['Pas_Count']:
                 print(f"WARNING {pas_count} out of {self.culture_dict[key]['Pas_Count']} passages loaded for {key}")
+
+            # Save Culture file if relevant
+            if self.cultureFiles is True:
+                self.save_file(df_eHRAFCulture, culture=key)
             # Save the file over a set interval in case there is an unforseen failure which did not allow partial saving
             if saveRate is not None:
                 saveRate_count += pas_count
@@ -424,11 +487,19 @@ class Scraper:
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
     # if there already exists a file that contains this specific search pattern, then load the data
     def partial_file_return(self):
+
         df_eHRAF = pd.read_excel(self.file_Path, index_col=0)
         pas_count_total = sum(~df_eHRAF['Region'].isna())
-        skip_cultures = set(df_eHRAF["Culture"])
 
-        # delete cultures in the dictionary already present
+        # If you are creating individual culture files, skipped cultures are determined by if the actual file already exists.
+        # Otherwise find skipped files via the altogether dataset
+        if self.cultureFiles is True:
+            xlsx_files = [f for f in os.listdir(self.folder_path) if f.endswith('.xlsx')] #get all files with '.xlsx
+            skip_cultures = [i.split('.')[0] for i in xlsx_files] #as we get "culture.xlsx" files back, split at the '.' and only take the "culture" putting it into a list. This will also include "_Altogether_Dataset but this should not matter"
+        else:
+            skip_cultures = set(df_eHRAF["Culture"])
+
+        # delete cultures in the dictionary already present (probably could rewrite reduce the for loop by 1 but this is probably okay)
         delete_key_list = []
         for key in self.culture_dict.keys():
             if key in skip_cultures:
@@ -532,16 +603,17 @@ class Scraper:
         else:
             raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
 
-        self.output_dir = "Data"  # output directory
-        self.output_dir_path = application_path + '/' + self.output_dir  # output directory path
-        os.makedirs(self.output_dir_path, exist_ok=True)  # make Data folder if it does not exist
-
-        self.file_Path = self.output_dir_path + '/' + file_name + '_web_data.xlsx'
-    def save_file(self, df, routine = False):
+        output_dir = "Data"  # output directory
+        output_dir_path = application_path + '/' + output_dir  # output directory path
+        os.makedirs(output_dir_path, exist_ok=True)  # make Data folder if it does not exist
+        self.folder_path = output_dir_path + '/' + file_name   #find where the folder should be locate
+        self.file_Path = self.folder_path + '/_Altogether_Dataset.xlsx' #find where the altogether dataset should be loacted
+        # self.file_Path = output_dir_path + '/' + file_name + '_web_data.xlsx'
+    def save_file(self, df, routine = False, culture=None):
       
 
-        # only add run info to the dataframe if saving for the first time and not starting from a partial file.
-        if self.querySkipper is False and self.repeatSave is False:
+        # only add run info to the dataframe if saving an idividual culture or (saving for the first time and not starting from a partial file).
+        if culture is not None or (self.querySkipper is False and self.repeatSave is False):
             # get time and date that this program was run
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
@@ -555,24 +627,32 @@ class Scraper:
             df.loc[3, 'run_Info'] = "Run Input: " + self.input_name
             df.loc[4, 'run_Info'] = "Filter: " + self.input_filters
             df.loc[5, 'run_Info'] = "Run URL: " + self.URL
-        # Add Passage
-        # df.reset_index(inplace=True)
-        # df = df.rename(columns = {'index':'Passage Number'})
+
+        # Use the normal file path unless we are saving to indivudal cultures
+        if culture is None:
+            save_file_path = self.file_Path
+        else:
+            save_file_path = self.folder_path + '/' + culture + '.xlsx'
+
+        df.index += 1
+        os.makedirs(self.folder_path, exist_ok=True)  # make dataset folder if it does not exist
         try:
-            df.to_excel(self.file_Path, index=True, index_label = "Passage Number")
+            df.to_excel(save_file_path, index=True, index_label = "Passage Number")
         except:
             raise Exception('unable to save to file, make sure the file is not currently open')
 
-        # Only update the run_info the first time
-        self.repeatSave = True
-        # print out the file name if this is not a routine save
-        if routine == False:
-            print(f'Saved to {self.file_Path}')
+        
+        # Unless we are saving to culture, resist repeat saving
+        if culture is None:
+            # Only update the run_info the first time for altogether file
+            self.repeatSave = True
+            # print out the file name only if this is not a routine save
+            if routine == False:
+                print(f'Saved to {self.file_Path}')
     def web_close(self):
         # close the webpage
         self.driver.close()
-    # if the class gets overwrittten,  remove the webpage
-    def __del__(self):
+    def __del__(self): # if the class gets overwrittten,  remove the webpage
         try:
             self.driver.close()
         except:

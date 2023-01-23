@@ -9,8 +9,20 @@
 # DONE: standardize the save files so that similar search terms (pear, grandma vs. grandma, pear) are regarded as the same.
 # DONE: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
 # DONE: implement better looking continue button which is unclicakble until the right time
-# TODO: implement a stop button
-# TODO: if possible make the terminal print out to the GUI's terminal but this is optional.
+# TODO: (OPTIONAL) implement a stop button
+# TODO: (OPTIONAL) make the terminal print out to the GUI's terminal.
+
+# DONE but not logged: Add passage page number columns to the excel files - eHRAF_Scraper.py
+# DONE but not logged: Have excel files include passage numbers - eHRAF_Scraper.py
+# TODO: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
+# DONE but not logged: Create an option for the list of culture's passage counts to be outputted in GUI terminal - eHRAF_Scraper.py and Scraper_GUI.py
+# DONE but not logged: Reorganize the passage count output so that it proceeds to the next line if overflow occurs - eHRAF_Scraper.py
+# DONE but not logged: create "section" column that extracts the section part of the document title - eHRAF_Scraper.py
+# TODO: Create an option for individual culture files to be created.
+# TODO: (potentially) remove the years after some author's names
+# TODO: (potentially) clean the page info as it is all over the place (osmetimes roman numerals, sometimes this format "[p.156]", this format "-156-", or sometimes just "156")
+# TODO: Fix problem where if you try to do cultural count on a folder whose _altogether_dataset does not match the number of cultural files, extra rows will be created
+
 
 import sys
 import os
@@ -86,6 +98,10 @@ class MainWindow(QMainWindow):
         self.pushButton_AdvSubmit.clicked.connect(self.create_URL)
         # continue on when user is ready
         self.pushButton_Continue.clicked.connect(self.web_continue)
+
+        # turn the sub buttons for the "Display number of passages per culture" option on or off
+        self.radioButton_DisplayPassages_YES.toggled.connect(self.DisplayNumReveal)
+        # self.radioButton_DisplayPassages_Yes.clicked.connect(self.DisplayNumReveal)
     def set_text_box(self): #relic from previous test, DELETE
         self.textBrowser.setText(self.plainTextEdit_URL.toPlainText())
     def textBox_descript_append(self, string:str): #update the description box
@@ -101,6 +117,14 @@ class MainWindow(QMainWindow):
         self.descript = ''
         self.textBrowser_Descript.setText('')
         self.textBrowser_URL.setText('')
+    def DisplayNumReveal(self): #reveal or hide the extra buttons for the display passages option
+        # if Yes is checked, then reveal, otherwise hide the buttons
+        if  self.radioButton_DisplayPassages_YES.isChecked():
+            self.pushButton_DisplayPassages_Culture.setEnabled(True)
+            self.pushButton_DisplayPassages_Count.setEnabled(True)
+        else:
+            self.pushButton_DisplayPassages_Culture.setEnabled(False)
+            self.pushButton_DisplayPassages_Count.setEnabled(False)
     def set_URL(self): #if URL submit button is clicked, just use that URL but first check if it is valid
         URL = self.plainTextEdit_URL.toPlainText()
         if URL == '':
@@ -168,8 +192,13 @@ class MainWindow(QMainWindow):
         else:
             rerun = False
 
+        # if "save seaparte culture files" is marked "YES" then save separate cultural files
+        if self.radioButton_CultureIndividualFiles_YES.isChecked():
+            cultureFiles = True
+        else:
+            cultureFiles = False
         # initialize the scraper
-        self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun, user=user)
+        self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun, user=user, cultureFiles=cultureFiles)
         # If there is nothing the scrape, then escape
         warning = self.scraper.region_scraper() 
         if warning is not None:
@@ -177,10 +206,25 @@ class MainWindow(QMainWindow):
             self.scraper.web_close()
             return
         
+        # Display time required to Scrape
         self.textBox_descript_append(self.scraper.time_req())
+
+        # Display (optionally) all the cultures and passage counts
+        if self.radioButton_DisplayPassages_YES.isChecked():
+            # -2 = culture, -3 equals "count"
+            if self.buttonGroup_DisplayPass.id(self.buttonGroup_DisplayPass.checkedButton()) == -2:
+                cultureCount = "culture"
+            elif self.buttonGroup_DisplayPass.id(self.buttonGroup_DisplayPass.checkedButton()) == -3:
+                cultureCount = "count"
+            else:
+                raise Exception("No value button number returned for buttonGroup_DisplayPass.id")
+            self.textBox_descript_append(self.scraper.cult_count(by=cultureCount))
         # DELETE COMMENTS HERE, THEY ARE FOR REFERENCE
         # color.BOLD + 'Hello, World!' + color.END
         # text = 'Press ' + color_app('CONTINUE','CYAN', 'UNDERLINE') + 'button or else choose a new query'
+
+
+
         text = 'Press the CONTINUE button or else choose a new query'
         self.textBox_descript_append(text)
         self.pushButton_Continue.setEnabled(True)
