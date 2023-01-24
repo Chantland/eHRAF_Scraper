@@ -34,7 +34,7 @@ Extract a URL based on Advanced Search which is able to be inputted into the URL
 ### Initial inputs
         none
 ### URL_generator function inputs
-	cultures =              <string: Culture names separated by a comma>
+        cultures =              <string: Culture names separated by a comma>
         cult_conj =             <int: Decide how the cultures will be included using values 0 for none or 1 for any/OR >
         subjects =              <string: Subject names and/or OCM numbers separated by a comma>
         subjects_conj =         <int: Decide how the Subjects will be included using values 0 for none, 1 for any/OR, or  2 for all/AND >
