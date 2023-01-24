@@ -24,7 +24,7 @@ Autonomous scraper which takes in a url input and scrapes eHRAF. Outputs and sav
         user =                  <string: your name>
         rerun =                 <bool: disregard any previously ran files (TRUE) or try to start from last crashed (FALSE)>
         headless =              <bool: do not show the scraped chrome browser (TRUE) or show the scraped Chrome Browser (FALSE)>
-
+	cultureFiles = 		<bool: create separate files for each culture scraped>
 ### Doc_Scraper function inputs:
         saveRate =              <int: iteration of files scraped before a routine "safety save" occurs>
 
