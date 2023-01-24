@@ -4,6 +4,7 @@ Data
 *.pyc
 .idea
 .spec
+_*
 _tester.ipynb
 _tester.ipynb
 dist
@@ -11,3 +12,4 @@ _demo_terminal.py
 Sketch-Sheet.xlsx
 .DS_Store
 Build/eHRAF_Scraper.ipynb
+Analysis/_Stats_CultureSplitter.ipynb
