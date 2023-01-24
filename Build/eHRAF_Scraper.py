@@ -52,6 +52,8 @@ class Scraper:
         # For saving individual culture files
         self.cultureFiles = cultureFiles
 
+        #For when the altogether dataset exists but cultural files do not match (and the person wants a partial file save)
+        self.skip_cultures_altogether = [] 
         # (optional) iniate "headless" which stops chrome from showing itself when this is run,
         # switch headless to False if you want to see the webpage or True if you want it to run in the background
         options = Options()
@@ -75,8 +77,8 @@ class Scraper:
         self.querySkipper = False
         self.output_dir_cons()
         if rerun is False:
-            if os.path.isfile(self.folder_path):
-                print("Folder with the same search query found, skipping successfully scraped cultures")
+            if os.path.isfile(self.file_Path):
+                print("File with the same search query found, skipping successfully scraped cultures")
                 self.querySkipper = True
     def region_scraper(self):
 
@@ -107,7 +109,12 @@ class Scraper:
     def time_req(self):
         # estimate the time this will take
         import math
-        time_sec = self.pas_count / 4.33
+        # time estimate in seconds, larger scrapings should be faster so they get a log reduction.
+        if self.pas_count > 10000: 
+            time_sec = math.log(self.pas_count,1.005) + len(self.culture_dict.keys())
+        else:
+            # time of standard loading of each culture
+            time_sec = (self.pas_count / 5) + len(self.culture_dict.keys())
         time_min = ""
         time_hour = ""
         if time_sec > 3600:
@@ -200,7 +207,7 @@ class Scraper:
             else:
                 text += key + (spaceBuffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
         return text
-    def doc_scraper(self, saveRate:int=5000, cultureFiles=False):
+    def doc_scraper(self, saveRate:int=5000):
 
         #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
         if not isinstance(saveRate, int) or saveRate <0 or saveRate is None:
@@ -467,8 +474,11 @@ class Scraper:
             df_eHRAFCulture = pd.DataFrame({'DocTitle': DocTitle, 'Section':section, 'Author':author, 'Page':pageNum, 'Year': Year, 
                                             "OCM": OCM_list, "OWC": OWC, "Passage": docPassage})
             df_eHRAFCulture[['Region','SubRegion',"Culture"]] = [self.culture_dict[key]['Region'], self.culture_dict[key]['SubRegion'], key ]
-            df_eHRAF = pd.concat([df_eHRAF, df_eHRAFCulture], ignore_index=True)
-            pas_count_total += pas_count
+            # In the rare case that a person wants to create cultural files but an altogether dataset already exists, skip the scraped cultures being added to the altogether file.
+            if key not in self.skip_cultures_altogether:
+                df_eHRAF = pd.concat([df_eHRAF, df_eHRAFCulture], ignore_index=True)
+                pas_count_total += pas_count
+            # if the counts of the files scrapes does not match what should be scraped, pop up a warning
             if pas_count != self.culture_dict[key]['Pas_Count']:
                 print(f"WARNING {pas_count} out of {self.culture_dict[key]['Pas_Count']} passages loaded for {key}")
 
@@ -476,7 +486,8 @@ class Scraper:
             if self.cultureFiles is True:
                 self.save_file(df_eHRAFCulture, culture=key)
             # Save the file over a set interval in case there is an unforseen failure which did not allow partial saving
-            if saveRate is not None:
+            # if the altogether dataset file is not meant to be appendeded (see above line) do not update the save.
+            if saveRate is not None and key not in self.skip_cultures_altogether:
                 saveRate_count += pas_count
                 if saveRate_count >= saveRate:
                     self.save_file(df_eHRAF, routine=True)
@@ -485,30 +496,6 @@ class Scraper:
         self.save_file(df_eHRAF)
         self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
-    # if there already exists a file that contains this specific search pattern, then load the data
-    def partial_file_return(self):
-
-        df_eHRAF = pd.read_excel(self.file_Path, index_col=0)
-        pas_count_total = sum(~df_eHRAF['Region'].isna())
-
-        # If you are creating individual culture files, skipped cultures are determined by if the actual file already exists.
-        # Otherwise find skipped files via the altogether dataset
-        if self.cultureFiles is True:
-            xlsx_files = [f for f in os.listdir(self.folder_path) if f.endswith('.xlsx')] #get all files with '.xlsx
-            skip_cultures = [i.split('.')[0] for i in xlsx_files] #as we get "culture.xlsx" files back, split at the '.' and only take the "culture" putting it into a list. This will also include "_Altogether_Dataset but this should not matter"
-        else:
-            skip_cultures = set(df_eHRAF["Culture"])
-
-        # delete cultures in the dictionary already present (probably could rewrite reduce the for loop by 1 but this is probably okay)
-        delete_key_list = []
-        for key in self.culture_dict.keys():
-            if key in skip_cultures:
-                delete_key_list.append(key)
-        for key in delete_key_list:
-            del self.culture_dict[key]
-
-
-        return df_eHRAF, pas_count_total
     def reload_retry(self, idealCount, searchText):
         reload_protect = 0
         reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
@@ -547,25 +534,25 @@ class Scraper:
         replace_dict_file = {'fq=':'_FILTERS-', ':':'-', ' ':'_'}
         remove_list_file = ['\"', '\'', ':','\|','&']
 
-        file_name = self.URL
+        folder_name = self.URL
 
         # replace HTML characters with their corresponding characters
         for key, val in replace_dict.items():
-            file_name = re.sub(key, val, file_name)
+            folder_name = re.sub(key, val, folder_name)
         #remove common undesirable characters 
         for i in remove_list:
-            file_name = re.sub(i, '', file_name)
+            folder_name = re.sub(i, '', folder_name)
 
-        self.input_name = file_name #save a copy before extra filtering as this will be sued later in the file
+        self.input_name = folder_name #save a copy before extra filtering as this will be used later in the file
         self.input_filters = 'No filters'
 
         # regex for finding filters if they are there
-        reg = re.findall('.*&fq=(.*)', file_name)
+        reg = re.findall('.*&fq=(.*)', folder_name)
         # if filters are present, reshape and beautify
         if len(reg) >0:
             self.input_name = re.sub('&fq='+re.escape(reg[0]),'',self.input_name)
             self.input_filters = reg[0]
-            file_filter = reg[0] #same as reg but now we can update it to fix the filtername
+            folder_filter = reg[0] #same as reg but now we can update it to fix the filtername
             # # second regex for finding the actual filter names, Use if you want to extract only the filters themselves
             # filter_names = ["".join(x) for x in re.findall('\|(.*?);|\|(.*?)$', reg[0])]
             # # if using above, you can replace the filters with those in parenthesis, I removed this since it parenthesis words multiple times each if there were duplicates
@@ -573,9 +560,9 @@ class Scraper:
             #     file_filters = re.sub(i, f'({i})', file_filters)
 
             # a few substitutions to get parenthesis around each of the filters
-            file_filter = re.sub('\|','(',file_filter)
-            file_filter = re.sub(';','),',file_filter)
-            file_filter += ')'
+            folder_filter = re.sub('\|','(',folder_filter)
+            folder_filter = re.sub(';','),',folder_filter)
+            folder_filter += ')'
 
             # Give a space between input filters for readability (and maybe splitting later)
             self.input_filters = re.sub(';', ';\n', self.input_filters)
@@ -583,14 +570,14 @@ class Scraper:
 
 
             # now add the corrected filters back to the URL file name,
-            file_name = re.sub(re.escape(reg[0]), file_filter, file_name)
+            folder_name = re.sub(re.escape(reg[0]), folder_filter, folder_name)
 
 
         # remove and replace the characters not good for a file name
         for key, val in replace_dict_file.items():
-            file_name = re.sub(key, val, file_name)
+            folder_name = re.sub(key, val, folder_name)
         for i in remove_list_file:
-            file_name = re.sub(i, '', file_name)
+            folder_name = re.sub(i, '', folder_name)
 
 
 
@@ -606,9 +593,33 @@ class Scraper:
         output_dir = "Data"  # output directory
         output_dir_path = application_path + '/' + output_dir  # output directory path
         os.makedirs(output_dir_path, exist_ok=True)  # make Data folder if it does not exist
-        self.folder_path = output_dir_path + '/' + file_name   #find where the folder should be locate
+        self.folder_path = output_dir_path + '/' + folder_name   #find where the folder should be locate
         self.file_Path = self.folder_path + '/_Altogether_Dataset.xlsx' #find where the altogether dataset should be loacted
         # self.file_Path = output_dir_path + '/' + file_name + '_web_data.xlsx'
+    # if there already exists a file that contains this specific search pattern, then load the data
+    def partial_file_return(self):
+
+        df_eHRAF = pd.read_excel(self.file_Path, index_col=0)
+        pas_count_total = sum(~df_eHRAF['Region'].isna())
+        # If you are creating individual culture files, skipped cultures are determined by if the actual file already exists.
+        # Otherwise find skipped files via the altogether dataset
+        if self.cultureFiles is True:
+            xlsx_files = [f for f in os.listdir(self.folder_path) if f.endswith('.xlsx')] #get all files with '.xlsx
+            skip_cultures = [i.split('.')[0] for i in xlsx_files] #as we get "culture.xlsx" files back, split at the '.' and only take the "culture" putting it into a list. This will also include "_Altogether_Dataset but this should not matter"
+            self.skip_cultures_altogether = set(df_eHRAF["Culture"])
+        else:
+            skip_cultures = set(df_eHRAF["Culture"])
+
+        # delete cultures in the dictionary already present (probably could rewrite reduce the for loop by 1 but this is probably okay)
+        delete_key_list = []
+        for key in self.culture_dict.keys():
+            if key in skip_cultures:
+                delete_key_list.append(key)
+        for key in delete_key_list:
+            del self.culture_dict[key]
+
+
+        return df_eHRAF, pas_count_total
     def save_file(self, df, routine = False, culture=None):
       
 
@@ -648,7 +659,7 @@ class Scraper:
             self.repeatSave = True
             # print out the file name only if this is not a routine save
             if routine == False:
-                print(f'Saved to {self.file_Path}')
+                print(f'Saved to {self.folder_path}')
     def web_close(self):
         # close the webpage
         self.driver.close()

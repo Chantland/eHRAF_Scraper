@@ -11,18 +11,19 @@
 # DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: (OPTIONAL) implement a stop button
 # TODO: (OPTIONAL) make the terminal print out to the GUI's terminal.
+# TODO: (potentially) Add more filters that eHRAF already allows.
 
-# DONE but not logged: Add passage page number columns to the excel files - eHRAF_Scraper.py
-# DONE but not logged: Have excel files include passage numbers - eHRAF_Scraper.py
+# DONE: Add passage page number columns to the excel files - eHRAF_Scraper.py
+# DONE: Have excel files include passage numbers - eHRAF_Scraper.py
 # TODO: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
-# DONE but not logged: Create an option for the list of culture's passage counts to be outputted in GUI terminal - eHRAF_Scraper.py and Scraper_GUI.py
-# DONE but not logged: Reorganize the passage count output so that it proceeds to the next line if overflow occurs - eHRAF_Scraper.py
-# DONE but not logged: create "section" column that extracts the section part of the document title - eHRAF_Scraper.py
-# TODO: Create an option for individual culture files to be created.
-# TODO: (potentially) remove the years after some author's names
-# TODO: (potentially) clean the page info as it is all over the place (osmetimes roman numerals, sometimes this format "[p.156]", this format "-156-", or sometimes just "156")
-# TODO: Fix problem where if you try to do cultural count on a folder whose _altogether_dataset does not match the number of cultural files, extra rows will be created
-
+# DONE: Create an option for the list of culture's passage counts to be outputted in GUI terminal - eHRAF_Scraper.py and Scraper_GUI.py
+# DONE: Reorganize the passage count output so that it proceeds to the next line if overflow occurs - eHRAF_Scraper.py
+# DONE: create "section" column that extracts the section part of the document title - eHRAF_Scraper.py
+# DONE: Create an option for individual culture files to be created.
+# DONE: Fix problem where if you try to do cultural count on a folder whose _altogether_dataset does not match the number of cultural files, extra rows will be created
+# DONE: Make time estimates more accurate by giving large scrapings a log scale
+# TODO: (REJECTED) remove the years after some author's names
+# TODO: (REJECTED) clean the page info as it is all over the place (sometimes roman numerals, sometimes this format "[p.156]", this format "-156-", or sometimes just "156")
 
 import sys
 import os
@@ -118,7 +119,7 @@ class MainWindow(QMainWindow):
         self.textBrowser_Descript.setText('')
         self.textBrowser_URL.setText('')
     def DisplayNumReveal(self): #reveal or hide the extra buttons for the display passages option
-        # if Yes is checked, then reveal, otherwise hide the buttons
+        # if Yes is checked, then reveal the buttons, otherwise hide the buttons
         if  self.radioButton_DisplayPassages_YES.isChecked():
             self.pushButton_DisplayPassages_Culture.setEnabled(True)
             self.pushButton_DisplayPassages_Count.setEnabled(True)
@@ -130,8 +131,11 @@ class MainWindow(QMainWindow):
         if URL == '':
             self.textBox_warning("No URL submitted")
             return
-        eHRAF_URL = re.match(r'^https://ehrafworldcultures.yale.edu/search', URL)
-        if not eHRAF_URL:    
+        regex_search = re.search(r'Run URL: ', URL)
+        if regex_search is not None:
+            URL = re.sub(r'Run URL: ', '', URL)
+        regex_search = re.match(r'^https://ehrafworldcultures.yale.edu/search', URL)
+        if not regex_search:    
             self.textBox_warning("Error, must be a search URL from eHRAF")
             return
         self.URL = URL
