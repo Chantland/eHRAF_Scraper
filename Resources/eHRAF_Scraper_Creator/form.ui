@@ -86,6 +86,11 @@ border-color: rgba(80, 110, 106, 80);
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+       </font>
+      </property>
       <property name="title">
        <string/>
       </property>
@@ -1193,7 +1198,7 @@ color: black;</string>
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -1205,6 +1210,11 @@ color: black;</string>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QGroupBox" name="groupBox_4">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
          <property name="toolTip">
           <string>Choose whether to display the browser while scraping</string>
          </property>
@@ -1287,6 +1297,11 @@ color: black;</string>
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_5">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If a file already exists with the same search parameters, the file will be loaded and start off where you left off. &lt;/p&gt;&lt;p&gt;Switching this to &amp;quot;NO&amp;quot; will allow the scraper to rerun the entire scraping even if a partial file with those same search parameters exists. &lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;WARNING this will overwrite the saved file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -1375,6 +1390,11 @@ color: black;</string>
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_8">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose whether to display the passage count for each culture.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -1465,6 +1485,11 @@ color: black;</string>
             <height>21</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+           </font>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Display cultures alphabetically&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -1493,6 +1518,11 @@ color: black;</string>
             <height>21</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+           </font>
+          </property>
           <property name="toolTip">
            <string>Display cultures by passage count</string>
           </property>
@@ -1519,6 +1549,11 @@ color: black;</string>
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_7">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create separate files for each culture in addition to the altogether file created&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -1607,6 +1642,11 @@ color: black;</string>
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_6">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the iteration of passages you want scraped before a partial save will occur (note that the number will never be exact when actually saving). If you chose to save separate culture files, this only relates to the &amp;quot;Altogether Dataset&amp;quot;.&lt;/p&gt;&lt;p&gt;Because Scraping a website is incredibly beholden to the website working, sometimes there can be unexpected crashes that bypass even the partial save feature of the Scraper. Saving is quick but it takes time. If you trust in this program, select &amp;quot;None&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;NOTE: If the number is small (like 6 or less) in rare circumstances, &lt;/span&gt;the run_info column may create extra rows. The data, however, is not affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -1793,6 +1833,11 @@ border-color: rgba(80, 110, 106, 80);
       <height>16</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+     </font>
+    </property>
     <property name="text">
      <string>URL in use:</string>
     </property>
@@ -1813,10 +1858,19 @@ border-color: rgba(80, 110, 106, 80);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
+  <buttongroup name="buttonGroup_CultureIndividualFiles"/>
+  <buttongroup name="buttonGroup_Subject"/>
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
   <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
+  <buttongroup name="buttonGroup_DisplayPass"/>
+  <buttongroup name="buttonGroup_Filter_CulturalLevel">
+   <property name="exclusive">
+    <bool>false</bool>
    </property>
   </buttongroup>
   <buttongroup name="buttonGroup_Culture">
@@ -1824,15 +1878,6 @@ border-color: rgba(80, 110, 106, 80);
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
   <buttongroup name="buttonGroup_Options_PartialFile"/>
-  <buttongroup name="buttonGroup_Subject"/>
-  <buttongroup name="buttonGroup_Filter_CulturalLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_DisplayPass"/>
-  <buttongroup name="buttonGroup_CultureIndividualFiles"/>
  </buttongroups>
 </ui>
