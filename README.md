@@ -48,7 +48,7 @@ Extract a URL based on Advanced Search which is able to be inputted into the URL
 
 If you are loading this for the first time (AND THE VENV IS MISSING), you will need the packages used in the file. The best way is to use a virtual environment or use anaconda (which might save on space but some package may not be available through there). For a virtual environment (venv) type into the terminal:
 
-        python - m venv venv
+        python3 -m venv venv
         
 When venv is created, select it as your preferred kernal (in VS code, it should give you a prompt to do so, otherwise, select it in the to right corner). Then create a new terminal (should be able to do so at the top of the mac screen under "terminal"). Each line in your terminal should start with "venv" or whatever you named the environment if you called it something else. Now you can install the requirements in the terminal using:
 
