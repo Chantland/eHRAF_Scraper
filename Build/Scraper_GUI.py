@@ -1,6 +1,7 @@
 # for installing the GUI (if you want to make changes) use the py installer prompt: 
-# pyinstaller --onefile --add-data 'Resources/favicon.icns:.' --add-data 'Resources/eHRAF_Scraper_Creator:eHRAF_Scraper_Creator'  --icon=Resources/favicon.icns Scraper_GUI.py
-# then place the file created in the dist folder into the main folder where the Scraper_GUI.py was first ran. You may need to manually chnage the icon
+# pyinstaller  --onefile --add-data 'Resources:Resources'  --icon=Resources/favicon.icns Scraper_GUI.py
+# Note that to make this an app also use --windowed
+
 
 # DONE: Cannot run two subsequent runs of the scraper without it crashing. Perhaps due to issues with initializing and deleting the driver.
 # DONE: check scraper for crashes. There is one which I thought was fixed but maybe not. It happens when the initial source tabs are clicked but cannot load yet seem to not initialize the reclick feature. Currently the error will save a partial file.
@@ -10,9 +11,8 @@
 # DONE: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
 # DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: (OPTIONAL) implement a stop button
-# TODO: (OPTIONAL) make the terminal print out to the GUI's terminal.
+# DONE: (basically) make the terminal print out to the GUI's terminal.
 # TODO: (potentially) Add more filters that eHRAF already allows.
-
 # DONE: Add passage page number columns to the excel files - eHRAF_Scraper.py
 # DONE: Have excel files include passage numbers - eHRAF_Scraper.py
 # TODO: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
@@ -22,8 +22,12 @@
 # DONE: Create an option for individual culture files to be created.
 # DONE: Fix problem where if you try to do cultural count on a folder whose _altogether_dataset does not match the number of cultural files, extra rows will be created
 # DONE: Make time estimates more accurate by giving large scrapings a log scale
-# TODO: (REJECTED) remove the years after some author's names
-# TODO: (REJECTED) clean the page info as it is all over the place (sometimes roman numerals, sometimes this format "[p.156]", this format "-156-", or sometimes just "156")
+# RJCT: (REJECTED) remove the years after some author's names
+# RJCT: (REJECTED) clean the page info as it is all over the place (sometimes roman numerals, sometimes this format "[p.156]", this format "-156-", or sometimes just "156")
+# DONE: Install app so dependancies are included automatically
+# TODO: Initiate app instead of exe so that no terminal is outputted and the image of the file is an icon
+# TODO: make exe be represented as an icon
+
 
 import sys
 import os
@@ -32,8 +36,8 @@ import re
 from eHRAF_Scraper import Scraper
 
 import PyQt6
-from PyQt6 import uic
-from PyQt6.QtCore import QSize
+from PyQt6 import uic, QtTest
+from PyQt6.QtCore import (QSize, QCoreApplication)
 from PyQt6.QtWidgets import (
     QApplication, 
     QMainWindow)
@@ -56,15 +60,8 @@ class MainWindow(QMainWindow):
         self.load_ui()
         self.widgit_setup()
         self.widgit_hub()
-    def load_ui(self):
-        # path = Path(__file__).resolve().parent / "form.ui"
-        if getattr(sys, 'frozen', False):
-            application_path = os.path.dirname(sys.executable)
-        elif __file__:
-            application_path = os.path.dirname(__file__)
-        else:
-            raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
-        uic.loadUi(application_path+ "/Resources/eHRAF_Scraper_Creator/form.ui", self)
+    def load_ui(self): #for loading UI. This used to have more code but then it was moved
+        uic.loadUi(resource_path("Resources/eHRAF_Scraper_Creator/form.ui"), self)
     def widgit_setup(self):
         # Set up the Id's to beter match what is used in the URL generator and for easier indexing
         # 0 None
@@ -227,14 +224,15 @@ class MainWindow(QMainWindow):
         # color.BOLD + 'Hello, World!' + color.END
         # text = 'Press ' + color_app('CONTINUE','CYAN', 'UNDERLINE') + 'button or else choose a new query'
 
-
-
-        text = 'Press the CONTINUE button or else choose a new query'
-        self.textBox_descript_append(text)
+        # If there is a matching query, output info
+        if self.scraper.querySkipper:
+            self.textBox_descript_append("File with the same search query found, skipping successfully scraped cultures")
+        
+        self.textBrowser_Descript.append("<font color='blue'>Press the <b>CONTINUE</b> button or else choose a new query</font>")
         self.pushButton_Continue.setEnabled(True)
         
     def web_continue(self):
-        # Doc_save count
+        # Routine partial saving initialization. If checked, have no partial saving, else set the partial saving to what user specified (or default)
         if self.pushButton_PartialSave_None.isChecked():
             saveRate = None
         else: 
@@ -242,8 +240,14 @@ class MainWindow(QMainWindow):
                 saveRate = int(self.plainTextEdit_PartialSave_DocCount.toPlainText())
             except:
                 saveRate = None
+        if self.scraper.querySkipper:
+            df, pas_count_total = self.scraper.partial_file_return()
+            self.textBox_descript_append(f'{pas_count_total} passages loaded from partial file')
+            QCoreApplication.processEvents() #process the events then wait so that the text can be loaded. Likely it may be good to use Qthreads instead
+            QtTest.QTest.qWait(100)
+        QCoreApplication.processEvents()
         self.scraper.doc_scraper(saveRate=saveRate)
-        self.textBox_descript_append('Completed scraping. Check the terminal for more info\n\n\n')
+        self.textBox_descript_append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}')
         self.pushButton_Continue.setEnabled(False)
         return
 
@@ -272,12 +276,12 @@ def color_app(string, *args):
     text += color.END
     return text
 
-# get path to images
+# get path to folder
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
-        base_path = os.path.abspath(".")
+        base_path = os.path.abspath(os.path.dirname(__file__))
 
     return os.path.join(base_path, relative_path)
 
@@ -285,7 +289,7 @@ def resource_path(relative_path):
 def main():
     app = QApplication(sys.argv)
     main = MainWindow()
-    app.setWindowIcon(QIcon(resource_path("Resources/favicon.icns")))
+    app.setWindowIcon(QIcon(resource_path("Resources/favicon.ico")))
     main.show()
     sys.exit(app.exec())
 

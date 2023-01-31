@@ -10,13 +10,13 @@ class URL_Generator:
                        'subject': {'valid': set(), 'invalid': set(), 'phrase': ''},
                        'keyword': {'valid': set(), 'invalid': set(), 'phrase': ''}, }
         self.final_phrase = ''
-        # set up application path for files
-        if getattr(sys, 'frozen', False):
-            self.application_path = os.path.dirname(sys.executable)
-        elif __file__:
-            self.application_path = os.path.dirname(__file__)
-        else:
-            raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
+        # # set up application path for files
+        # if getattr(sys, 'frozen', False):
+        #     self.application_path = os.path.dirname(sys.executable)
+        # elif __file__:
+        #     self.application_path = os.path.dirname(__file__)
+        # else:
+        #     raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
     def word_strip(self, string:str):
         string_list = [x.lower().strip() for x in string.split(",")]
         for i, string in enumerate(string_list): #remove extra quotes
@@ -41,7 +41,7 @@ class URL_Generator:
         if cultures != '':
             culture_list = self.word_strip(cultures)
             # Match cultures with the cultures that eHRAF uses
-            df_Culture = pd.read_excel(self.application_path + '/Resources/Culture_Names.xlsx')
+            df_Culture = pd.read_excel(resource_path("Resources/Culture_Names.xlsx"))
             for culture in culture_list:
                 if culture in df_Culture['Culture'].unique():
                     found_culture = df_Culture[df_Culture['Culture'].isin([culture])]
@@ -69,7 +69,7 @@ class URL_Generator:
         if subjects != '':
             subjects_list = self.word_strip(subjects)
             # Match OCM codes with meanings and return back a list of ones that worked and ones that didn't
-            df_OCM_Codes = pd.read_excel(self.application_path + '/Resources/OCM_Codes.xlsx')
+            df_OCM_Codes = pd.read_excel(resource_path("Resources/OCM_Codes.xlsx"))
             for subject in subjects_list:
                 # turn OCMs into meanings, or search for if the meanings exist
                 if subject.isnumeric():
@@ -211,3 +211,10 @@ class URL_Generator:
             invalidParagraph += '\n'
         return invalidParagraph
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(os.path.dirname(__file__))
+
+    return os.path.join(base_path, relative_path)

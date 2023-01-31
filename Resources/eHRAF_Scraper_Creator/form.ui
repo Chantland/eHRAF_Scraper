@@ -1858,26 +1858,26 @@ border-color: rgba(80, 110, 106, 80);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_CultureIndividualFiles"/>
   <buttongroup name="buttonGroup_Subject"/>
+  <buttongroup name="buttonGroup_Options_PartialFile"/>
   <buttongroup name="buttonGroup_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Keyword">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
-  <buttongroup name="buttonGroup_DisplayPass"/>
+  <buttongroup name="buttonGroup_CultureIndividualFiles"/>
   <buttongroup name="buttonGroup_Filter_CulturalLevel">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_Keyword">
+   <property name="exclusive">
+    <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_DisplayPass"/>
   <buttongroup name="buttonGroup_Culture">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
  </buttongroups>
 </ui>

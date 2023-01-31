@@ -14,6 +14,7 @@ import pandas as pd                 # dataframe storing
 from bs4 import BeautifulSoup       # parsing web content in a nice way
 import os                           # Find where this file is located.
 import sys                          # Also for finding file location (for saving)
+import platform                     # for checking the platform
 import re                           # regex for searching through strings
 import time                         # for waiting for the page to load
 import selenium                     #package for loading an autnomous browser
@@ -580,18 +581,20 @@ class Scraper:
             folder_name = re.sub(i, '', folder_name)
 
 
+        # output directory
+        output_dir = "Data"  
 
         # Find path
         # determine if application is a script file or frozen exe
         if getattr(sys, 'frozen', False):
-            application_path = os.path.dirname(sys.executable)
-        elif __file__:
-            application_path = os.path.dirname(__file__)
+            
+            # # # allow users to access the data folder
+            app_dir = os.path.dirname(sys.executable)
+            self.application_path = os.path.join(app_dir, output_dir)
         else:
-            raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
+            self.application_path = os.path.dirname(__file__)
 
-        output_dir = "Data"  # output directory
-        output_dir_path = application_path + '/' + output_dir  # output directory path
+        output_dir_path = self.application_path + '/' + output_dir  # output directory path
         os.makedirs(output_dir_path, exist_ok=True)  # make Data folder if it does not exist
         self.folder_path = output_dir_path + '/' + folder_name   #find where the folder should be locate
         self.file_Path = self.folder_path + '/_Altogether_Dataset.xlsx' #find where the altogether dataset should be loacted
@@ -639,7 +642,7 @@ class Scraper:
             df.loc[4, 'run_Info'] = "Filter: " + self.input_filters
             df.loc[5, 'run_Info'] = "Run URL: " + self.URL
 
-        # Use the normal file path unless we are saving to indivudal cultures
+        # Use the normal file path unless we are saving to individual cultures
         if culture is None:
             save_file_path = self.file_Path
         else:
