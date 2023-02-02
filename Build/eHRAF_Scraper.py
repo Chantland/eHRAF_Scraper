@@ -508,16 +508,18 @@ class Scraper:
             raise RuntimeError("Too many reloads")
         return reloadTab
     def reload_fail(self, df, pas_count_total, text):
+        # create fail and exception text variables in order to be able to be referenced outside the program
+        self.fail_text = ""
         if len(df) < 1 or df is None:
-            print("Not enough data to create a saved file")
+            self.fail_text += "Not enough data to create a saved file\n\n"
         else:
             self.save_file(df)
             self.web_close()
-            print("Partial saving has occurred, please rerun the program to restart at the culture left off")
-            print(
-                f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
-        raise Exception(
-            f"failed to load all {text} tabs, please contact ericchantland@gmail.com for info on fixing")
+            self.fail_text += "Partial saving has occurred, please rerun the program to restart at the culture left off\n\n"
+            self.fail_text += f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)\n\n'
+        print(self.fail_text)
+        self.exception_text= f"Failed to load all {text} tabs, please contact ericchantland@gmail.com for info on fixing"
+        raise Exception(self.exception_text)
     def reload_page(self, key, next_page_count): #reload the page and try to start at the page number left off for the culture
         self.driver.get(self.homeURL + self.culture_dict[key]['link'])
         # return to the page where this failed originally
@@ -665,7 +667,10 @@ class Scraper:
                 print(f'Saved to {self.folder_path}')
     def web_close(self):
         # close the webpage
-        self.driver.close()
+        try:
+            self.driver.close()
+        except:
+            print("driver attempted to close but failed. Likely due to webpage already closed")
     def __del__(self): # if the class gets overwrittten,  remove the webpage
         try:
             self.driver.close()

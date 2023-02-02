@@ -27,8 +27,20 @@
 # DONE: Install app so dependancies are included automatically
 # TODO: Initiate app instead of exe so that no terminal is outputted and the image of the file is an icon
 # TODO: make exe be represented as an icon
+# DONE: Integrate scraper run failure within the GUI terminal allowing for almost all information to be accessed outside the OS terminal. Also, stop the GUI from crashing when the Scraper crashes
+ 
+
+# default:
+# self.setFixedSize(QSize(880, 780)) #window
+# self.textBrowser_Descript.setGeometry(600, 20, 261, 531) text box
+# self.tabWidget.setFixedWidth(571) #tab
 
 
+
+# enlarged
+# self.setFixedSize(QSize(1180, 780)) #window
+# self.textBrowser_Descript.setGeometry(600, 20, 261+300, 531-320) #flip text box
+# self.tabWidget.setFixedWidth(self.tabWidget.width()+580) # set enlarged tab width
 import sys
 import os
 from URL_Generator import URL_Generator as ug
@@ -107,9 +119,17 @@ class MainWindow(QMainWindow):
         self.textBrowser_Descript.setText(self.descript)
     def textBox_URL_set(self): #update the URL box
         self.textBrowser_URL.setText(self.URL)
-    def textBox_warning(self, warning:str): #give warning flag if user does something wrong
+    def textBox_warning(self, warning:str, crash:bool=False): #give warning flag if user does something wrong
         self.text_clear()
-        self.textBrowser_Descript.setText(warning)
+        # if the scraper crashed, give a failure warning and close the webpage unless it is not already closed
+        if crash:
+            self.textBrowser_Descript.append("<font color='red'><b>THE SCRAPER HAS CRASHED</b></font><br>")
+            try:
+                self.scraper.web_close()
+            except:
+                pass
+        # Add text warning
+        self.textBrowser_Descript.append(warning)
         self.pushButton_Continue.setEnabled(False)
     def text_clear(self): #clear both boxes of text
         self.descript = ''
@@ -198,13 +218,18 @@ class MainWindow(QMainWindow):
             cultureFiles = True
         else:
             cultureFiles = False
-        # initialize the scraper
-        self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun, user=user, cultureFiles=cultureFiles)
-        # If there is nothing the scrape, then escape
-        warning = self.scraper.region_scraper() 
-        if warning is not None:
-            self.textBrowser_Descript.setText(warning)
-            self.scraper.web_close()
+
+        try:
+            # initialize the scraper
+            self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun, user=user, cultureFiles=cultureFiles)
+            # If there is nothing the scrape, then escape
+            warning = self.scraper.region_scraper() 
+            if warning is not None:
+                self.textBox_warning(warning)
+                self.scraper.web_close()
+                return
+        except:
+            self.textBox_warning(warning="Unable to load the initial webpage properly, please try resubmitting", failure=True)
             return
         
         # Display time required to Scrape
@@ -241,12 +266,22 @@ class MainWindow(QMainWindow):
             except:
                 saveRate = None
         if self.scraper.querySkipper:
-            df, pas_count_total = self.scraper.partial_file_return()
+            pas_count_total = self.scraper.partial_file_return()[1]
             self.textBox_descript_append(f'{pas_count_total} passages loaded from partial file')
             QCoreApplication.processEvents() #process the events then wait so that the text can be loaded. Likely it may be good to use Qthreads instead
             QtTest.QTest.qWait(100)
         QCoreApplication.processEvents()
-        self.scraper.doc_scraper(saveRate=saveRate)
+        # run the actual scraping. if it should fail, output the reason
+        try:
+            self.scraper.doc_scraper(saveRate=saveRate)
+        except:
+            # if known failure occurred, print out, otherwise give unknown
+            try:
+                self.textBox_warning(self.scraper.fail_text, crash=True)
+                self.textBrowser_Descript.append(self.scraper.exception_text)
+            except:
+                self.textBox_warning("Unknown failue has occurred", crash=True)
+            return
         self.textBox_descript_append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}')
         self.pushButton_Continue.setEnabled(False)
         return
