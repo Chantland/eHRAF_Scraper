@@ -26,21 +26,27 @@
 # RJCT: (REJECTED) clean the page info as it is all over the place (sometimes roman numerals, sometimes this format "[p.156]", this format "-156-", or sometimes just "156")
 # DONE: Install app so dependancies are included automatically
 # TODO: Initiate app instead of exe so that no terminal is outputted and the image of the file is an icon
-# TODO: make exe be represented as an icon
+# TODO: (Potentiallu) make exe be represented as an icon
 # DONE: Integrate scraper run failure within the GUI terminal allowing for almost all information to be accessed outside the OS terminal. Also, stop the GUI from crashing when the Scraper crashes
  
 
-# default:
-# self.setFixedSize(QSize(880, 780)) #window
-# self.textBrowser_Descript.setGeometry(600, 20, 261, 531) text box
-# self.tabWidget.setFixedWidth(571) #tab
-
-
-
 # enlarged
 # self.setFixedSize(QSize(1180, 780)) #window
-# self.textBrowser_Descript.setGeometry(600, 20, 261+300, 531-320) #flip text box
+# self.textBrowser_Descript.setGeometry(600, 20+20, 261+300, 531-345) #flip text box
 # self.tabWidget.setFixedWidth(self.tabWidget.width()+580) # set enlarged tab width
+# self.textBrowser_URL.setFixedWidth(self.textBrowser_URL.width()+300)
+
+
+# reset to default:
+# self.setFixedSize(QSize(880, 780)) #window
+# self.textBrowser_Descript.setGeometry(600, 20, 261, 531) # text box
+# self.tabWidget.setFixedWidth(self.tabWidget.width()-580) #tab
+# self.textBrowser_URL.setFixedWidth(self.textBrowser_URL.width()-300)
+
+
+
+
+
 import sys
 import os
 from URL_Generator import URL_Generator as ug
@@ -93,6 +99,16 @@ class MainWindow(QMainWindow):
         self.buttonGroup_SubjKey_Conj.setId(self.pushButton_SubKeyOr, 1)
         self.buttonGroup_SubjKey_Conj.setId(self.pushButton_SubKeyAnd, 2)
 
+
+        # set up tab size (reset from the UI)
+        self.tabWidget.setFixedWidth(571) # set default tab length
+
+        # set visibility of extra tab to start out as hidden
+        self.groupBox_ExtraParam.setVisible(False)
+        # self.pushButton_ExtraParam_And.setVisible(False)
+        # self.pushButton_ExtraParam_Or.setVisible(False)
+        self.groupBox_ExtraParam_Buttons.setVisible(False)
+
         # self.continueButton = QPushButton(self)
         # self.continueButton.setText("Continue")
         # self.stopButton = QPushButton(self)
@@ -111,7 +127,10 @@ class MainWindow(QMainWindow):
 
         # turn the sub buttons for the "Display number of passages per culture" option on or off
         self.radioButton_DisplayPassages_YES.toggled.connect(self.DisplayNumReveal)
-        # self.radioButton_DisplayPassages_Yes.clicked.connect(self.DisplayNumReveal)
+
+        # reveal additional search clause
+        self.checkBox_ExtraClause.toggled.connect(self.ShowExtraParam)
+
     def set_text_box(self): #relic from previous test, DELETE
         self.textBrowser.setText(self.plainTextEdit_URL.toPlainText())
     def textBox_descript_append(self, string:str): #update the description box
@@ -143,6 +162,33 @@ class MainWindow(QMainWindow):
         else:
             self.pushButton_DisplayPassages_Culture.setEnabled(False)
             self.pushButton_DisplayPassages_Count.setEnabled(False)
+    def ShowExtraParam(self):
+        # if toggled to true, display extra parameters, otherwise revert back to original
+        if self.checkBox_ExtraClause.isChecked():
+            # set visibility
+            self.groupBox_ExtraParam.setVisible(True)
+            self.groupBox_ExtraParam_Buttons.setVisible(True)
+
+            # set increased size
+            self.setFixedSize(QSize(1180, 780)) #window
+            self.textBrowser_Descript.setGeometry(600, 20+20, 261+300, 531-345) #flip text box
+            self.tabWidget.setFixedWidth(self.tabWidget.width()+580) # set enlarged tab width
+            self.textBrowser_URL.setFixedWidth(self.textBrowser_URL.width()+300) #URL box
+            self.pushButton_Continue.setGeometry(self.pushButton_Continue.x()+145,\
+                self.pushButton_Continue.y(),self.pushButton_Continue.width(),self.pushButton_Continue.height())  # move the continue button (I couldn't find how to just move the X without changing the width)
+        else:
+            # set visibility
+            self.groupBox_ExtraParam.setVisible(False)
+            self.groupBox_ExtraParam_Buttons.setVisible(False)
+
+            # reset to default size:
+            self.setFixedSize(QSize(880, 780)) #window
+            self.textBrowser_Descript.setGeometry(600, 20, 261, 531) # text box
+            self.tabWidget.setFixedWidth(self.tabWidget.width()-580) #tab
+            self.textBrowser_URL.setFixedWidth(self.textBrowser_URL.width()-300) #URL box
+            self.pushButton_Continue.setGeometry(self.pushButton_Continue.x()-145,\
+                self.pushButton_Continue.y(),self.pushButton_Continue.width(),self.pushButton_Continue.height())  # reset the continue button (I couldn't find how to just move the X without changing the width)
+
     def set_URL(self): #if URL submit button is clicked, just use that URL but first check if it is valid
         URL = self.plainTextEdit_URL.toPlainText()
         if URL == '':
@@ -168,6 +214,14 @@ class MainWindow(QMainWindow):
         concat_conj = self.buttonGroup_SubjKey_Conj.id(self.buttonGroup_SubjKey_Conj.checkedButton())
         keywords = self.plainTextEdit_Keyword.toPlainText()
         keywords_conj = self.buttonGroup_Keyword.id(self.buttonGroup_Keyword.checkedButton())
+        # exClause_conj:int = 1, # Extra Clause Conjunction between primary clause and extra clause
+        # exClause_subject:str = '', # Extra Clause Subject query
+        # exClause_subjects_conj:int = 1, # Extra Clause Subject conjunction between queries  
+        # exClause_concat_conj:int = 1,  # Conjunction between extra clause subject and culture
+        # exClause_keyword:str = '', # Extra Clause Keyword query
+        # exClause_keywords_conj:int = 1, # Extra Clause Keyword conjunction between queries 
+
+
         # check to make sure a search term was provided
         if cultures == '' and subjects == '' and keywords == '':
             self.textBox_warning("No search terms provided, please add then submit again.")
@@ -238,12 +292,12 @@ class MainWindow(QMainWindow):
         # Display (optionally) all the cultures and passage counts
         if self.radioButton_DisplayPassages_YES.isChecked():
             # -2 = culture, -3 equals "count"
-            if self.buttonGroup_DisplayPass.id(self.buttonGroup_DisplayPass.checkedButton()) == -2:
+            if self.buttonGroup_Options_DisplayPassages_CoC.id(self.buttonGroup_Options_DisplayPassages_CoC.checkedButton()) == -2:
                 cultureCount = "culture"
-            elif self.buttonGroup_DisplayPass.id(self.buttonGroup_DisplayPass.checkedButton()) == -3:
+            elif self.buttonGroup_Options_DisplayPassages_CoC.id(self.buttonGroup_Options_DisplayPassages_CoC.checkedButton()) == -3:
                 cultureCount = "count"
             else:
-                raise Exception("No value button number returned for buttonGroup_DisplayPass.id")
+                raise Exception("No value button number returned for buttonGroup_Options_DisplayPassages_CoC.id")
             self.textBox_descript_append(self.scraper.cult_count(by=cultureCount))
         # DELETE COMMENTS HERE, THEY ARE FOR REFERENCE
         # color.BOLD + 'Hello, World!' + color.END

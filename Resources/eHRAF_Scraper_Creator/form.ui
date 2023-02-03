@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>880</width>
-    <height>786</height>
+    <width>1255</width>
+    <height>782</height>
    </rect>
   </property>
   <property name="font">
@@ -61,7 +61,7 @@ border-color: rgba(80, 110, 106, 80);
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>571</width>
+      <width>1191</width>
       <height>541</height>
      </rect>
     </property>
@@ -160,7 +160,7 @@ border-color: rgba(80, 110, 106, 80);
      <attribute name="title">
       <string>Search</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="groupBox_URL">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -340,7 +340,7 @@ border-style: outset;
         <height>20</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout_ORLine">
        <item>
         <widget class="Line" name="line">
          <property name="orientation">
@@ -378,7 +378,7 @@ border-style: outset;
        </item>
       </layout>
      </widget>
-     <widget class="QGroupBox" name="groupBox_2">
+     <widget class="QGroupBox" name="groupBox_Adv">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -410,7 +410,7 @@ border-style: outset;
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_Culture">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_Culture_Buttons" stretch="0,0">
           <property name="spacing">
            <number>3</number>
           </property>
@@ -535,9 +535,9 @@ border-style: outset;
          <height>44</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_Keyword_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_Subject">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_Subject_Buttons">
           <property name="spacing">
            <number>3</number>
           </property>
@@ -726,7 +726,7 @@ border-color: rgb(82, 120, 120);
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_Keyword">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="horizontalLayout_Keyword_Buttons">
           <property name="spacing">
            <number>3</number>
           </property>
@@ -939,6 +939,11 @@ border-style: outset;
          <height>32</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
        <property name="cursor">
         <cursorShape>WhatsThisCursor</cursorShape>
        </property>
@@ -974,6 +979,11 @@ border-bottom-left-radius: 15px;
          <width>41</width>
          <height>32</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
        </property>
        <property name="cursor">
         <cursorShape>WhatsThisCursor</cursorShape>
@@ -1012,7 +1022,7 @@ border-bottom-right-radius: 15px;
        <property name="geometry">
         <rect>
          <x>440</x>
-         <y>260</y>
+         <y>300</y>
          <width>91</width>
          <height>32</height>
         </rect>
@@ -1042,7 +1052,7 @@ color: black;</string>
         <string>SUBMIT</string>
        </property>
       </widget>
-      <widget class="QGroupBox" name="groupBox_3">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1171,13 +1181,574 @@ color: black;</string>
         </property>
        </widget>
       </widget>
+      <widget class="QCheckBox" name="checkBox_ExtraClause">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>130</y>
+         <width>101</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add an extra Keyword and/or Subject Search Clause&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(60, 180, 170);</string>
+       </property>
+       <property name="text">
+        <string>Extra Clause</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_ExtraParam">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>190</y>
+        <width>541</width>
+        <height>301</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>13</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;An additional clause to be used in conjection with your first search. Note any culture queries will apply to both clauses&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="title">
+       <string>Extra Keyword/Subject Clause</string>
+      </property>
+      <widget class="QWidget" name="layoutWidget_8">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>521</width>
+         <height>44</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_ExtraParam_Subject">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_ExtraParam_Subject_Buttons">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="pushButton_ExtraParam_SubAny">
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>WhatsThisCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	
+	background-color: rgb(225, 255, 254);
+color: rgb(148, 148, 148);
+border-style: outset;
+border-width:2px;
+	border-color: rgb(80, 110, 106);
+border-top-left-radius: 15px;
+border-bottom-left-radius: 15px;
+
+
+
+}
+
+QPushButton:checked {
+	color: rgb(0, 0, 0);
+	background-color: rgb(82, 214, 195);
+border-color: rgb(82, 120, 120);
+     border-style: inset;
+ }
+
+QPushButton:pressed {
+	color: rgb(90, 90, 90);
+	background-color: rgb(190, 220, 220);
+border-color: rgb(82, 120, 120);
+     border-style: inset;
+ }</string>
+            </property>
+            <property name="text">
+             <string>Any</string>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoDefault">
+             <bool>false</bool>
+            </property>
+            <property name="default">
+             <bool>false</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_ExtraParam_SubAll">
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>WhatsThisCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>All</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_ExtraParam_SubNone">
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>WhatsThisCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>None</string>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="plainTextEdit_ExtraParam_Subject">
+          <property name="maximumSize">
+           <size>
+            <width>365</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="documentTitle">
+           <string/>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+          <property name="overwriteMode">
+           <bool>false</bool>
+          </property>
+          <property name="backgroundVisible">
+           <bool>false</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Subjects (separated by a comma. Use words or OCM #)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="layoutWidget_9">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>120</y>
+         <width>521</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_ExtraParam_Keyword">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayoutt_ExtraParam_Keyword_Buttons">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="pushButtont_ExtraParam_KeyAny">
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>WhatsThisCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>Any</string>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoDefault">
+             <bool>false</bool>
+            </property>
+            <property name="default">
+             <bool>false</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtont_ExtraParam_KeyAll">
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>WhatsThisCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>All</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtont_ExtraParam_KeyNone">
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>WhatsThisCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>None</string>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="plainTextEditt_ExtraParam_Keyword">
+          <property name="maximumSize">
+           <size>
+            <width>365</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="documentTitle">
+           <string/>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+          <property name="overwriteMode">
+           <bool>false</bool>
+          </property>
+          <property name="backgroundVisible">
+           <bool>false</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Keywords (separated by a comma)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QPushButton" name="pushButtont_ExtraParam_SubKeyAnd">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>80</y>
+         <width>41</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>WhatsThisCursor</cursorShape>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+
+QPushButton {
+border-top-left-radius: 15px;
+border-bottom-left-radius: 15px;
+}</string>
+       </property>
+       <property name="text">
+        <string>And</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtont_ExtraParam_SubKeyOr">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>80</y>
+         <width>41</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>WhatsThisCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+border-top-right-radius: 15px;
+border-bottom-right-radius: 15px;
+}
+</string>
+       </property>
+       <property name="text">
+        <string>Or</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="ColorBackground" stdset="0">
+        <color>
+         <red>105</red>
+         <green>248</green>
+         <blue>82</blue>
+        </color>
+       </property>
+       <property name="egfdg" stdset="0">
+        <string>gdfg</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_ExtraParam_Buttons">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>240</y>
+        <width>71</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select how the Extra clause will be used in conjunction with your primary clause.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QGroupBox {
+background-color: rgb(190,190,205);
+border-radius: 15px
+}</string>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QPushButton" name="pushButton_ExtraParam_Or">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>WhatsThisCursor</cursorShape>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+
+QPushButton {
+border-bottom-left-radius: 15px;
+border-bottom-right-radius: 15px;
+}</string>
+       </property>
+       <property name="text">
+        <string>Or</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_ExtraParam</string>
+       </attribute>
+      </widget>
+      <widget class="QPushButton" name="pushButton_ExtraParam_And">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>WhatsThisCursor</cursorShape>
+       </property>
+       <property name="whatsThis">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+
+QPushButton {
+border-top-left-radius: 15px;
+border-top-right-radius: 15px;
+}</string>
+       </property>
+       <property name="text">
+        <string>And</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_ExtraParam</string>
+       </attribute>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="Options">
      <attribute name="title">
       <string>Options</string>
      </attribute>
-     <widget class="QLabel" name="label_3">
+     <widget class="QLabel" name="label_Option_Info">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -1209,7 +1780,7 @@ color: black;</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QGroupBox" name="groupBox_4">
+        <widget class="QGroupBox" name="groupBox_Option_Browser">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -1252,7 +1823,7 @@ color: black;</string>
             <height>23</height>
            </rect>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QHBoxLayout" name="horizontalLayout_Option_Browser">
            <item>
             <widget class="QRadioButton" name="radioButton_browser_NO">
              <property name="font">
@@ -1296,7 +1867,7 @@ color: black;</string>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_5">
+        <widget class="QGroupBox" name="groupBox_Option_PartialFiles">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -1345,7 +1916,7 @@ color: black;</string>
             <height>23</height>
            </rect>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <layout class="QHBoxLayout" name="horizontalLayout_Option_PartialFiles">
            <item>
             <widget class="QRadioButton" name="radioButton_PartialFiles_NO">
              <property name="font">
@@ -1389,7 +1960,7 @@ color: black;</string>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_8">
+        <widget class="QGroupBox" name="groupBox_Option_DisplayPassages">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -1438,7 +2009,7 @@ color: black;</string>
             <height>23</height>
            </rect>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <layout class="QHBoxLayout" name="horizontalLayout_Option_DisplayPassages">
            <item>
             <widget class="QRadioButton" name="radioButton_DisplayPassages_NO">
              <property name="font">
@@ -1453,6 +2024,9 @@ color: black;</string>
              <property name="checked">
               <bool>true</bool>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_Options_DisplayPassages_NoY</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -1469,6 +2043,9 @@ color: black;</string>
              <property name="checked">
               <bool>false</bool>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_Options_DisplayPassages_NoY</string>
+             </attribute>
             </widget>
            </item>
           </layout>
@@ -1503,7 +2080,7 @@ color: black;</string>
            <bool>false</bool>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_DisplayPass</string>
+           <string notr="true">buttonGroup_Options_DisplayPassages_CoC</string>
           </attribute>
          </widget>
          <widget class="QPushButton" name="pushButton_DisplayPassages_Count">
@@ -1542,13 +2119,13 @@ color: black;</string>
            <bool>true</bool>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_DisplayPass</string>
+           <string notr="true">buttonGroup_Options_DisplayPassages_CoC</string>
           </attribute>
          </widget>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_7">
+        <widget class="QGroupBox" name="groupBox_Option_CultureIndividualFiles">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -1597,7 +2174,7 @@ color: black;</string>
             <height>23</height>
            </rect>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <layout class="QHBoxLayout" name="horizontalLayout_Option_CultureIndividualFiles">
            <item>
             <widget class="QRadioButton" name="radioButton_CultureIndividualFiles_NO">
              <property name="font">
@@ -1613,7 +2190,7 @@ color: black;</string>
               <bool>true</bool>
              </property>
              <attribute name="buttonGroup">
-              <string notr="true">buttonGroup_CultureIndividualFiles</string>
+              <string notr="true">buttonGroup_Options_CultureIndividualFiles</string>
              </attribute>
             </widget>
            </item>
@@ -1632,7 +2209,7 @@ color: black;</string>
               <bool>false</bool>
              </property>
              <attribute name="buttonGroup">
-              <string notr="true">buttonGroup_CultureIndividualFiles</string>
+              <string notr="true">buttonGroup_Options_CultureIndividualFiles</string>
              </attribute>
             </widget>
            </item>
@@ -1641,7 +2218,7 @@ color: black;</string>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_6">
+        <widget class="QGroupBox" name="groupBox_Option_PartialSave">
          <property name="font">
           <font>
            <family>Arial</family>
@@ -1757,21 +2334,6 @@ color: black;</string>
      </widget>
     </widget>
    </widget>
-   <widget class="QTextBrowser" name="textBrowser_Descript">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>20</y>
-      <width>261</width>
-      <height>531</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Courier New</family>
-     </font>
-    </property>
-   </widget>
    <widget class="QTextBrowser" name="textBrowser_URL">
     <property name="geometry">
      <rect>
@@ -1804,6 +2366,9 @@ color: black;</string>
       <family>Arial</family>
       <pointsize>21</pointsize>
      </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Continue onto the scraping&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton{
@@ -1842,13 +2407,28 @@ border-color: rgba(80, 110, 106, 80);
      <string>URL in use:</string>
     </property>
    </widget>
+   <widget class="QTextBrowser" name="textBrowser_Descript">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>20</y>
+      <width>261</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Courier New</family>
+     </font>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>880</width>
+     <width>1255</width>
      <height>24</height>
     </rect>
    </property>
@@ -1859,25 +2439,27 @@ border-color: rgba(80, 110, 106, 80);
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Filter_CulturalLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
   <buttongroup name="buttonGroup_Subject"/>
-  <buttongroup name="buttonGroup_CultureIndividualFiles"/>
   <buttongroup name="buttonGroup_Options_ShowBrowser"/>
   <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
   <buttongroup name="buttonGroup_Culture">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Filter_CulturalLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_DisplayPass"/>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_ExtraParam"/>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
  </buttongroups>
 </ui>

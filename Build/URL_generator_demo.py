@@ -1,9 +1,9 @@
 
-import URL_generator as ug
+import URL_Generator as ug
 
 from importlib import reload
 ug = reload(ug)
-from URL_generator import URL_generator as ug
+from URL_Generator import URL_Generator as ug
 
 # all 3
 # cult and Subj
@@ -26,14 +26,22 @@ from URL_generator import URL_generator as ug
 # cultural_level_samples = ['EA', 'SRS']
 
 
-cultures = ["Mao, AzAnde, Tikopia", "AzAnde, Mao, Tikopia", "AzAnde, Tikopia, Mao", "Tikopia, Mao, Azande", "Tikopia, AzAnde, Mao", "Mao, Tikopia, AzAnde", "Mao"]
+cultures = ["Mao, AzAnde, tiko, ti, Tikopia", "AzAnde, Mao, Tikopia", "AzAnde, shee, Tikopia, Mao", "Tikopia, Mao, mao, Azande", "Tikopia, AzAnde, Mao", "Mao, Tikopia, AzAnde", "Mao"]
 cult_conj =  [1,1,1,1,1,1,1]
-subjects = ["spirits and gods, joiks, 750, 9999, 640", "750, 9999, spirits and gods, joiks, 640", "750, 9999, joiks, 640, spirits and gods", "640, 750, 9999, joiks, spirits and gods", "640,  spirits and gods, 750, 9999, joiks", "spirits and gods, 640, 9999, joiks, 750", "750"]
+subjects = ["spirits and gods, bop, joiks, 750, 9999, 640", "750, 9999, spirits and gods, joiks, 640", "750, 9999, joiks, 640, spirits and gods", "640, 750, 9999, joiks,schenee, go,  spirits and gods", "640,  spirits and gods, 750, 9999, joiks", "spirits and gods, 640, 9999, joiks, 750", "750"]
 subjects_conj = [1,1,1,1,1,1,1]
 concat_conj = [1,1,1,1,1,1,1]
 keywords = ["apple, grandma, pear", "apple, pear, grandma", "pear, grandma, apple", "pear, apple, grandma","Grandma, apple, PEaR", "Grandma, Pear, apple", "apple, pear"]
 keywords_conj = [1,1,1,1,1,1,1]
 cultural_level_samples = []
+
+
+# subjects = ["spirits and gods, joiks, 750, 9999, 640", "750, 9999, spirits and gods, joiks, 640", "750, 9999, joiks, 640, spirits and gods", "640, 750, 9999, joiks, spirits and gods", "640,  spirits and gods, 750, 9999, joiks", "spirits and gods, 640, 9999, joiks, 750", "750"]
+# subjects_conj = [1,1,1,1,1,1,1]
+# concat_conj = [1,1,1,1,1,1,1]
+# keywords = ["apple, grandma, pear", "apple, pear, grandma", "pear, grandma, apple", "pear, apple, grandma","Grandma, apple, PEaR", "Grandma, Pear, apple", "apple, pear"]
+# keywords_conj = [1,1,1,1,1,1,1]
+# cultural_level_samples = []
 
 
 
