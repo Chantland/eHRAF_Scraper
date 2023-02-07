@@ -80,6 +80,8 @@ class Scraper:
         if rerun is False:
             if os.path.isfile(self.file_Path):
                 print("File with the same search query found, skipping successfully scraped cultures")
+                if self.file_length_warning is not None:
+                    print("WARNING, due to the shortening of the file name, different search queries can be regarded as the same search query and cause the scraper to skip skip cultures it shouldn't. Check the the _Altogether_Dataset.xlsx to be sure")
                 self.querySkipper = True
     def region_scraper(self):
 
@@ -497,6 +499,7 @@ class Scraper:
         self.save_file(df_eHRAF)
         self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
+        print('Scraping complete\n\n')
     def reload_retry(self, idealCount, searchText):
         reload_protect = 0
         reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
@@ -557,10 +560,10 @@ class Scraper:
             self.input_filters = reg[0]
             folder_filter = reg[0] #same as reg but now we can update it to fix the filtername
             # # second regex for finding the actual filter names, Use if you want to extract only the filters themselves
-            # filter_names = ["".join(x) for x in re.findall('\|(.*?);|\|(.*?)$', reg[0])]
+            filter_names = ["".join(x) for x in re.findall('\|(.*?);|\|(.*?)$', reg[0])]
             # # if using above, you can replace the filters with those in parenthesis, I removed this since it parenthesis words multiple times each if there were duplicates
             # for i in filter_names:
-            #     file_filters = re.sub(i, f'({i})', file_filters)
+            #     file_filters = re.sub(i, f'({i})', folder_filter)
 
             # a few substitutions to get parenthesis around each of the filters
             folder_filter = re.sub('\|','(',folder_filter)
@@ -582,6 +585,20 @@ class Scraper:
         for i in remove_list_file:
             folder_name = re.sub(i, '', folder_name)
 
+        # if the file is too long
+        self.file_length_warning = None
+        if len(folder_name) > 240:
+            folder_name = folder_name[:240]
+            self.file_length_warning = "WARNING, file name is too big and has been cut off, this can cause overwriting and/or use of same named queries"
+            print(self.file_length_warning)
+            # # remove filters (Old, currently just snipping off the ends of files)
+            # reg2 = re.findall('_FILTERS.*', folder_name)
+            # if len(reg2) > 0:
+            #     folder_name = re.sub(reg2, '', folder_name)
+            # # if file is still too long, go into basic cutting
+            # if len(folder_name) > 240:
+                
+
 
         # output directory
         output_dir = "Data"  
@@ -589,7 +606,6 @@ class Scraper:
         # Find path
         # determine if application is a script file or frozen exe
         if getattr(sys, 'frozen', False):
-            
             # # # allow users to access the data folder
             app_dir = os.path.dirname(sys.executable)
             self.application_path = os.path.join(app_dir, output_dir)

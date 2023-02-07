@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import os
 import sys
+from unidecode import unidecode
 
 class URL_Generator:
     def __init__(self):
@@ -21,10 +22,10 @@ class URL_Generator:
         #     raise Exception("Unable to find application path. Potentially neither script file nor frozen file")
     
     def word_strip(self, query:str): # extract the comma sepaarted queries and clean
-        query_list = [x.lower().strip() for x in query.split(",")]
+        query_list = [x.lower().strip() for x in query.split(",")] #split the text at commas and make the text lower case then erase blank spaces at the end and beginning
         for i, query in enumerate(query_list): #remove extra quotes
             query_list[i] = re.sub("\"|\'", '', query)
-        query_list = [i for i in query_list if i !=''] #remove blanks
+        query_list = [i.strip() for i in query_list if i !=''] #remove blanks and strip again in case the "" did not encompass everything
         return query_list
     def culture_valid_extractor(self, query_list:list):
             df = pd.read_excel(resource_path("Resources/Culture_Names.xlsx"))
@@ -36,7 +37,7 @@ class URL_Generator:
                 else:
                     self.Search_dict['culture']['invalid'].add(str(culture))
             self.Search_dict['culture']['valid'] = sorted(self.Search_dict['culture']['valid']) #sort the inputs/values
-    def OCM_valid_extractor(self, query_list:list):
+    def OCM_valid_extractor(self, name:str, query_list:list):
             # Match OCM codes with meanings and return back a list of ones that worked and ones that didn't
             df = pd.read_excel(resource_path("Resources/OCM_Codes.xlsx"))
             for subject in query_list:
@@ -49,15 +50,15 @@ class URL_Generator:
                     sub = subject
                 if sub in df[col].unique():
                     meaning = df[df[col].isin([sub])]
-                    self.Search_dict['subject']['valid'].add(meaning['Meaning'].values[0]) #could be one line but split to reduce confusion
+                    self.Search_dict[name]['valid'].add(meaning['Meaning'].values[0]) #could be one line but split to reduce confusion
                 else:
-                    self.Search_dict['subject']['invalid'].add(str(sub))
-            self.Search_dict['subject']['valid'] = sorted(self.Search_dict['subject']['valid']) #sort the inputs/values
-    def phrase_creator(self, name:str, conj:int): 
+                    self.Search_dict[name]['invalid'].add(str(sub))
+            self.Search_dict[name]['valid'] = sorted(self.Search_dict[name]['valid']) #sort the inputs/values
+    def phrase_creator(self, name:str, conj:int, search_param:str): 
         conj_list = ["  ", " OR ", " AND "]
         # create phrase for query (will be combined with the rest and then turned in a URL
         if len(self.Search_dict[name]['valid']) > 0:
-            self.Search_dict[name]['phrase'] += name+':(' #TODO: fix this name as it does not create the query correctly.
+            self.Search_dict[name]['phrase'] += search_param+':(' #TODO: fix this name as it does not create the query correctly.
             multi_term = False
             for search_i in self.Search_dict[name]['valid']:
                 # Add a conjunction if there are more than 1 search terms
@@ -79,10 +80,10 @@ class URL_Generator:
                     keywords:str = '',  # Keyword query
                     keywords_conj:int = 1, # Keyword conjunction between queries  
                     exClause_conj:int = 1, # Extra Clause Conjunction between primary clause and extra clause
-                    exClause_subject:str = '', # Extra Clause Subject query
+                    exClause_subjects:str = '', # Extra Clause Subject query
                     exClause_subjects_conj:int = 1, # Extra Clause Subject conjunction between queries  
                     exClause_concat_conj:int = 1,  # Conjunction between extra clause subject and culture
-                    exClause_keyword:str = '', # Extra Clause Keyword query
+                    exClause_keywords:str = '', # Extra Clause Keyword query
                     exClause_keywords_conj:int = 1, # Extra Clause Keyword conjunction between queries 
                     cultural_level_samples:list = []): # Extra Clause Cultural level samples filter
 
@@ -91,36 +92,37 @@ class URL_Generator:
         
         # create search phrase chunks which will be later combined and used for the URL
         if cultures != '':
+            unidecode(cultures) #remove accented characters
             culture_list = self.word_strip(cultures)
             # Match cultures with the cultures that eHRAF uses
             self.culture_valid_extractor(culture_list)
             # create the actual phrase
-            self.phrase_creator('culture',cult_conj)
+            self.phrase_creator('culture',cult_conj, "cultures")
 
         if subjects != '':
             OCM_list = self.word_strip(subjects)
             # Match OCMs with the OCM's that eHRAF uses
-            self.OCM_valid_extractor(OCM_list)
+            self.OCM_valid_extractor(name="subject", query_list=OCM_list)
             # create the actual phrase
-            self.phrase_creator('subject',subjects_conj)
+            self.phrase_creator('subject',subjects_conj, "subjects" )
 
         if keywords != '':
             keyword_list = self.word_strip(keywords)
             self.Search_dict['keyword']['valid'] = set(keyword_list)
-            self.phrase_creator('keyword',keywords_conj)
+            self.phrase_creator('keyword',keywords_conj, "text")
 
         # EXTRA CLAUSE: for optional addition to 
-        if exClause_subject != '':
-            OCM_list = self.word_strip(exClause_subject)
+        if exClause_subjects != '':
+            OCM_list = self.word_strip(exClause_subjects)
             # Match OCMs with the OCM's that eHRAF uses
-            self.OCM_valid_extractor(OCM_list)
+            self.OCM_valid_extractor(name='exClause_subject', query_list=OCM_list)
             # create the actual phrase
-            self.phrase_creator('exClause_subject',exClause_subjects_conj)
+            self.phrase_creator('exClause_subject',exClause_subjects_conj, "subjects")
 
-        if exClause_keyword != '':
-            keyword_list = self.word_strip(exClause_keyword)
+        if exClause_keywords != '':
+            keyword_list = self.word_strip(exClause_keywords)
             self.Search_dict['exClause_keyword']['valid'] = set(keyword_list)
-            self.phrase_creator('exClause_keyword',exClause_keywords_conj)
+            self.phrase_creator('exClause_keyword',exClause_keywords_conj, "text")
 
         # if there are no valid inputs, return a blank text
         for val in self.Search_dict.values():
@@ -201,7 +203,7 @@ class URL_Generator:
     def invalid_inputs(self):
         # If there are no invalid values, return, otherwise continue and catalog the values
         for val in self.Search_dict.values():
-            if val['invalid'] == '':
+            if len(val['invalid']) < 1:
                 continue
             else:
                 break

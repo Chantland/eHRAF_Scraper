@@ -15,7 +15,7 @@
 # TODO: (potentially) Add more filters that eHRAF already allows.
 # DONE: Add passage page number columns to the excel files - eHRAF_Scraper.py
 # DONE: Have excel files include passage numbers - eHRAF_Scraper.py
-# TODO: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
+# DONE NOTE NOT CATALOGGED: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
 # DONE: Create an option for the list of culture's passage counts to be outputted in GUI terminal - eHRAF_Scraper.py and Scraper_GUI.py
 # DONE: Reorganize the passage count output so that it proceeds to the next line if overflow occurs - eHRAF_Scraper.py
 # DONE: create "section" column that extracts the section part of the document title - eHRAF_Scraper.py
@@ -26,23 +26,11 @@
 # RJCT: (REJECTED) clean the page info as it is all over the place (sometimes roman numerals, sometimes this format "[p.156]", this format "-156-", or sometimes just "156")
 # DONE: Install app so dependancies are included automatically
 # TODO: Initiate app instead of exe so that no terminal is outputted and the image of the file is an icon
-# TODO: (Potentiallu) make exe be represented as an icon
+# TODO: (Potentially) make exe be represented as an icon
 # DONE: Integrate scraper run failure within the GUI terminal allowing for almost all information to be accessed outside the OS terminal. Also, stop the GUI from crashing when the Scraper crashes
- 
-
-# enlarged
-# self.setFixedSize(QSize(1180, 780)) #window
-# self.textBrowser_Descript.setGeometry(600, 20+20, 261+300, 531-345) #flip text box
-# self.tabWidget.setFixedWidth(self.tabWidget.width()+580) # set enlarged tab width
-# self.textBrowser_URL.setFixedWidth(self.textBrowser_URL.width()+300)
-
-
-# reset to default:
-# self.setFixedSize(QSize(880, 780)) #window
-# self.textBrowser_Descript.setGeometry(600, 20, 261, 531) # text box
-# self.tabWidget.setFixedWidth(self.tabWidget.width()-580) #tab
-# self.textBrowser_URL.setFixedWidth(self.textBrowser_URL.width()-300)
-
+# DONE NOTE NOT CATALOGGED: Fix for upon repeated use, the browser font can be turned blue
+# DONE NOTE NOT CATALOGGED: Implement file saving which can be more concise should the file be too big.
+# DONE NOTE NOT CATALOGGED: filter cultural inputs for accented characters
 
 
 
@@ -59,7 +47,7 @@ from PyQt6.QtCore import (QSize, QCoreApplication)
 from PyQt6.QtWidgets import (
     QApplication, 
     QMainWindow)
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QColor
 
 
 # app = QtWidgets.QApplication(sys.argv)
@@ -99,15 +87,27 @@ class MainWindow(QMainWindow):
         self.buttonGroup_SubjKey_Conj.setId(self.pushButton_SubKeyOr, 1)
         self.buttonGroup_SubjKey_Conj.setId(self.pushButton_SubKeyAnd, 2)
 
+        self.buttonGroup_ExtraClause.setId(self.pushButton_ExtraClause_Not, 0)
+        self.buttonGroup_ExtraClause.setId(self.pushButton_ExtraClause_Or, 1)
+        self.buttonGroup_ExtraClause.setId(self.pushButton_ExtraClause_And, 2)
+
+        self.buttonGroup_ExtraClause_Subject.setId(self.pushButton_ExtraClause_SubNone, 0)
+        self.buttonGroup_ExtraClause_Subject.setId(self.pushButton_ExtraClause_SubAny, 1)
+        self.buttonGroup_ExtraClause_Subject.setId(self.pushButton_ExtraClause_SubAll, 2)
+
+        self.buttonGroup_ExtraClause_Keyword.setId(self.pushButton_ExtraClause_KeyNone, 0)
+        self.buttonGroup_ExtraClause_Keyword.setId(self.pushButton_ExtraClause_KeyAny, 1)
+        self.buttonGroup_ExtraClause_Keyword.setId(self.pushButton_ExtraClause_KeyAll, 2)
+
+        self.buttonGroup_ExtraClause_SubjKey_Conj.setId(self.pushButton_ExtraClause_SubKeyOr, 1)
+        self.buttonGroup_ExtraClause_SubjKey_Conj.setId(self.pushButton_ExtraClause_SubKeyAnd, 2)       
 
         # set up tab size (reset from the UI)
         self.tabWidget.setFixedWidth(571) # set default tab length
 
         # set visibility of extra tab to start out as hidden
-        self.groupBox_ExtraParam.setVisible(False)
-        # self.pushButton_ExtraParam_And.setVisible(False)
-        # self.pushButton_ExtraParam_Or.setVisible(False)
-        self.groupBox_ExtraParam_Buttons.setVisible(False)
+        self.groupBox_ExtraClause.setVisible(False)
+        self.groupBox_ExtraClause_Buttons.setVisible(False)
 
         # self.continueButton = QPushButton(self)
         # self.continueButton.setText("Continue")
@@ -129,13 +129,23 @@ class MainWindow(QMainWindow):
         self.radioButton_DisplayPassages_YES.toggled.connect(self.DisplayNumReveal)
 
         # reveal additional search clause
-        self.checkBox_ExtraClause.toggled.connect(self.ShowExtraParam)
+        self.checkBox_ExtraClause.toggled.connect(self.ShowExtraClause)
+        self.tabWidget.tabBarClicked.connect(self.demo_changeSize) #demo
+    def demo_changeSize(self):
+        if not self.checkBox_ExtraClause.isChecked():
+            if self.Filters.isVisible():
+                self.textBrowser_Descript.setGeometry(600, 20, 261, 531-345) #flip text box
+            else:
+                self.textBrowser_Descript.setGeometry(600, 20, 261, 531) # text box
+
+
+
 
     def set_text_box(self): #relic from previous test, DELETE
         self.textBrowser.setText(self.plainTextEdit_URL.toPlainText())
-    def textBox_descript_append(self, string:str): #update the description box
-        self.descript += string + "\n\n"
-        self.textBrowser_Descript.setText(self.descript)
+    # def textBrowser_Descript(self, string:str): #update the description box
+    #     self.descript += string + "\n\n"
+    #     self.textBrowser_Descript.setText(self.descript)
     def textBox_URL_set(self): #update the URL box
         self.textBrowser_URL.setText(self.URL)
     def textBox_warning(self, warning:str, crash:bool=False): #give warning flag if user does something wrong
@@ -143,12 +153,13 @@ class MainWindow(QMainWindow):
         # if the scraper crashed, give a failure warning and close the webpage unless it is not already closed
         if crash:
             self.textBrowser_Descript.append("<font color='red'><b>THE SCRAPER HAS CRASHED</b></font><br>")
+            self.textBrowser_Descript.setTextColor(QColor("black")) #put in to make sure this stays as black as for an unknown reason the text can become blue
             try:
                 self.scraper.web_close()
             except:
                 pass
         # Add text warning
-        self.textBrowser_Descript.append(warning)
+        self.textBrowser_Descript.append(f'{warning}\n')
         self.pushButton_Continue.setEnabled(False)
     def text_clear(self): #clear both boxes of text
         self.descript = ''
@@ -162,12 +173,12 @@ class MainWindow(QMainWindow):
         else:
             self.pushButton_DisplayPassages_Culture.setEnabled(False)
             self.pushButton_DisplayPassages_Count.setEnabled(False)
-    def ShowExtraParam(self):
-        # if toggled to true, display extra parameters, otherwise revert back to original
+    def ShowExtraClause(self):
+        # if toggled to true, display extra clause, otherwise revert back to original
         if self.checkBox_ExtraClause.isChecked():
             # set visibility
-            self.groupBox_ExtraParam.setVisible(True)
-            self.groupBox_ExtraParam_Buttons.setVisible(True)
+            self.groupBox_ExtraClause.setVisible(True)
+            self.groupBox_ExtraClause_Buttons.setVisible(True)
 
             # set increased size
             self.setFixedSize(QSize(1180, 780)) #window
@@ -178,8 +189,8 @@ class MainWindow(QMainWindow):
                 self.pushButton_Continue.y(),self.pushButton_Continue.width(),self.pushButton_Continue.height())  # move the continue button (I couldn't find how to just move the X without changing the width)
         else:
             # set visibility
-            self.groupBox_ExtraParam.setVisible(False)
-            self.groupBox_ExtraParam_Buttons.setVisible(False)
+            self.groupBox_ExtraClause.setVisible(False)
+            self.groupBox_ExtraClause_Buttons.setVisible(False)
 
             # reset to default size:
             self.setFixedSize(QSize(880, 780)) #window
@@ -205,6 +216,7 @@ class MainWindow(QMainWindow):
         self.text_clear() #if success, clear out the windows
         self.textBox_URL_set()
         self.web_scraper()
+
     def create_URL(self): #construct the URL from the inputs of the advanced search
         # extract all the advanced search input boxes and buttons
         cultures = self.plainTextEdit_Culture.toPlainText()
@@ -214,16 +226,25 @@ class MainWindow(QMainWindow):
         concat_conj = self.buttonGroup_SubjKey_Conj.id(self.buttonGroup_SubjKey_Conj.checkedButton())
         keywords = self.plainTextEdit_Keyword.toPlainText()
         keywords_conj = self.buttonGroup_Keyword.id(self.buttonGroup_Keyword.checkedButton())
-        # exClause_conj:int = 1, # Extra Clause Conjunction between primary clause and extra clause
-        # exClause_subject:str = '', # Extra Clause Subject query
-        # exClause_subjects_conj:int = 1, # Extra Clause Subject conjunction between queries  
-        # exClause_concat_conj:int = 1,  # Conjunction between extra clause subject and culture
-        # exClause_keyword:str = '', # Extra Clause Keyword query
-        # exClause_keywords_conj:int = 1, # Extra Clause Keyword conjunction between queries 
+        # only include the clause arguments if the box is currently clicked. Otherwise use default
+        if self.checkBox_ExtraClause.isChecked():
+            exClause_conj = self.buttonGroup_ExtraClause.id(self.buttonGroup_ExtraClause.checkedButton())
+            exClause_subjects = self.plainTextEdit_ExtraClause_Subject.toPlainText()
+            exClause_subjects_conj = self.buttonGroup_ExtraClause_Subject.id(self.buttonGroup_ExtraClause_Subject.checkedButton())
+            exClause_concat_conj = self.buttonGroup_ExtraClause_SubjKey_Conj.id(self.buttonGroup_ExtraClause_SubjKey_Conj.checkedButton())
+            exClause_keywords = self.plainTextEdit_ExtraClause_Keyword.toPlainText()
+            exClause_keywords_conj = self.buttonGroup_ExtraClause_Keyword.id(self.buttonGroup_ExtraClause_Keyword.checkedButton())
+        else:
+            exClause_conj = 1
+            exClause_subjects = ''
+            exClause_subjects_conj = 1
+            exClause_concat_conj = 1
+            exClause_keywords = ''
+            exClause_keywords_conj = 1
 
 
         # check to make sure a search term was provided
-        if cultures == '' and subjects == '' and keywords == '':
+        if cultures == '' and subjects == '' and keywords == '' and exClause_subjects == '' and exClause_keywords == '':
             self.textBox_warning("No search terms provided, please add then submit again.")
             return
         # if one or more of the cultural filters are checked, append it to the list
@@ -239,13 +260,19 @@ class MainWindow(QMainWindow):
                             concat_conj= concat_conj,
                             keywords= keywords,
                             keywords_conj= keywords_conj,
+                            exClause_conj = exClause_conj,
+                            exClause_subjects = exClause_subjects,
+                            exClause_subjects_conj = exClause_subjects_conj,
+                            exClause_concat_conj = exClause_concat_conj,
+                            exClause_keywords = exClause_keywords,
+                            exClause_keywords_conj = exClause_keywords_conj,
                             cultural_level_samples= cultural_level_samples)
         if URL == '':
             self.textBox_warning("No viable search terms were found, please check for spelling mistakes")
             return
         self.URL = URL
         self.text_clear() #if success, clear out the windows
-        self.textBox_descript_append(URL_gen.invalid_inputs()) #Add invalid inputs and scraper count
+        self.textBrowser_Descript.append(f'{URL_gen.invalid_inputs()}\n') #Add invalid inputs and scraper count
         self.textBox_URL_set()
         self.web_scraper()
     def web_scraper(self):
@@ -273,21 +300,28 @@ class MainWindow(QMainWindow):
         else:
             cultureFiles = False
 
+        # initialize the scraper
         try:
-            # initialize the scraper
             self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun, user=user, cultureFiles=cultureFiles)
-            # If there is nothing the scrape, then escape
+            # Run the region scraper. If there is nothing the scrape, then escape
             warning = self.scraper.region_scraper() 
             if warning is not None:
                 self.textBox_warning(warning)
+                self.textBrowser_URL.setText(self.URL)
                 self.scraper.web_close()
                 return
         except:
             self.textBox_warning(warning="Unable to load the initial webpage properly, please try resubmitting", failure=True)
             return
         
+        # If the file name is too long, give a warning.
+        if self.scraper.file_length_warning is not None:
+            self.textBrowser_Descript.append(f"<font color='red'>{self.scraper.file_length_warning}<font><br>")
+
+
+
         # Display time required to Scrape
-        self.textBox_descript_append(self.scraper.time_req())
+        self.textBrowser_Descript.append(f'{self.scraper.time_req()}\n')
 
         # Display (optionally) all the cultures and passage counts
         if self.radioButton_DisplayPassages_YES.isChecked():
@@ -298,16 +332,21 @@ class MainWindow(QMainWindow):
                 cultureCount = "count"
             else:
                 raise Exception("No value button number returned for buttonGroup_Options_DisplayPassages_CoC.id")
-            self.textBox_descript_append(self.scraper.cult_count(by=cultureCount))
+            self.textBrowser_Descript.append(f'{self.scraper.cult_count(by=cultureCount)}\n')
         # DELETE COMMENTS HERE, THEY ARE FOR REFERENCE
         # color.BOLD + 'Hello, World!' + color.END
         # text = 'Press ' + color_app('CONTINUE','CYAN', 'UNDERLINE') + 'button or else choose a new query'
 
         # If there is a matching query, output info
         if self.scraper.querySkipper:
-            self.textBox_descript_append("File with the same search query found, skipping successfully scraped cultures")
-        
-        self.textBrowser_Descript.append("<font color='blue'>Press the <b>CONTINUE</b> button or else choose a new query</font>")
+            self.textBrowser_Descript.append("File with the same search query found, skipping successfully scraped cultures\n")
+            # also give a warning if you might be overwriting the wrong long file.
+            if self.scraper.file_length_warning is not None:
+                self.textBrowser_Descript.append("<font color='red'>WARNING, due to the shortening of the file name, your query could be mistaken for another. Check the current _Altogether_Dataset.xlsx to be sure.<font><br>")
+
+
+
+        self.textBrowser_Descript.append("<br><font color='blue'>Press the <b>CONTINUE</b> button or else choose a new query</font><br><br>")
         self.pushButton_Continue.setEnabled(True)
         
     def web_continue(self):
@@ -321,7 +360,7 @@ class MainWindow(QMainWindow):
                 saveRate = None
         if self.scraper.querySkipper:
             pas_count_total = self.scraper.partial_file_return()[1]
-            self.textBox_descript_append(f'{pas_count_total} passages loaded from partial file')
+            self.textBrowser_Descript.append(f'{pas_count_total} passages loaded from partial file\n')
             QCoreApplication.processEvents() #process the events then wait so that the text can be loaded. Likely it may be good to use Qthreads instead
             QtTest.QTest.qWait(100)
         QCoreApplication.processEvents()
@@ -332,12 +371,13 @@ class MainWindow(QMainWindow):
             # if known failure occurred, print out, otherwise give unknown
             try:
                 self.textBox_warning(self.scraper.fail_text, crash=True)
-                self.textBrowser_Descript.append(self.scraper.exception_text)
+                self.textBrowser_Descript.append(f'{self.scraper.exception_text}\n')
             except:
-                self.textBox_warning("Unknown failue has occurred", crash=True)
+                self.textBox_warning("Unknown failure has occurred", crash=True)
             return
-        self.textBox_descript_append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}')
+        self.textBrowser_Descript.append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}\n')
         self.pushButton_Continue.setEnabled(False)
+        self.textBrowser_Descript.setTextColor(QColor("black")) #put in to make sure this stays as black as for an unknown reason the text can become blue
         return
 
 # change text color within Python

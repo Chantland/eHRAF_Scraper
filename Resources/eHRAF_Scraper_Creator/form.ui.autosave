@@ -71,7 +71,7 @@ border-color: rgba(80, 110, 106, 80);
      </font>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Info">
      <attribute name="title">

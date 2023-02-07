@@ -33,6 +33,15 @@ subjects_conj = [1,1,1,1,1,1,1]
 concat_conj = [1,1,1,1,1,1,1]
 keywords = ["apple, grandma, pear", "apple, pear, grandma", "pear, grandma, apple", "pear, apple, grandma","Grandma, apple, PEaR", "Grandma, Pear, apple", "apple, pear"]
 keywords_conj = [1,1,1,1,1,1,1]
+
+exClause_conj = [0,1,2,2,1,0,1]
+exClause_subject =  ['',"750","758, 750",'',"759,758, Disease", '','']
+exClause_subjects_conj = [2,1,0,2,1,0,2]
+exClause_concat_conj = [1,2,1,2,1,2,1] 
+exClause_keyword = ["apple",'',"pear,apple",'', "apple,pear, apple", '', 'Apple,apple,apple,pear']
+exClause_keywords_conj = [1,1,0,0,2,2,1]
+
+
 cultural_level_samples = []
 
 
@@ -46,18 +55,24 @@ cultural_level_samples = []
 
 
 # 0 None
-# 1 any
-# 2 all
+# 1 any/OR
+# 2 all/AND
 final_phrase_check = []
 for i in range(len(cultures)):
     URL_gen = ug()
     URL = URL_gen.URL_generator(cultures=cultures[i],
-                           cult_conj=cult_conj[i],
-                           subjects=subjects[i],
-                           subjects_conj=subjects_conj[i],
-                           concat_conj= concat_conj[i],
-                           keywords= keywords[i],
-                           keywords_conj= keywords_conj[i],
+                            cult_conj=cult_conj[i],
+                            subjects=subjects[i],
+                            subjects_conj=subjects_conj[i],
+                            concat_conj= concat_conj[i],
+                            keywords= keywords[i],
+                            keywords_conj= keywords_conj[i],
+                            exClause_conj = exClause_conj[i],# Extra Clause Conjunction between primary clause and extra clause
+                            exClause_subjects = exClause_subject[i],# Extra Clause Subject query
+                            exClause_subjects_conj = exClause_subjects_conj[i],# Extra Clause Subject conjunction between queries  
+                            exClause_concat_conj =   exClause_concat_conj[i],# Conjunction between extra clause subject and culture
+                            exClause_keywords =  exClause_keyword[i],# Extra Clause Keyword query
+                            exClause_keywords_conj = exClause_keywords_conj[i], # Extra Clause Keyword conjunction between queries 
                            cultural_level_samples= cultural_level_samples)
     final_phrase = URL_gen.final_phrase
     invalid = URL_gen.invalid_inputs()
