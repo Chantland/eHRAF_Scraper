@@ -71,7 +71,7 @@ border-color: rgba(80, 110, 106, 80);
      </font>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Info">
      <attribute name="title">
@@ -1071,135 +1071,6 @@ color: black;</string>
         <string>Extra Clause</string>
        </property>
       </widget>
-      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>230</y>
-         <width>121</width>
-         <height>121</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-        </font>
-       </property>
-       <property name="title">
-        <string/>
-       </property>
-       <widget class="QCheckBox" name="checkBox_PSF">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>70</y>
-          <width>85</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial</family>
-         </font>
-        </property>
-        <property name="text">
-         <string>PSF</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup_Filter_CulturalLevel</string>
-        </attribute>
-       </widget>
-       <widget class="QCheckBox" name="checkBox_SCCS">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>85</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial</family>
-         </font>
-        </property>
-        <property name="text">
-         <string>SCCS</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup_Filter_CulturalLevel</string>
-        </attribute>
-       </widget>
-       <widget class="QCheckBox" name="checkBox_SRS">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>90</y>
-          <width>85</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial</family>
-         </font>
-        </property>
-        <property name="text">
-         <string>SRS</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup_Filter_CulturalLevel</string>
-        </attribute>
-       </widget>
-       <widget class="QCheckBox" name="checkBox_EA">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>30</y>
-          <width>85</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial</family>
-         </font>
-        </property>
-        <property name="text">
-         <string>EA</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup_Filter_CulturalLevel</string>
-        </attribute>
-       </widget>
-       <widget class="QLabel" name="label_5">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>81</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial</family>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">color: rgb(60, 180, 170);</string>
-        </property>
-        <property name="text">
-         <string>Cultural Level</string>
-        </property>
-       </widget>
-      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_ExtraClause">
       <property name="enabled">
@@ -1814,7 +1685,7 @@ border-bottom-right-radius: 15px;
      <attribute name="title">
       <string>Filters</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_2">
+     <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -1831,49 +1702,7 @@ border-bottom-right-radius: 15px;
       <property name="title">
        <string/>
       </property>
-      <widget class="QCheckBox" name="checkBox_PSF_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>70</y>
-         <width>85</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-        </font>
-       </property>
-       <property name="text">
-        <string>PSF</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="checkBox_SCCS_2">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>85</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Arial</family>
-        </font>
-       </property>
-       <property name="text">
-        <string>SCCS</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="checkBox_SRS_2">
+      <widget class="QCheckBox" name="checkBox_SRS">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1887,11 +1716,17 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>SRS</string>
+       </property>
        <property name="text">
         <string>SRS</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_Filter_CulturalLevel</string>
+       </attribute>
       </widget>
-      <widget class="QCheckBox" name="checkBox_EA_2">
+      <widget class="QCheckBox" name="checkBox_EA">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1905,9 +1740,15 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>EA</string>
+       </property>
        <property name="text">
         <string>EA</string>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_Filter_CulturalLevel</string>
+       </attribute>
       </widget>
       <widget class="QLabel" name="label_6">
        <property name="geometry">
@@ -1930,8 +1771,56 @@ border-bottom-right-radius: 15px;
         <string>Cultural Level Samples</string>
        </property>
       </widget>
+      <widget class="QCheckBox" name="checkBox_PSF">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>70</y>
+         <width>101</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="accessibleName">
+        <string>PSF</string>
+       </property>
+       <property name="text">
+        <string>PSF</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_Filter_CulturalLevel</string>
+       </attribute>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_SCCS">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>101</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="accessibleName">
+        <string>SCCS</string>
+       </property>
+       <property name="text">
+        <string>SCCS</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_Filter_CulturalLevel</string>
+       </attribute>
+      </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_3">
+     <widget class="QGroupBox" name="groupBox_Filter_DocumentLevel">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -1962,6 +1851,9 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>EA (cautionary)</string>
+       </property>
        <property name="text">
         <string>EA (Cautionary)</string>
        </property>
@@ -1982,6 +1874,9 @@ border-bottom-right-radius: 15px;
         <font>
          <family>Arial</family>
         </font>
+       </property>
+       <property name="accessibleName">
+        <string>EA (partial)</string>
        </property>
        <property name="text">
         <string>EA (Partial)</string>
@@ -2004,6 +1899,9 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>SCCS (entire)</string>
+       </property>
        <property name="text">
         <string>SCCS (Entire)</string>
        </property>
@@ -2021,6 +1919,9 @@ border-bottom-right-radius: 15px;
         <font>
          <family>Arial</family>
         </font>
+       </property>
+       <property name="accessibleName">
+        <string>EA (entire)</string>
        </property>
        <property name="text">
         <string>EA (Entire)</string>
@@ -2061,6 +1962,9 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>SCCS (partial)</string>
+       </property>
        <property name="text">
         <string>SCCS (Partial)</string>
        </property>
@@ -2079,12 +1983,15 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>SCCS (cautionary)</string>
+       </property>
        <property name="text">
         <string>SCCS (Cautionary)</string>
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_4">
+     <widget class="QGroupBox" name="groupBox_Filter_DocumentTypes">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -2115,6 +2022,9 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>Essay</string>
+       </property>
        <property name="text">
         <string>Essay</string>
        </property>
@@ -2136,8 +2046,11 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>Component part(s), monograph</string>
+       </property>
        <property name="text">
-        <string>Component Part(S) M</string>
+        <string>Component Part(s), Monograph</string>
        </property>
        <property name="checked">
         <bool>false</bool>
@@ -2157,6 +2070,9 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>Journal Article</string>
+       </property>
        <property name="text">
         <string>Journal Article</string>
        </property>
@@ -2174,6 +2090,9 @@ border-bottom-right-radius: 15px;
         <font>
          <family>Arial</family>
         </font>
+       </property>
+       <property name="accessibleName">
+        <string>Monograph</string>
        </property>
        <property name="text">
         <string>Monograph</string>
@@ -2214,6 +2133,9 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>Collection</string>
+       </property>
        <property name="text">
         <string>Collection</string>
        </property>
@@ -2232,6 +2154,9 @@ border-bottom-right-radius: 15px;
          <family>Arial</family>
         </font>
        </property>
+       <property name="accessibleName">
+        <string>Manuscript</string>
+       </property>
        <property name="text">
         <string>Manuscript</string>
        </property>
@@ -2249,6 +2174,9 @@ border-bottom-right-radius: 15px;
         <font>
          <family>Arial</family>
         </font>
+       </property>
+       <property name="accessibleName">
+        <string>Image Collection</string>
        </property>
        <property name="text">
         <string>Image Collection</string>
@@ -2269,11 +2197,27 @@ border-bottom-right-radius: 15px;
         </font>
        </property>
        <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>170</y>
+         <width>58</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Blank filter, it is unclear why eHRAF has this</string>
+       </property>
+       <property name="text">
         <string>BLANK</string>
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_5">
+     <widget class="QGroupBox" name="groupBox_Filter_SubsistenceTypes">
       <property name="geometry">
        <rect>
         <x>190</x>
@@ -2336,7 +2280,7 @@ border-bottom-right-radius: 15px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>90</y>
+         <y>130</y>
          <width>211</width>
          <height>20</height>
         </rect>
@@ -2347,7 +2291,7 @@ border-bottom-right-radius: 15px;
         </font>
        </property>
        <property name="text">
-        <string>Astro-Pastoralists</string>
+        <string>Agro-Pastoralists</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="checkBox_EA_6">
@@ -2393,7 +2337,7 @@ border-bottom-right-radius: 15px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>90</y>
          <width>221</width>
          <height>20</height>
         </rect>
@@ -2411,7 +2355,7 @@ border-bottom-right-radius: 15px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>130</y>
+         <y>170</y>
          <width>141</width>
          <height>20</height>
         </rect>
@@ -2447,7 +2391,7 @@ border-bottom-right-radius: 15px;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>170</y>
+         <y>110</y>
          <width>211</width>
          <height>20</height>
         </rect>
@@ -2459,6 +2403,24 @@ border-bottom-right-radius: 15px;
        </property>
        <property name="text">
         <string>Commercial Economy</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox_SRS_82">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>190</y>
+         <width>141</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Not Assigned</string>
        </property>
       </widget>
      </widget>
@@ -2759,7 +2721,7 @@ border-bottom-right-radius: 15px;
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_7">
+     <widget class="QGroupBox" name="groupBox_Filter_Series">
       <property name="geometry">
        <rect>
         <x>190</x>
@@ -2772,6 +2734,9 @@ border-bottom-right-radius: 15px;
        <font>
         <family>Arial</family>
        </font>
+      </property>
+      <property name="toolTip">
+       <string>Filter for the series that searches may come from. WARNING currently there are more series than the 10 shown here. Unable to retrieve all the series from eHRAF</string>
       </property>
       <property name="title">
        <string/>
@@ -3675,193 +3640,1291 @@ border-color: rgba(80, 110, 106, 80);
      </font>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_8">
+   <widget class="QGroupBox" name="groupBox_Region">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>320</y>
-      <width>171</width>
-      <height>191</height>
+      <x>600</x>
+      <y>240</y>
+      <width>261</width>
+      <height>311</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Arial</family>
+      <bold>false</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QGroupBox {
+color: rgb(60, 180, 170);
+}
+</string>
     </property>
     <property name="title">
      <string/>
     </property>
-    <widget class="QCheckBox" name="checkBox_PSF_11">
+    <widget class="QStackedWidget" name="stackedWidget_Region">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>70</y>
-       <width>141</width>
-       <height>20</height>
+       <x>0</x>
+       <y>60</y>
+       <width>261</width>
+       <height>251</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
+     <property name="currentIndex">
+      <number>7</number>
      </property>
-     <property name="text">
-      <string>Essay</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
+     <widget class="QWidget" name="page_1_Africa">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_8">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_PSF_11">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>141</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Northern Africa</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SCCS_11">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Eastern Africa</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_47">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Southern Africa</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_EA_11">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Central Africa</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_15">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>Africa</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_48">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Western Africa</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_49">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_2_Asia">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_12">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_PSF_16">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>141</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>East Asia</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SCCS_16">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Central Asia</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_72">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>North Asia</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_EA_16">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Caucasus</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_22">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>Asia</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_73">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>South Asia</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_74">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>130</y>
+          <width>141</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Southeast Asia</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_76">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>141</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_3_Europe">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_9">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_PSF_13">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Southeastern Europe</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SCCS_13">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Scandinavia</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_50">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Southern Europe</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_EA_17">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>British Isles</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_17">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>Europe</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_57">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_4_MiddleAmerica">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_13">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_PSF_17">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Central Mexico</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SCCS_17">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Central America</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_51">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Maya Area</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_EA_18">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Caribbean</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_23">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>211</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>Middle America And The Caribbean</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_58">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Northern Mexico</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_59">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_5_MiddelEast">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_14">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_EA_19">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Middle East</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_24">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>211</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>Middle East</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_75">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_6_NorthAmerica">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_15">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_PSF_18">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>211</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Northwest Coast And California</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SCCS_18">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Eastern Woodlands</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_60">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>181</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Plains And Plateau</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_EA_20">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>211</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Arctic And Subarctic</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_25">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>211</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>North America</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_61">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>181</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Southwest And Basin</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_77">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_7_Oceania">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_16">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_PSF_19">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Polynesia</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SCCS_19">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Micronesia</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_EA_21">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Melanesia</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_26">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>211</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>Oceania</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_80">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_8_SouthAmerica">
+      <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_17">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>0</y>
+         <width>247</width>
+         <height>237</height>
+        </rect>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QCheckBox" name="checkBox_PSF_20">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>191</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Eastern South America</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SCCS_20">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>151</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Central Andes</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_78">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>191</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Northwestern South America</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_EA_22">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>211</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Amazon And Orinoco</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_27">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>211</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(60, 180, 170);</string>
+        </property>
+        <property name="text">
+         <string>South America</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_79">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>211</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>Southern South America</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_SRS_81">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+         </font>
+        </property>
+        <property name="text">
+         <string>ALL</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
     </widget>
-    <widget class="QCheckBox" name="checkBox_SCCS_11">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>50</y>
-       <width>151</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>Component Part(S) M</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_SRS_47">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>90</y>
-       <width>121</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>Journal Article</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_EA_11">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>101</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>Monograph</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_15">
+    <widget class="QLabel" name="label_Region">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>151</width>
+       <width>241</width>
        <height>16</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Arial</family>
+       <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
       <string notr="true">color: rgb(60, 180, 170);</string>
      </property>
      <property name="text">
-      <string>Document Types</string>
+      <string>Regions</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox_SRS_48">
+    <widget class="QComboBox" name="comboBox_RegionSelection">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>110</y>
-       <width>121</width>
-       <height>20</height>
+       <y>30</y>
+       <width>241</width>
+       <height>32</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>Collection</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_SRS_49">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>130</y>
-       <width>141</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>Manuscript</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_SRS_50">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>150</y>
-       <width>141</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>Image Collection</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_SRS_51">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>170</y>
-       <width>141</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Arial</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>BLANK</string>
-     </property>
+     <item>
+      <property name="text">
+       <string>Africa</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Asia</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Europe</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Middle America And The Caribbean</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Middle East</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>North America</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Oceania</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>South America</string>
+      </property>
+     </item>
     </widget>
    </widget>
   </widget>

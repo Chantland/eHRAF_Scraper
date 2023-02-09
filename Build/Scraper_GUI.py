@@ -15,7 +15,7 @@
 # TODO: (potentially) Add more filters that eHRAF already allows.
 # DONE: Add passage page number columns to the excel files - eHRAF_Scraper.py
 # DONE: Have excel files include passage numbers - eHRAF_Scraper.py
-# DONE NOTE NOT CATALOGGED: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
+# DONE: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
 # DONE: Create an option for the list of culture's passage counts to be outputted in GUI terminal - eHRAF_Scraper.py and Scraper_GUI.py
 # DONE: Reorganize the passage count output so that it proceeds to the next line if overflow occurs - eHRAF_Scraper.py
 # DONE: create "section" column that extracts the section part of the document title - eHRAF_Scraper.py
@@ -28,9 +28,9 @@
 # TODO: Initiate app instead of exe so that no terminal is outputted and the image of the file is an icon
 # TODO: (Potentially) make exe be represented as an icon
 # DONE: Integrate scraper run failure within the GUI terminal allowing for almost all information to be accessed outside the OS terminal. Also, stop the GUI from crashing when the Scraper crashes
-# DONE NOTE NOT CATALOGGED: Fix for upon repeated use, the browser font can be turned blue
-# DONE NOTE NOT CATALOGGED: Implement file saving which can be more concise should the file be too big.
-# DONE NOTE NOT CATALOGGED: filter cultural inputs for accented characters
+# DONE: Fix for upon repeated use, the browser font can be turned blue
+# DONE: Implement file saving which can be more concise should the file be too big.
+# DONE: filter cultural inputs for accented characters
 
 
 
@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
         self.widgit_hub()
     def load_ui(self): #for loading UI. This used to have more code but then it was moved
         uic.loadUi(resource_path("Resources/eHRAF_Scraper_Creator/form.ui"), self)
+
     def widgit_setup(self):
         # Set up the Id's to beter match what is used in the URL generator and for easier indexing
         # 0 None
@@ -109,14 +110,8 @@ class MainWindow(QMainWindow):
         self.groupBox_ExtraClause.setVisible(False)
         self.groupBox_ExtraClause_Buttons.setVisible(False)
 
-        # self.continueButton = QPushButton(self)
-        # self.continueButton.setText("Continue")
-        # self.stopButton = QPushButton(self)
-        # self.stopButton.move(120,0)
-        # self.buttonGroup_Filter_CulturalLevel.setId(self.checkBox_EA, 0)
-        # self.buttonGroup_Filter_CulturalLevel.setId(self.checkBox_SCCS, 1)
-        # self.buttonGroup_Filter_CulturalLevel.setId(self.checkBox_PSF, 2)
-        # self.buttonGroup_Filter_CulturalLevel.setId(self.checkBox_SRS, 3)
+        # set visibility of the region filter box
+        self.groupBox_Region.setVisible(False)
 
     def widgit_hub(self):
         # set up the submit buttons to listen for clicks
@@ -130,24 +125,33 @@ class MainWindow(QMainWindow):
 
         # reveal additional search clause
         self.checkBox_ExtraClause.toggled.connect(self.ShowExtraClause)
-        self.tabWidget.tabBarClicked.connect(self.demo_changeSize) #demo
-    def demo_changeSize(self):
-        if not self.checkBox_ExtraClause.isChecked():
-            if self.Filters.isVisible():
-                self.textBrowser_Descript.setGeometry(600, 20, 261, 531-345) #flip text box
-            else:
-                self.textBrowser_Descript.setGeometry(600, 20, 261, 531) # text box
 
+        # Filter tab
+        # change size
+        self.tabWidget.currentChanged.connect(self.FilterTab_Changed)
+        # change region
+        self.comboBox_RegionSelection.currentIndexChanged.connect(self.set_region)
 
+    def FilterTab_Changed(self, index):
+        # change size of textbox to allow filters only if it is not already changed
+        if self.tabWidget.tabText(index) == "Filters":
+            self.groupBox_Region.setVisible(True)
+            if not self.checkBox_ExtraClause.isChecked():
+                self.textBrowser_Descript.setGeometry(600, 20, 261, 531-325) #flip text box
+        else:
+            self.groupBox_Region.setVisible(False)
+            if not self.checkBox_ExtraClause.isChecked():
+                self.textBrowser_Descript.setGeometry(600, 20, 261, 531) # text box     
+    def set_region(self):
+        # set the region box to the same as the selected drop down tab
+        self.stackedWidget_Region.setCurrentIndex(self.comboBox_RegionSelection.currentIndex())
 
-
-    def set_text_box(self): #relic from previous test, DELETE
-        self.textBrowser.setText(self.plainTextEdit_URL.toPlainText())
     # def textBrowser_Descript(self, string:str): #update the description box
     #     self.descript += string + "\n\n"
     #     self.textBrowser_Descript.setText(self.descript)
     def textBox_URL_set(self): #update the URL box
         self.textBrowser_URL.setText(self.URL)
+
     def textBox_warning(self, warning:str, crash:bool=False): #give warning flag if user does something wrong
         self.text_clear()
         # if the scraper crashed, give a failure warning and close the webpage unless it is not already closed
@@ -161,10 +165,12 @@ class MainWindow(QMainWindow):
         # Add text warning
         self.textBrowser_Descript.append(f'{warning}\n')
         self.pushButton_Continue.setEnabled(False)
+    
     def text_clear(self): #clear both boxes of text
         self.descript = ''
         self.textBrowser_Descript.setText('')
         self.textBrowser_URL.setText('')
+    
     def DisplayNumReveal(self): #reveal or hide the extra buttons for the display passages option
         # if Yes is checked, then reveal the buttons, otherwise hide the buttons
         if  self.radioButton_DisplayPassages_YES.isChecked():
@@ -173,6 +179,7 @@ class MainWindow(QMainWindow):
         else:
             self.pushButton_DisplayPassages_Culture.setEnabled(False)
             self.pushButton_DisplayPassages_Count.setEnabled(False)
+    
     def ShowExtraClause(self):
         # if toggled to true, display extra clause, otherwise revert back to original
         if self.checkBox_ExtraClause.isChecked():
@@ -199,7 +206,14 @@ class MainWindow(QMainWindow):
             self.textBrowser_URL.setFixedWidth(self.textBrowser_URL.width()-300) #URL box
             self.pushButton_Continue.setGeometry(self.pushButton_Continue.x()-145,\
                 self.pushButton_Continue.y(),self.pushButton_Continue.width(),self.pushButton_Continue.height())  # reset the continue button (I couldn't find how to just move the X without changing the width)
-
+    
+    def getFiltersClicked(self, filter):
+        # if one or more of the filters are checked, append it to the list
+        filter_list = []
+        for i in range(len(filter.buttons())):
+            if filter.buttons()[i].isChecked():
+                filter_list.append(filter.buttons()[i].text())
+        return filter_list
     def set_URL(self): #if URL submit button is clicked, just use that URL but first check if it is valid
         URL = self.plainTextEdit_URL.toPlainText()
         if URL == '':
@@ -247,11 +261,9 @@ class MainWindow(QMainWindow):
         if cultures == '' and subjects == '' and keywords == '' and exClause_subjects == '' and exClause_keywords == '':
             self.textBox_warning("No search terms provided, please add then submit again.")
             return
-        # if one or more of the cultural filters are checked, append it to the list
-        cultural_level_samples = []
-        for i in range(4):
-            if self.buttonGroup_Filter_CulturalLevel.buttons()[i].isChecked():
-                cultural_level_samples.append(self.buttonGroup_Filter_CulturalLevel.buttons()[i].text())
+        # filter_dict = {"Cultural_Level_Samples":self.getFiltersClicked(self.buttonGroup_Filter_CulturalLevel),
+        #                "Document Level Samples":self.getFiltersClicked(self.buttonGroup_Filter_CulturalLevel) }
+
         URL_gen = ug()
         URL = URL_gen.URL_generator(cultures=cultures,
                             cult_conj=cult_conj,
@@ -266,7 +278,7 @@ class MainWindow(QMainWindow):
                             exClause_concat_conj = exClause_concat_conj,
                             exClause_keywords = exClause_keywords,
                             exClause_keywords_conj = exClause_keywords_conj,
-                            cultural_level_samples= cultural_level_samples)
+                            cultural_level_samples= self.getFiltersClicked(self.buttonGroup_Filter_CulturalLevel))
         if URL == '':
             self.textBox_warning("No viable search terms were found, please check for spelling mistakes")
             return
@@ -275,6 +287,7 @@ class MainWindow(QMainWindow):
         self.textBrowser_Descript.append(f'{URL_gen.invalid_inputs()}\n') #Add invalid inputs and scraper count
         self.textBox_URL_set()
         self.web_scraper()
+    
     def web_scraper(self):
 
         # Set Info
