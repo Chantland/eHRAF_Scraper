@@ -45,7 +45,8 @@ import PyQt6
 from PyQt6 import uic, QtTest
 from PyQt6.QtCore import (QSize, QCoreApplication)
 from PyQt6.QtWidgets import (
-    QApplication, 
+    QApplication,
+    QCheckBox, 
     QMainWindow)
 from PyQt6.QtGui import QIcon, QColor
 
@@ -112,7 +113,10 @@ class MainWindow(QMainWindow):
 
         # set visibility of the region filter box
         self.groupBox_Region.setVisible(False)
-
+        # save the regional names to reduce repeat down below.
+        self.regionName_list = []
+        self.set_region() #set the region at the start
+    
     def widgit_hub(self):
         # set up the submit buttons to listen for clicks
         self.pushButton_URLSubmit.clicked.connect(self.set_URL)
@@ -131,7 +135,7 @@ class MainWindow(QMainWindow):
         self.tabWidget.currentChanged.connect(self.FilterTab_Changed)
         # change region
         self.comboBox_RegionSelection.currentIndexChanged.connect(self.set_region)
-
+        
     def FilterTab_Changed(self, index):
         # change size of textbox to allow filters only if it is not already changed
         if self.tabWidget.tabText(index) == "Filters":
@@ -142,9 +146,32 @@ class MainWindow(QMainWindow):
             self.groupBox_Region.setVisible(False)
             if not self.checkBox_ExtraClause.isChecked():
                 self.textBrowser_Descript.setGeometry(600, 20, 261, 531) # text box     
+    
     def set_region(self):
         # set the region box to the same as the selected drop down tab
         self.stackedWidget_Region.setCurrentIndex(self.comboBox_RegionSelection.currentIndex())
+        #select the hypothetical all button
+        self.allButton = self.stackedWidget_Region.currentWidget().children()[0].children()[-1]
+        if self.allButton.text() != "ALL": #if not where we think it is, cycle until we find it.
+            for button in self.allButton.parent().children():
+                if button.text() == "ALL":
+                    self.allButton = button
+                    break
+            else:
+                raise Exception("Error, no Filter ALL button has been found")
+        # only add the regionName if it has not been added before (you could probably just inialize all the "ALL" at the start and it would work too)
+        if self.comboBox_RegionSelection.currentText() not in self.regionName_list:
+            self.allButton.toggled.connect(self.click_allRegion) #set listening
+            self.regionName_list.append(self.comboBox_RegionSelection.currentText())
+        
+    def click_allRegion(self):
+        # set checked for all the buttons if it is checked, otherwise turn it off
+        for index, button in enumerate(self.allButton.parent().children()):
+            if isinstance(button, QCheckBox) and button.text() != "ALL":
+                if self.allButton.isChecked():
+                    self.allButton.parent().children()[index].setChecked(True)
+                else:
+                    self.allButton.parent().children()[index].setChecked(False)
 
     # def textBrowser_Descript(self, string:str): #update the description box
     #     self.descript += string + "\n\n"
@@ -261,8 +288,13 @@ class MainWindow(QMainWindow):
         if cultures == '' and subjects == '' and keywords == '' and exClause_subjects == '' and exClause_keywords == '':
             self.textBox_warning("No search terms provided, please add then submit again.")
             return
-        # filter_dict = {"Cultural_Level_Samples":self.getFiltersClicked(self.buttonGroup_Filter_CulturalLevel),
-        #                "Document Level Samples":self.getFiltersClicked(self.buttonGroup_Filter_CulturalLevel) }
+        filter_dict = {"culture_level_samples":self.getFiltersClicked(self.buttonGroup_Filter_CulturalLevel),
+                       "document_level_samples":self.getFiltersClicked(self.buttonGroup_Filter_DocumentLevel),
+                       "document_types":self.getFiltersClicked(self.buttonGroup_Filter_DocumentTypes),
+                       "subsistence_types":self.getFiltersClicked(self.buttonGroup_Filter_SubsistenceTypes),
+                       "series":self.getFiltersClicked(self.buttonGroup_Filter_Series),
+                       "published_date":self.getFiltersClicked(self.buttonGroup_Filter_PublishedDate), 
+                       "subregions":self.getFiltersClicked(self.buttonGroup_Filter_Regions)}
 
         URL_gen = ug()
         URL = URL_gen.URL_generator(cultures=cultures,
@@ -278,7 +310,7 @@ class MainWindow(QMainWindow):
                             exClause_concat_conj = exClause_concat_conj,
                             exClause_keywords = exClause_keywords,
                             exClause_keywords_conj = exClause_keywords_conj,
-                            cultural_level_samples= self.getFiltersClicked(self.buttonGroup_Filter_CulturalLevel))
+                            cultural_level_samples= filter_dict["culture_level_samples"])
         if URL == '':
             self.textBox_warning("No viable search terms were found, please check for spelling mistakes")
             return
