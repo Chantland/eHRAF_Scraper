@@ -558,17 +558,22 @@ class Scraper:
         if len(reg) >0:
             self.input_name = re.sub('&fq='+re.escape(reg[0]),'',self.input_name)
             self.input_filters = reg[0]
-            folder_filter = reg[0] #same as reg but now we can update it to fix the filtername
-            # # second regex for finding the actual filter names, Use if you want to extract only the filters themselves
-            filter_names = ["".join(x) for x in re.findall('\|(.*?);|\|(.*?)$', reg[0])]
-            # # if using above, you can replace the filters with those in parenthesis, I removed this since it parenthesis words multiple times each if there were duplicates
-            # for i in filter_names:
-            #     file_filters = re.sub(i, f'({i})', folder_filter)
 
-            # a few substitutions to get parenthesis around each of the filters
-            folder_filter = re.sub('\|','(',folder_filter)
-            folder_filter = re.sub(';','),',folder_filter)
-            folder_filter += ')'
+            folderFilter = ''
+            # # second regex for finding the filter types and names, producing a smaller filter name than before
+            # filterNames = ["".join(x) for x in re.findall('\|(.*?);|\|(.*?)$', reg[0])] #old way to get the names and erasing the unneeded tuple
+            reg2 = re.findall('[^\|;]+', reg[0]) #extract filter types and names
+            filterTypes_set = set()
+            for filterName, filterType in zip(reg2[1::2], reg2[0::2]):
+                if filterType in filterTypes_set:
+                    folderFilter += f',{filterName}'
+                else:
+                    folderFilter += f')-{filterType}({filterName}'
+                    filterTypes_set.add(filterType)
+            folderFilter = folderFilter[2:] + ')' #erase the first paranthesis
+            # subsitute space for underscores
+            folderFilter = re.sub(' ','_',folderFilter)
+
 
             # Give a space between input filters for readability (and maybe splitting later)
             self.input_filters = re.sub(';', ';\n', self.input_filters)
@@ -576,7 +581,7 @@ class Scraper:
 
 
             # now add the corrected filters back to the URL file name,
-            folder_name = re.sub(re.escape(reg[0]), folder_filter, folder_name)
+            folder_name = re.sub(re.escape(reg[0]), folderFilter, folder_name)
 
 
         # remove and replace the characters not good for a file name
@@ -608,7 +613,7 @@ class Scraper:
         if getattr(sys, 'frozen', False):
             # # # allow users to access the data folder
             app_dir = os.path.dirname(sys.executable)
-            self.application_path = os.path.join(app_dir, output_dir)
+            self.application_path = os.path.join(app_dir)
         else:
             self.application_path = os.path.dirname(__file__)
 
@@ -657,7 +662,7 @@ class Scraper:
             df.loc[1, 'run_Info'] = "Run Time: " + str(current_time)
             df.loc[2, 'run_Info'] = "Run Date: " + str(current_date)
             df.loc[3, 'run_Info'] = "Run Input: " + self.input_name
-            df.loc[4, 'run_Info'] = "Filter: " + self.input_filters
+            df.loc[4, 'run_Info'] = "Filter:\n" + self.input_filters
             df.loc[5, 'run_Info'] = "Run URL: " + self.URL
 
         # Use the normal file path unless we are saving to individual cultures

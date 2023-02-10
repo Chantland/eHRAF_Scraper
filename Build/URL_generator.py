@@ -54,8 +54,8 @@ class URL_Generator:
                 else:
                     self.Search_dict[name]['invalid'].add(str(sub))
             self.Search_dict[name]['valid'] = sorted(self.Search_dict[name]['valid']) #sort the inputs/values
-    def phrase_creator(self, name:str, conj:int, search_param:str): 
-        conj_list = ["  ", " OR ", " AND "]
+    def phrase_creator(self, name:str, conj:int, search_param:str, quotes:bool=True): 
+        conj_list = [" ", " OR ", " AND "]
         # create phrase for query (will be combined with the rest and then turned in a URL
         if len(self.Search_dict[name]['valid']) > 0:
             self.Search_dict[name]['phrase'] += search_param+':(' #TODO: fix this name as it does not create the query correctly.
@@ -68,8 +68,12 @@ class URL_Generator:
                     multi_term = True
                 # if NONE is selected for cultures, add a -
                 if conj == 0:
-                    self.Search_dict[name]['phrase'] += '-'
-                self.Search_dict[name]['phrase'] += '\"' + search_i + '\"'
+                    self.Search_dict[name]['phrase'] += ' -'
+                # if quotes are desired around the query, use them, otherwise don't (keywords do not use quotes)
+                if quotes:
+                    self.Search_dict[name]['phrase'] += '\"' + search_i + '\"'
+                else:
+                    self.Search_dict[name]['phrase'] += search_i
             self.Search_dict[name]['phrase'] += ')'
     def URL_generator(self, 
                     cultures:str = '', # Culture query
@@ -85,7 +89,7 @@ class URL_Generator:
                     exClause_concat_conj:int = 1,  # Conjunction between extra clause subject and culture
                     exClause_keywords:str = '', # Extra Clause Keyword query
                     exClause_keywords_conj:int = 1, # Extra Clause Keyword conjunction between queries 
-                    cultural_level_samples:list = []): # Extra Clause Cultural level samples filter
+                    filters:dict = {}): # filter dictionary for adding those sweet filters
 
 
 
@@ -97,19 +101,19 @@ class URL_Generator:
             # Match cultures with the cultures that eHRAF uses
             self.culture_valid_extractor(culture_list)
             # create the actual phrase
-            self.phrase_creator('culture',cult_conj, "cultures")
+            self.phrase_creator('culture', cult_conj, "cultures")
 
         if subjects != '':
             OCM_list = self.word_strip(subjects)
             # Match OCMs with the OCM's that eHRAF uses
             self.OCM_valid_extractor(name="subject", query_list=OCM_list)
             # create the actual phrase
-            self.phrase_creator('subject',subjects_conj, "subjects" )
+            self.phrase_creator('subject', subjects_conj, "subjects" )
 
         if keywords != '':
             keyword_list = self.word_strip(keywords)
             self.Search_dict['keyword']['valid'] = set(keyword_list)
-            self.phrase_creator('keyword',keywords_conj, "text")
+            self.phrase_creator('keyword', keywords_conj, "text", False)
 
         # EXTRA CLAUSE: for optional addition to 
         if exClause_subjects != '':
@@ -117,12 +121,12 @@ class URL_Generator:
             # Match OCMs with the OCM's that eHRAF uses
             self.OCM_valid_extractor(name='exClause_subject', query_list=OCM_list)
             # create the actual phrase
-            self.phrase_creator('exClause_subject',exClause_subjects_conj, "subjects")
+            self.phrase_creator('exClause_subject', exClause_subjects_conj, "subjects")
 
         if exClause_keywords != '':
             keyword_list = self.word_strip(exClause_keywords)
             self.Search_dict['exClause_keyword']['valid'] = set(keyword_list)
-            self.phrase_creator('exClause_keyword',exClause_keywords_conj, "text")
+            self.phrase_creator('exClause_keyword', exClause_keywords_conj, "text", False)
 
         # if there are no valid inputs, return a blank text
         for val in self.Search_dict.values():
@@ -138,14 +142,13 @@ class URL_Generator:
 
         #### Construct the passage ####
         
-        conj_list = ["  ", " OR ", " AND "]
-        final_phrase = ''
-        subKeyClause = False
+        conj_list = [" ", " OR ", " AND "] # eHRAF currently uses double quotes for "not" queries
+        finalPhrase = ''
         # combine subject and keywords together by using a conjunction specified. Otherwise get one or the other (or neither)
         if self.Search_dict['subject']['phrase'] != '' and self.Search_dict['keyword']['phrase'] != '':
-            final_phrase = '(' + self.Search_dict['subject']['phrase'] + conj_list[concat_conj] + self.Search_dict['keyword']['phrase'] + ')'
+            finalPhrase = '(' + self.Search_dict['subject']['phrase'] + conj_list[concat_conj] + self.Search_dict['keyword']['phrase'] + ')'
         else: # else combine the blank subject/keyword with the real text (if it is also not blank)
-            final_phrase = self.Search_dict['subject']['phrase'] + self.Search_dict['keyword']['phrase']
+            finalPhrase = self.Search_dict['subject']['phrase'] + self.Search_dict['keyword']['phrase']
 
         # if either search queries in the extra clause exists, append it the first subject/keyword clause (unless it doesn't exist)
         if self.Search_dict['exClause_subject']['phrase'] != '' or self.Search_dict['exClause_keyword']['phrase'] != '':
@@ -155,47 +158,51 @@ class URL_Generator:
             else:
                 extraClause_phrase = self.Search_dict['exClause_subject']['phrase'] + self.Search_dict['exClause_keyword']['phrase']
             #add extra clause to the potential primary clause if it exists
-            if final_phrase != '':
-                final_phrase = '(' + final_phrase + conj_list[exClause_conj] + extraClause_phrase + ')'
+            if finalPhrase != '':
+                if exClause_conj == 0: #this is the only NOT that does not us " -" but instead uses the actual word
+                    finalPhrase = '(' + finalPhrase + " NOT " + extraClause_phrase + ')'
+                else:
+                    finalPhrase = '(' + finalPhrase + conj_list[exClause_conj] + extraClause_phrase + ')'
             else:
-                final_phrase = extraClause_phrase
+                finalPhrase = extraClause_phrase
 
+        # culture
         if self.Search_dict['culture']['phrase'] != '':
             # if either clause for subject and/or keyword are present, add a conjunction and combine
-            if final_phrase != '':
-                final_phrase = self.Search_dict['culture']['phrase'] + conj_list[2] + final_phrase
+            if finalPhrase != '':
+                finalPhrase = self.Search_dict['culture']['phrase'] + conj_list[2] + finalPhrase
             else:
-                final_phrase = self.Search_dict['culture']['phrase']
+                finalPhrase = self.Search_dict['culture']['phrase']
 
+        # # ADD FILTERS
+        # sort the filter dictionary (potentially not necessary but I want to avoid similar filter queries being scrampled so they look different to the partial-file-saver in eHRAF_Scraper.py)
+        filters = dict(sorted(filters.items()))
+        # Add each filter
+        filter_str = ''
+        if sum(len(val) for val in filters.values()) > 0: #check if there are actually any filters at all
+            filter_str += '&fq='
+            semiColon = False #determine if a semicolon is needed between items (only used the first time)
+            for filterType, filterVals in filters.items(): #take the filter type (culture_level_samples)
+                # run through the list of filter values and append to URL
+                for val in filterVals:
+                    if semiColon is False:
+                        semiColon = True
+                    else:
+                        filter_str += '%3B'
+                    filter_str += f'{filterType}%7C{val}'
+        
+        # construct URL and give it initialized http address
+        URL = r'https://ehrafworldcultures.yale.edu/search?q='
 
-
-        # construct URL from phrase
-        URL= r'https://ehrafworldcultures.yale.edu/search?q='
-        URL_final_phrase = final_phrase
+        # replace characters with their URL counterparts then add phrase and filter to  URL
+        URL_PhraseFilter = finalPhrase + filter_str
         replace_dict = {'\(':'%28', '\)':'%29', '\:':'%3A', '\|':'%7C', '\;':'%3B', ' ':'+', '\"':'%22'}
-
-
         for key, val in replace_dict.items():
-            URL_final_phrase = re.sub(key, val, URL_final_phrase)
-        URL += URL_final_phrase
-
-        #Add in optional filters like cultural level camples
-        # &fq=culture_level_samples%7CEA%3Bculture_level_samples%7CPSF%3Bculture_level_samples%7CSCCS%3Bculture_level_samples%7CSRS.
-
-        # cultureSamplesText_list = ['EA', 'SCCS', 'PSF', 'SRS']
-        # filteredCST_list = [i for (i, v) in zip(cultureSamplesText_list, cultural_level_samples) if v]
-        if len(cultural_level_samples) > 0:
-            URL += '&fq='
-            semiColon = False #determine if a semicolon is needed between items
-            for CST in cultural_level_samples:
-                if semiColon is False:
-                    semiColon = True
-                else:
-                    URL += '%3B'
-                URL += 'culture_level_samples%7C' + CST
+            URL_PhraseFilter = re.sub(key, val, URL_PhraseFilter)
+        URL += URL_PhraseFilter
 
         # Allow phrase and dictionary to be accessed through the class
-        self.final_phrase = final_phrase
+        self.final_phrase = finalPhrase
         self.Search_dict = self.Search_dict
         return URL
 

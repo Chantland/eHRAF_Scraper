@@ -12,7 +12,7 @@
 # DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: (OPTIONAL) implement a stop button
 # DONE: (basically) make the terminal print out to the GUI's terminal.
-# TODO: (potentially) Add more filters that eHRAF already allows.
+# DONE: (potentially) Add more filters that eHRAF already allows.
 # DONE: Add passage page number columns to the excel files - eHRAF_Scraper.py
 # DONE: Have excel files include passage numbers - eHRAF_Scraper.py
 # DONE: Allow for extra advanced search culture and keywords queries where a second set of culture and keywords can be searched
@@ -31,7 +31,7 @@
 # DONE: Fix for upon repeated use, the browser font can be turned blue
 # DONE: Implement file saving which can be more concise should the file be too big.
 # DONE: filter cultural inputs for accented characters
-
+# DONE: make file names with filters shortened.
 
 
 
@@ -135,7 +135,9 @@ class MainWindow(QMainWindow):
         self.tabWidget.currentChanged.connect(self.FilterTab_Changed)
         # change region
         self.comboBox_RegionSelection.currentIndexChanged.connect(self.set_region)
-        
+        # unclick all filter buttons
+        self.pushButton_Filter_Clear.clicked.connect(self.unclickAllFilters)
+    
     def FilterTab_Changed(self, index):
         # change size of textbox to allow filters only if it is not already changed
         if self.tabWidget.tabText(index) == "Filters":
@@ -239,8 +241,20 @@ class MainWindow(QMainWindow):
         filter_list = []
         for i in range(len(filter.buttons())):
             if filter.buttons()[i].isChecked():
-                filter_list.append(filter.buttons()[i].text())
+                filter_list.append(filter.buttons()[i].accessibleName())
         return filter_list
+
+    def unclickAllFilters(self):
+        buttonGroup_list = [self.buttonGroup_Filter_CulturalLevel, self.buttonGroup_Filter_DocumentLevel,
+                            self.buttonGroup_Filter_DocumentTypes, self.buttonGroup_Filter_PublishedDate,
+                            self.buttonGroup_Filter_Regions, self.buttonGroup_Filter_RegionsALL,
+                            self.buttonGroup_Filter_Series, self.buttonGroup_Filter_SubsistenceTypes]
+        # click all buttons within each group
+        for group in buttonGroup_list:
+            for button in group.buttons():
+                button.setChecked(False)
+
+
     def set_URL(self): #if URL submit button is clicked, just use that URL but first check if it is valid
         URL = self.plainTextEdit_URL.toPlainText()
         if URL == '':
@@ -310,7 +324,7 @@ class MainWindow(QMainWindow):
                             exClause_concat_conj = exClause_concat_conj,
                             exClause_keywords = exClause_keywords,
                             exClause_keywords_conj = exClause_keywords_conj,
-                            cultural_level_samples= filter_dict["culture_level_samples"])
+                            filters= filter_dict)
         if URL == '':
             self.textBox_warning("No viable search terms were found, please check for spelling mistakes")
             return
