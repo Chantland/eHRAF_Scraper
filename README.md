@@ -41,7 +41,18 @@ Extract a URL based on Advanced Search which is able to be inputted into the URL
         concat_conj =           <int: Decide how the subjects and keyword search terms will be paired. Would you like either the subjects OR (Value 1) the keywords to be searched or would you like both (Value 2)>
         keywords =              <string: Lexical search keywords separated by a comma>
         keywords_conj =         <int: Decide how the Keywords will be included using values 0 for none, 1 for any/OR, or  2 for all/AND >
-        cultural_level_samples =<list: include a list of “Cultural Level Sample” strings like “PSF”, “EA”, SCCS”, and/or “SRS”>
+        
+        exClause_conj =         <int: Decide how the extra clause will be included>
+        exClause_subjects =     <string: Extra Subject names and/or OCM numbers separated by a comma>
+        exClause_subjects_conj =<int: Decide how the extra clause Subjects will be included using values 0 for none, 1 for any/OR, or  2 for all/AND >
+        exClause_concat_conj =  <int: Decide how the extra subjects and keyword search terms will be paired. Would you like either the subjects OR (Value 1) the keywords to be searched or would you like both (Value 2)>
+        exClause_keywords =     <string: extra Lexical search keywords separated by a comma>
+        exClause_keywords_conj =<int: Decide how the extra Keywords will be included using values 0 for none, 1 for any/OR, or  2 for all/AND >
+
+        filters =               <dict: key is filter category string for URL, value is a list of strings of Filter names that can be inputted in the URL>
+
+
+        
 ### 
 
 ## Packages requirements
