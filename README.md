@@ -2,11 +2,11 @@
 
 To use this Scraper, please click on Scraper_GUI and follow GUI_Instructions.docx 
 Note that currently there is only a MAC version of the GUI application. If you want Windows or Linux, consider installing it on your desired Machine.
-
+YOU MUST HAVE CHROME DOWLOADED TO RUN THE SCRAPER
 
 Autonomous scraper of eHRAF webpage that through URL_generator.py can mimic the search parameters in eHRAF and through eHRAF_Scraper.py can extract document information from the website, systematically scraping each culture's defined documents.
-In short the scraper takes an Advance Search URL such as [https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF](https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF)
-and runs through each of the document passages, obtaining OCM's, passage texts, year made, culture, region, and sub-region. At completion, this saves all packages extracted to a data file in Data/.
+In short, the scraper takes an Advanced Search URL such as [https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF](https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF)
+and runs through each of the document passages, obtaining OCM's, passage texts, year made, culture, region, and sub-region. At completion, this saves all packages extracted to a folder in Data/.
 
 Currently, you should run the Scraper_GUI as this is the most up to date and friendly version of the scraper. If you wish to run the other applications THEY MUST BE OUTSIDE OF THE "Build" FOLDER. the "Build" folder was used to help to declutter but is not where the build files should actually be localized (as to build the GUI they need to be in the same place that the GUI will be ran)
 
