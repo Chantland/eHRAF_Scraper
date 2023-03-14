@@ -3,12 +3,6 @@
 #### **Created** -- October 2022
 
 
-# NOTE: This is the behind the scenes python code for the eHRAF GUI which is designed to scrape document files from
-# eHRAF based on the user's search selections. This should run nearly identical to the eHRAF_Scraper.ipynb albeit
-# with more focus on making the GUI side work. If you are new to the project, I highly recommend checking out
-# eHRAF_Scraper.ipynb as it contains a bit more description as to what the code is doing.
-
-
 
 import pandas as pd                 # dataframe storing
 from bs4 import BeautifulSoup       # parsing web content in a nice way
@@ -210,7 +204,7 @@ class Scraper:
             else:
                 text += key + (spaceBuffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
         return text
-    def doc_scraper(self, saveRate:int=5000):
+    def doc_scraper(self, saveRate:int=5000, displayTime=False):
 
         #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
         if not isinstance(saveRate, int) or saveRate <0 or saveRate is None:
@@ -231,6 +225,7 @@ class Scraper:
 
         # For each Culture, go to their webpage link then scrape the document data
         for key in self.culture_dict.keys():
+            t1 = time.time() # start time of cultural loop for later throttling if necessary
             self.driver.get(self.homeURL + self.culture_dict[key]['link'])
             pas_count = 0
 
@@ -496,6 +491,14 @@ class Scraper:
                     self.save_file(df_eHRAF, routine=True)
                     print(f'Routine partial saving has occurred, {pas_count_total} passages saved')
                     saveRate_count = 0
+            # Display time of cultural loop and potentially throttle
+            t2 = time.time() 
+            throttle = ""
+            if t2 - t1 < 1:
+                time.sleep(1)
+                throttle = "(throttled)"
+            if displayTime is True:
+                print(f'{key} time: {t2 - t1: .2f} {throttle}')
         self.save_file(df_eHRAF)
         self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
