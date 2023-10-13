@@ -65,9 +65,9 @@ If you would like to reinstall the GUI for whatever reason, the files URL_genera
         
         pyinstaller  --onefile --add-data 'Resources:Resources'  --icon=Resources/favicon.icns Scraper_GUI.py
         
+Note that you must input this prompt in a terminal which currently has activated the virtual environment (venv) mentioned above. Usually activation is something like `source /path/to/your/virtualenv/bin/activate`
         
         
-
 You may need to change the file's icon manually if it does not set.
 
 
