@@ -432,7 +432,7 @@ class MainWindow(QMainWindow):
                 self.textBox_warning(self.scraper.fail_text, crash=True)
                 self.textBrowser_Descript.append(f'{self.scraper.exception_text}\n')
             except:
-                self.textBox_warning("Unknown failure has occurred", crash=True)
+                self.textBox_warning("Unknown failure has occurred, if you have a partial save you may start off where you left off", crash=True)
             return
         self.textBrowser_Descript.append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}\n')
         self.pushButton_Continue.setEnabled(False)
