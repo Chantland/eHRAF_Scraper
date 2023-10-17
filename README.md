@@ -1,16 +1,16 @@
 # eHRAF_Scraper
 
-To use this Scraper, please click on Scraper_GUI and follow GUI_Instructions.docx 
-Note that currently there is only a MAC version of the GUI application. If you want Windows or Linux, consider installing it on your desired Machine (check installing below).
+To use this Scraper, please click on Scraper_GUI and follow GUI_Instructions.docx. <br>
+Note that currently there is only a MAC version of the GUI application. If you want Windows or Linux, consider installing it on your desired machine (check installing below).
 
 
 Autonomous scraper of eHRAF webpage that through URL_generator.py can mimic the search parameters in eHRAF and through eHRAF_Scraper.py can extract document information from the website, systematically scraping each culture's defined documents.
-In short the scraper takes an Advance Search URL such as [https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF](https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF)
+In short, the scraper takes an Advance Search URL such as [https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF](https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF)
 and runs through each of the document passages, obtaining OCM's, passage texts, year made, culture, region, and sub-region. At completion, this saves all packages extracted to a data file in Data/.
 
-Currently, you should run the Scraper_GUI as this is the most up to date and friendly version of the scraper. If you wish to run the other applications THEY MUST BE OUTSIDE OF THE "Build" FOLDER. the "Build" folder was used to help to declutter but is not where the build files should actually be localized (as to build the GUI they need to be in the same place that the GUI will be ran)
+Currently, you should run the Scraper_GUI as this is the most up-to-date and friendly version of the scraper. If you wish to run the other applications THEY MUST BE OUTSIDE OF THE "Build" FOLDER. the "Build" folder was used to help declutter but is not where the build files should actually be localized (as to build the GUI they need to be in the same place that the GUI will be ran)
 
-Scraper_GUI (the executable) should be able to be ran anywhere regardless of its location. However, in the past it required to have the subfolder 'resources' in its path (like how it is on GitHub). If you see that the scraper crashes because it is missing certain files, this may be a solution. Running the scraper as a python file will always require the resources folder which is why you must take it out of the build folder should you choose to use that instead.
+Scraper_GUI (the executable) should be able to be run anywhere regardless of its location. However, in the past, it required to have the subfolder 'resources' in its path (like how it is on GitHub). If you see that the scraper crashes because it is missing certain files, this may be a solution. Running the scraper as a Python file will always require the resources folder which is why you must take it out of the build folder should you choose to use that instead.
 
 
 
@@ -46,7 +46,7 @@ Extract a URL based on Advanced Search which is able to be inputted into the URL
 
 ## Packages requirements
 
-If you are loading this for the first time (AND THE VENV IS MISSING), you will need the packages used in the file. The best way is to use a virtual environment or use anaconda (which might save on space but some package may not be available through there). For a virtual environment (venv) type into the terminal while within the folder of the scraper:
+If you are loading this for the first time (AND THE VENV IS MISSING), you will need the packages used in the file. The best way is to use a virtual environment or use anaconda (which might save on space but some packages may not be available through there). For a virtual environment (venv) type into the terminal while within the folder of the scraper:
 
         python3 -m venv venv
         
@@ -65,26 +65,29 @@ If you would like to reinstall the GUI for whatever reason, the files URL_genera
         
         pyinstaller  --onefile --add-data 'Resources:Resources'  --icon=Resources/favicon.icns Scraper_GUI.py
         
-Note that you must input this prompt in a terminal which currently has activated the virtual environment (venv) mentioned above. Usually activation is something like `source /path/to/your/venv/bin/activate`
+Note that you must input this prompt in a terminal which currently has activated the virtual environment (venv) mentioned above. Usually, activation is something like `source /path/to/your/venv/bin/activate`
         
         
-You may need to change the file's icon manually if it does not set.
+You may need to change the file's icon manually if it is not set or save to something other than .icns if you are not using a Mac.
 
 
 
 ## Troubleshooting
 
-**Partial saving** - If your scraping crashes for whatever reason (there are a lot of ways it can, this is somewhat unavoidable) it will usually save a partial file of your scraping before ending and giving an error message telling you some info of how it crashed. Sometimes, however, the crash is so severe that the scraper does not know what happened and is unable to save everything. A routine partial saving will still occur during the scraping (default is 5,000 passages but you can reduce this) so you will probably still get a partial file. If you do have a partial file (you usually will) just reenter the same scraping queries you had before and it will start off where the last save ended! It will tell you how many passages were loaded so make sure you see "partial saving loaded" to make sure you made entered in again the correct query. This also means that if you try to scrape something that already has been scraped before, it will NOT scrape any new passages unless eHRAF suddenly gets a new culture. 
+**Partial saving** - If your scraping crashes for whatever reason (there are a lot of ways it can, this is somewhat unavoidable) it will usually save a partial file of your scraping before ending and giving an error message telling you some info of how it crashed. Sometimes, however, the crash is so severe that the scraper does not know what happened and is unable to save everything. A routine partial saving will still occur during the scraping (default is 5,000 passages but you can reduce this) so you will probably still get a partial file. If you do have a partial file (you usually will) just reenter the same scraping queries you had before and it will start off where the last save ended! It will tell you how many passages were loaded so make sure you see "partial saving loaded" to make sure you entered the correct query again. This also means that if you try to scrape something that already has been scraped before, it will NOT scrape any new passages unless eHRAF suddenly gets a new culture. 
 
-**Overwriting unrelated scrapings** - The scraper is able to find scrapings by matching folder names with your queries. If your queries are complex, the folder name will be truncated as there are only so many characters that can be saved to a folder's name. This truncation can become and issue if you have two very long queries which look nearly identical but differ in small details found in the truncated section as the scraper may think the two queries are the same an treat them as such (like adding to the wrong partial file. Though rare, it is important to be cognizant of it. I the future we might make a simple text line allowing you to enter in your now optional file name.
+**Overwriting unrelated scrapings** - The scraper is able to find scrapings by matching folder names with your queries. If your queries are complex, the folder name will be truncated as there are only so many characters that can be saved to a folder's name. This truncation can become an issue if you have two very long queries that look nearly identical but differ in small details found in the truncated section as the scraper may think the two queries are the same and treat them as such (like adding to the wrong partial file. Though rare, it is important to be cognizant of it. In the future, we might make a simple text line allowing you to enter in your now optional file name.
 
-**Chromium not found** - There are cases where the Chromium that is being loaded may not longer exist or be outdated. You may need to update the packages directly and reinstall the GUI using the above prompt or try "pyinstaller Scraper_GUI.spec" although this has not been corroborated. Future versions of the scraper may try to preinstall a chrome browser so it does not need to download each time yet this is a future project. 
+**Chromium not found** - There are cases where the Chromium that is being loaded may no longer exist or be outdated. You may need to update the packages directly and reinstall the GUI using the above prompt or try "pyinstaller Scraper_GUI.spec" although this has not been corroborated. Future versions of the scraper may try to preinstall a Chrome browser so it does not need to download each time yet this is a future project. 
 
-**No active subscription** - eHRAF requires having an active subscription to access its files. When we, the authors, run the code, we do so using the university internet which has an active subscription allowing us to scrape merely by having valid internet credential. This can be an issue if you need to log in to supply your credentials as the scraper will not wait for you to do so. If neither you or your university/wifi have a subscription, you may be unable to use the scraper
+**No active subscription** - eHRAF requires having an active subscription to access its files. When we, the authors, run the code, we do so using the university internet which has an active subscription allowing us to scrape merely by having valid internet credentials. This can be an issue if you need to log in to supply your credentials as the scraper will not wait for you to do so. If neither you nor your university/wifi have a subscription, you may be unable to use the scraper
 
-**Long start up** - The GUI start-up sequence is slow and could take up to 5 minutes. This may be due to the scraper needing to download the chromium browser (this is something we want to eventually fix). 
+**Long start-up** - The GUI start-up sequence is slow and could take up to 5 minutes. This may be due to the scraper needing to download the Chromium browser (this is something we want to eventually fix). 
 
-**Crash from monitor size** - Because of the nature of web scraping, the website as well as your computer itself may affect its success. In the past, monitor window/browser size negatively affected what items could be scraped as eHRAF hides items if the window is too small. We have done workarounds to fix these problems on our end but we cannot test every monitor size especially small ones. If an issue, try using a larger monitor or manually stretch the window size within the code. 
+**Crash from monitor size** - Because of the nature of web scraping, the website as well as your computer itself may affect its success. In the past, monitor window/browser size negatively affected what items could be scraped as eHRAF hides items if the window is too small. We have done workarounds to fix these problems on our end but we cannot test every monitor size, especially small ones. If an issue, try using a larger monitor or manually stretch the window size within the code. 
 
-**Changed website layout** - If eHRAF changes their website layout or design, there is no immediate fix to this and it will crash. This will eventually happen and this scraper will become unusable. Be warned, this is the nature of all scrapers.
+**Changed website layout** - If eHRAF changes its website layout or design, there is no immediate fix to this and it will crash. This will eventually happen and this scraper will become unusable. Be warned, this is the nature of all scrapers.
+
+**Only 10 Series shown** - Although filters work, the Series category of filters does not include as many as eHRAF actually has. This is because eHRAF only shows 10 at a time and therefore the top 10 are only shown. If you have a desire to use the Series filter, consider using eHRAF’s search API itself to get the URL with your desired series then paste this URL within the Scraper_GUI.
+
 
