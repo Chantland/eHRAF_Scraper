@@ -88,3 +88,6 @@ You may need to change the file's icon manually if it is not set or save to some
 
 **Changed website layout** - If eHRAF changes its website layout or design, there is no immediate fix to this and it will crash. This will eventually happen and this scraper will become unusable. Be warned, this is the nature of all scrapers.
 
+**Only 10 Series shown** - Although filters work, the Series category of filters does not include as many as eHRAF actually has. This is because eHRAF only shows 10 at a time and therefore the top 10 are only shown. If you have a desire to use the Series filter, consider using eHRAF’s search API itself to get the URL with your desired series then paste this URL within the Scraper_GUI.
+
+
