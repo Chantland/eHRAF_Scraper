@@ -30,7 +30,7 @@ Autonomous scraper which takes in a url input and scrapes eHRAF. Outputs and sav
 
 ### doc_scraper function inputs:
         saveRate =              <int: iteration of files scraped before a routine "safety save" occurs, defaults to 5000>
-	endClose =              <bool: close file when finished scraping, defaults to True>
+        endClose =              <bool: close file when finished scraping, defaults to True>
 
 ## URL_Generator.py
 Extract a URL based on Advanced Search which is able to be inputted into the URL of eHRAF_Scraper.py. Include the following optional inputs. Note that all string defaults are ‘’ while all int defaults are 1:
