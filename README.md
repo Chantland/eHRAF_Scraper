@@ -20,14 +20,17 @@ To use the eHRAF_Scraper.py, consider using main_demo.py which has preset commen
 ## eHRAF_Scraper.py 
 Autonomous scraper which takes in a url input and scrapes eHRAF. Outputs and saves excel file(s). Again, this is all optional and it is recommended to use the Scraper_GUI executable instead.
 ### Initial inputs:
+        headless =              <bool: do not show the scraped chrome browser (TRUE) or show the scraped Chrome Browser (FALSE)>
+
+### region_scraper function inputs:
         url =                   <string: eHRAF URL>
         user =                  <string: your name>
         rerun =                 <bool: disregard any previously ran files (TRUE) or try to start from last crashed (FALSE)>
-        headless =              <bool: do not show the scraped chrome browser (TRUE) or show the scraped Chrome Browser (FALSE)>
         cultureFiles =          <bool: create separate files for each culture scraped>
-	
-### Doc_Scraper function inputs:
-        saveRate =              <int: iteration of files scraped before a routine "safety save" occurs>
+
+### doc_scraper function inputs:
+        saveRate =              <int: iteration of files scraped before a routine "safety save" occurs, defaults to 5000>
+	endClose =              <bool: close file when finished scraping, defaults to True>
 
 ## URL_Generator.py
 Extract a URL based on Advanced Search which is able to be inputted into the URL of eHRAF_Scraper.py. Include the following optional inputs. Note that all string defaults are ‘’ while all int defaults are 1:

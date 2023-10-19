@@ -35,28 +35,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Scraper:
-    def __init__(self, url=None, user=None, rerun=False, headless=False, cultureFiles= False):
-        if url is not None:
-            self.URL = url
-        # if no inputs are received,set URL to the default Apple demo
-        if url is None:
-            self.URL = r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF'
-        if user is None:
-            self.user = "No Name Specified"
-        else:
-            try:
-                self.user = str(user)
-            except Exception as err:
-                print(f"Unexpected {err=}, {type(err)=}")
-                raise
+    def __init__(self, headless=False):
+
+
         # The program may need to be saved multiple times, Make it so it only overwrites the input info once
         self.repeatSave = False
         
-        # For saving individual culture files
-        self.cultureFiles = cultureFiles
 
-        #For when the altogether dataset exists but cultural files do not match (and the person wants a partial file save)
-        self.skip_cultures_altogether = [] 
         # (optional) iniate "headless" which stops chrome from showing itself when this is run,
         # switch headless to False if you want to see the webpage or True if you want it to run in the background
         options = Options()
@@ -68,14 +53,43 @@ class Scraper:
 
         # here for later gui integration
         self.homeURL = "https://ehrafworldcultures.yale.edu/"
-        searchTokens = self.URL.split('/')[-1]
 
-        # Load the HTML page and make it full screen to account for responsive webpage sizes
-        self.driver.get(self.homeURL + searchTokens)
+        # Change window size to account for irresponsive webpage sizes
         try:
             self.driver.set_window_size(1100,1100)
         except: #in case a computer cannot handle the set size (which it should but still)
             self.driver.fullscreen_window()
+
+    def login(self): # if an initial login is required
+        self.driver.get(self.homeURL) 
+
+    def region_scraper(self, url=None, user=None, rerun=False, cultureFiles= False):
+
+        if url is not None:
+            self.URL = url
+        # if no inputs are received,set URL to the default Apple demo
+        if url is None:
+            self.URL = r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF'
+        
+        if user is None:
+            self.user = "No Name Specified"
+        else:
+            try:
+                self.user = str(user)
+            except Exception as err:
+                print(f"Unexpected {err=}, {type(err)=}")
+                raise
+        # For saving individual culture files
+        self.cultureFiles = cultureFiles
+
+        #For when the altogether dataset exists but cultural files do not match (and the person wants a partial file save)
+        self.skip_cultures_altogether = [] 
+
+        # Get URL search tokens then navigate to the webpage for region scraping
+        searchTokens = self.URL.split('/')[-1]
+        self.driver.get(self.homeURL + searchTokens)
+
+
         # if a partial file is already present, append to that file
         self.querySkipper = False
         self.output_dir_cons()
@@ -85,7 +99,8 @@ class Scraper:
                 if self.file_length_warning is not None:
                     print("WARNING, due to the shortening of the file name, different search queries can be regarded as the same search query and cause the scraper to skip skip cultures it shouldn't. Check the the _Altogether_Dataset.xlsx to be sure")
                 self.querySkipper = True
-    def region_scraper(self):
+
+
 
         # Find then click on each tab to reveal content for scraping
         # Elements must be individually clicked backwards. I do not know why this is a thing but my guess is each
@@ -212,7 +227,7 @@ class Scraper:
             else:
                 text += key + (spaceBuffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
         return text
-    def doc_scraper(self, saveRate:int=5000):
+    def doc_scraper(self, saveRate:int=5000, endClose:bool = True):
 
         #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
         if not isinstance(saveRate, int) or saveRate <0 or saveRate is None:
@@ -499,7 +514,8 @@ class Scraper:
                     print(f'Routine partial saving has occurred, {pas_count_total} passages saved')
                     saveRate_count = 0
         self.save_file(df_eHRAF)
-        self.web_close()
+        if endClose: # close the webbrowser unless otherwise said
+            self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
         print('Scraping complete\n\n')
     def reload_retry(self, idealCount, searchText):

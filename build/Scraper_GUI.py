@@ -1,5 +1,6 @@
 # for installing the GUI (if you want to make changes) use the py installer prompt: 
 # pyinstaller  --onefile --add-data 'Resources:Resources'  --icon=Resources/favicon.icns Scraper_GUI.py
+
 # Note that to make this an app also use --windowed
 
 
@@ -118,11 +119,14 @@ class MainWindow(QMainWindow):
         self.set_region() #set the region at the start
     
     def widgit_hub(self):
+
         # set up the submit buttons to listen for clicks
         self.pushButton_URLSubmit.clicked.connect(self.set_URL)
         self.pushButton_AdvSubmit.clicked.connect(self.create_URL)
         # continue on when user is ready
         self.pushButton_Continue.clicked.connect(self.web_continue)
+        # Allow users to login should they think it is required to access eHRAF
+        self.pushButton_Login.clicked.connect(self.login)
 
         # turn the sub buttons for the "Display number of passages per culture" option on or off
         self.radioButton_DisplayPassages_YES.toggled.connect(self.DisplayNumReveal)
@@ -333,9 +337,7 @@ class MainWindow(QMainWindow):
         self.textBrowser_Descript.append(f'{URL_gen.invalid_inputs()}\n') #Add invalid inputs and scraper count
         self.textBox_URL_set()
         self.web_scraper()
-    
-    def web_scraper(self):
-
+    def get_initialVars(self): # for redoing and getting variables if needed
         # Set Info
         user = self.plainTextEdit_NameInput.toPlainText()
         if user == '':
@@ -353,17 +355,33 @@ class MainWindow(QMainWindow):
         else:
             rerun = False
 
-        # if "save seaparte culture files" is marked "YES" then save separate cultural files
+        # if "save separate culture files" is marked "YES" then save separate cultural files
         if self.radioButton_CultureIndividualFiles_YES.isChecked():
             cultureFiles = True
         else:
             cultureFiles = False
+        
+        return user, headless, rerun, cultureFiles
+    
+    def login(self):
+        user, headless, rerun, cultureFiles = self.get_initialVars()
+        self.scraper = Scraper(headless=headless)
+        self.scraper.login()
+        self.text_clear()
+        self.textBrowser_Descript.append(f"Please log in, once finished, leave the browser open while you enter your search queries into the GUI\n")
+    def web_scraper(self):
+        # get intitial variables for web scraping and starting up the
+        user, headless, rerun, cultureFiles = self.get_initialVars()
 
-        # initialize the scraper
+        # initialize the scraper if it does not exist yet (like if someone did not log in)
         try:
-            self.scraper = Scraper(url=self.URL, headless=headless, rerun=rerun, user=user, cultureFiles=cultureFiles)
-            # Run the region scraper. If there is nothing the scrape, then escape
-            warning = self.scraper.region_scraper() 
+            self.scraper.driver.current_url
+        except:
+            self.scraper = Scraper(headless=headless)
+
+        # Run the region scraper. If there is nothing to scrape, then escape and give warning
+        try:
+            warning = self.scraper.region_scraper(url=self.URL, user=user, rerun=rerun, cultureFiles=cultureFiles) 
             if warning is not None:
                 self.textBox_warning(warning)
                 self.textBrowser_URL.setText(self.URL)
@@ -392,9 +410,6 @@ class MainWindow(QMainWindow):
             else:
                 raise Exception("No value button number returned for buttonGroup_Options_DisplayPassages_CoC.id")
             self.textBrowser_Descript.append(f'{self.scraper.cult_count(by=cultureCount)}\n')
-        # DELETE COMMENTS HERE, THEY ARE FOR REFERENCE
-        # color.BOLD + 'Hello, World!' + color.END
-        # text = 'Press ' + color_app('CONTINUE','CYAN', 'UNDERLINE') + 'button or else choose a new query'
 
         # If there is a matching query, output info
         if self.scraper.querySkipper:
@@ -405,7 +420,7 @@ class MainWindow(QMainWindow):
 
 
 
-        self.textBrowser_Descript.append("<br><font color='blue'>Press the <b>CONTINUE</b> button or else choose a new query</font><br><br>")
+        self.textBrowser_Descript.append("<br><font color='blue'>Press the <b>CONTINUE</b> button or else submit a new query</font><br><br>")
         self.pushButton_Continue.setEnabled(True)
         
     def web_continue(self):
@@ -423,16 +438,23 @@ class MainWindow(QMainWindow):
             QCoreApplication.processEvents() #process the events then wait so that the text can be loaded. Likely it may be good to use Qthreads instead
             QtTest.QTest.qWait(100)
         QCoreApplication.processEvents()
+
+        # if "Close browser when finished" is marked "YES" then close browser when saving is done
+        if self.radioButton_CloseBrowser_YES.isChecked():
+            endClose = True
+        else:
+            endClose = False
+
         # run the actual scraping. if it should fail, output the reason
         try:
-            self.scraper.doc_scraper(saveRate=saveRate)
+            self.scraper.doc_scraper(saveRate=saveRate, endClose=endClose)
         except:
             # if known failure occurred, print out, otherwise give unknown
             try:
                 self.textBox_warning(self.scraper.fail_text, crash=True)
                 self.textBrowser_Descript.append(f'{self.scraper.exception_text}\n')
             except:
-                self.textBox_warning("Unknown failure has occurred, if you have a partial save you may start off where you left off", crash=True)
+                self.textBox_warning("Unknown failure has occurred. If you have a partial save, you may start where you left off", crash=True)
             return
         self.textBrowser_Descript.append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}\n')
         self.pushButton_Continue.setEnabled(False)
