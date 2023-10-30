@@ -155,6 +155,63 @@ border-color: rgba(80, 110, 106, 80);
        <string>Proceed to the Search tab once you have entered your Info</string>
       </property>
      </widget>
+     <widget class="QGroupBox" name="Login">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>541</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you do not have a IP or VPN with a valid license, you need to log in first before you may scrape. This button is optional if you have a valid IP/VPN. If you do not have a license or valid IP/VPN, scraping may be impossible.&lt;/p&gt;
+&lt;p&gt;Please find the login button, then when you are sucessfully logged in, KEEP the browser open and enter in your web scraping parameters through the GUI in the next page.&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QPushButton" name="pushButton_Login">
+       <property name="geometry">
+        <rect>
+         <x>225</x>
+         <y>10</y>
+         <width>91</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>WhatsThisCursor</cursorShape>
+       </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius: 10px;
+color: black;</string>
+       </property>
+       <property name="text">
+        <string>LOGIN</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
     <widget class="QWidget" name="Search">
      <attribute name="title">
@@ -3247,13 +3304,13 @@ color: Black;
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>40</y>
-        <width>531</width>
-        <height>361</height>
+        <y>41</y>
+        <width>551</width>
+        <height>451</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -3338,6 +3395,93 @@ color: Black;
              <attribute name="buttonGroup">
               <string notr="true">buttonGroup_Options_ShowBrowser</string>
              </attribute>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_Option_CloseBrowser">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optionally close the browser when the scraping is finished. If you need to login to access eHRAF, it may be advisable to select NO as you may need to log in each time the browser is opened up again&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <widget class="QLabel" name="label_CloseBrowser">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>281</width>
+            <height>38</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(60, 180, 170);</string>
+          </property>
+          <property name="text">
+           <string>Close browser when finished</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::AutoText</enum>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_7">
+          <property name="geometry">
+           <rect>
+            <x>300</x>
+            <y>20</y>
+            <width>118</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_Option_CloseBrowser">
+           <item>
+            <widget class="QRadioButton" name="radioButton_CloseBrowser_NO">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>NO</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_CloseBrowser_YES">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>YES</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>
@@ -3739,7 +3883,7 @@ color: Black;
          <widget class="QPushButton" name="pushButton_PartialSave_None">
           <property name="geometry">
            <rect>
-            <x>390</x>
+            <x>440</x>
             <y>15</y>
             <width>45</width>
             <height>31</height>
@@ -3781,9 +3925,9 @@ color: Black;
          <widget class="QPlainTextEdit" name="plainTextEdit_PartialSave_DocCount">
           <property name="geometry">
            <rect>
-            <x>280</x>
+            <x>300</x>
             <y>15</y>
-            <width>101</width>
+            <width>111</width>
             <height>31</height>
            </rect>
           </property>
@@ -3934,7 +4078,7 @@ color: rgb(60, 180, 170);
       </rect>
      </property>
      <property name="currentIndex">
-      <number>6</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="page_1_Africa">
       <widget class="QGroupBox" name="groupBox_Filter_CulturalLevel_8">
@@ -5431,58 +5575,19 @@ color: rgb(60, 180, 170);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_Options_PartialFile"/>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Filter_CulturalLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
-  <buttongroup name="buttonGroup_Subject"/>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
   <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
+  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
   <buttongroup name="buttonGroup_Culture">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause"/>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
-  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
-  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
-  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Filter_DocumentLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Filter_DocumentTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Filter_Series">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="buttonGroup_Filter_PublishedDate">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Filter_Regions">
    <property name="exclusive">
     <bool>false</bool>
    </property>
@@ -5492,5 +5597,44 @@ color: rgb(60, 180, 170);
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_Filter_Regions">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Filter_Series">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Filter_CulturalLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
+  <buttongroup name="buttonGroup_Subject"/>
+  <buttongroup name="buttonGroup_Filter_DocumentTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_ExtraClause"/>
+  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
+  <buttongroup name="buttonGroup_Filter_DocumentLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_PartialFile"/>
  </buttongroups>
 </ui>

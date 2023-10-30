@@ -8,6 +8,7 @@
 # with more focus on making the GUI side work. If you are new to the project, I highly recommend checking out
 # eHRAF_Scraper.ipynb as it contains a bit more description as to what the code is doing.
 
+# TODO It appears that the tab which shows more passages (10 to 150) rveals every one of the sources. Perhaps make it the default at the start?
 
 
 import pandas as pd                 # dataframe storing
@@ -63,6 +64,7 @@ class Scraper:
     def login(self): # if an initial login is required
         self.driver.get(self.homeURL) 
 
+    # Reveal all the cultures relevant to your query then extarct URL links
     def region_scraper(self, url=None, user=None, rerun=False, cultureFiles= False):
 
         if url is not None:
@@ -126,8 +128,9 @@ class Scraper:
         self.pas_count = int(self.pas_count.split()[1])
 
         self.doc_URL_finder(soup=soup)
+
+    # Estimate the time this will take (no longer accurate)
     def time_req(self):
-        # estimate the time this will take
         import math
         # time estimate in seconds, larger scrapings should be faster so they get a log reduction.
         if self.pas_count > 10000: 
@@ -148,6 +151,8 @@ class Scraper:
 
         time_sec = f"{math.floor(time_sec)} second(s)"
         return f"This will scrape up to {self.pas_count} passages and take roughly \n{time_hour}{time_min}{time_sec}"
+    
+    # Get URL's for each culture about the be scraped
     def doc_URL_finder(self, soup):
         # Create a dictionary to store all cultures and their links for later use
         self.culture_dict = {}
@@ -178,6 +183,8 @@ class Scraper:
 
             self.culture_dict[cultureName] = {"Region": region, "SubRegion": subRegion, "link": link, "Source_count": source_count, "Pas_Count": pas_count,  "Reloads": {"source_reload": 0, "results_reload": 0}}
         # print(f"Number of cultures extracted {len(culture_dict)}")
+
+    # Optionally reveal the number of passages per culture
     def cult_count(self, by:str=None):
         
         if by is None:
@@ -227,8 +234,9 @@ class Scraper:
             else:
                 text += key + (spaceBuffer * ' ') + str(self.culture_dict[key]["Pas_Count"]) + '\n'
         return text
+   
+    # The meat and potatoes to the scraper, click and scrape each passage of the culture.
     def doc_scraper(self, saveRate:int=5000, endClose:bool = True):
-
         #Set the save rate up which automatically save the file every time x files are loaded. Made to protect for unforseen issues
         if not isinstance(saveRate, int) or saveRate <0 or saveRate is None:
             saveRate = None
@@ -353,16 +361,16 @@ class Scraper:
 
                     # If there are a lot of passages to run through, this may cause a problem with loading new sets of
                     # 10 passages (as the default is 10 at a time.) Therefore, expand to the greater number of passages
-                    if sourceCount_list[i] > 10:
+                    if sourceCount_list[i] > 10: 
                         # I think something jossles the webpage making it transition to a new dynamic webpage size and therefore changing the drop down list
                         # I am not sure why this would happen since we are just looking for the results tabs above but perhaps searching for them again upon a failure might help
                         try:
-                            expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
+                            expander = resultsTabs[i].find_elements(By.CLASS_NAME, 'mdc-list-item')
                             self.driver.execute_script("arguments[0].click();", expander[-1])
                         except:
                             try:
                                 resultsTabs = self.reload_retry(resultsTabs_total, 'trad-data__results')
-                                expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
+                                expander = resultsTabs[i].find_elements(By.CLASS_NAME, 'mdc-list-item')
                                 self.driver.execute_script("arguments[0].click();", expander[-1])
                             except:
                                 self.reload_fail(df_eHRAF, pas_count_total, "extended frame")
@@ -390,12 +398,12 @@ class Scraper:
                                         resultsTabs = self.reload_retry(resultsTabs_total,
                                                                         'trad-data__results')
                                         if sourceCount_list[i] > 10:
-                                            expander = resultsTabs[0].find_elements(By.CLASS_NAME, 'mdc-list-item')
+                                            expander = resultsTabs[i].find_elements(By.CLASS_NAME, 'mdc-list-item')
                                             self.driver.execute_script("arguments[0].click();", expander[-1])
                                         resultsTabs = self.reload_retry(resultsTabs_total,
                                                                         'trad-data__results')
                                         for j in range(tab_switch_count):
-                                            SourceTabFooter = resultsTabs[0].find_elements(By.CLASS_NAME,'trad-data__results--pagination')
+                                            SourceTabFooter = resultsTabs[i].find_elements(By.CLASS_NAME,'trad-data__results--pagination')
                                             buttons = SourceTabFooter[0].find_elements(By.CLASS_NAME, 'rmwc-icon--ligature')
                                             self.driver.execute_script("arguments[0].click();", buttons[-1])
                                             resultsTabs = self.reload_retry(resultsTabs_total,
@@ -409,18 +417,18 @@ class Scraper:
                                     self.reload_fail(df_eHRAF, pas_count_total, "results")
                         # explicitly wait until the doctabs can be seen (probably not necessary but can't hurt)
                         try:
-                            WebDriverWait(resultsTabs[0], 10).until(
+                            WebDriverWait(resultsTabs[i], 10).until(
                                 EC.presence_of_element_located((By.CLASS_NAME, 'sre-result__title')))
                         except:
                             self.reload_fail(df_eHRAF, pas_count_total, "document")
-                        pasTabs = resultsTabs[0].find_elements(By.CLASS_NAME, 'sre-result__title')
+                        pasTabs = resultsTabs[i].find_elements(By.CLASS_NAME, 'sre-result__title')
                         #Click all the tabs within a source
                         for pas in pasTabs:
                             self.driver.execute_script("arguments[0].click();", pas)
                         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
-
+                        
                         #Extract the passage INFO here
-                        soupDocs = soup.find_all('section',{'class':'sre-result__sre-result'}, limit=len(pasTabs))
+                        soupDocs = soup.find_all('section',{'class':'sre-result__sre-result'})[-len(pasTabs):]
                         for soupDoc in soupDocs:
                             docPassage[pas_count] = soupDoc.find('div',{'class':'sre-result__sre-content'}).text
 
@@ -474,14 +482,14 @@ class Scraper:
                         # If there are more tabs hidden away, find the button, click it, and then refresh the results
                         # otherwise, end the loop and close the source tab to make search for information easier
                         if total >0:
-                            SourceTabFooter = resultsTabs[0].find_elements(By.CLASS_NAME, 'trad-data__results--pagination')
+                            SourceTabFooter = resultsTabs[i].find_elements(By.CLASS_NAME, 'trad-data__results--pagination')
                             buttons = SourceTabFooter[0].find_elements(By.CLASS_NAME, 'rmwc-icon--ligature')
                             self.driver.execute_script("arguments[0].click();", buttons[-1])
                             tab_switch_count += 1
                         else:
                             ## close sourcetab(this might save time in the long run)
                             self.driver.execute_script("arguments[0].click();", sourceTabs[i])
-                            resultsTabs_total -= 1
+                            # resultsTabs_total -= 1 #NOTE removing it to not change the counts but more work will need to be done to make this stable
                             break #break from loop
                 # Run to the next page if necessary. Check to see if there are more source tabs left, if so, click the next page and continue scraping the page
                 source_total -= len(sourceCount_list)
@@ -518,6 +526,7 @@ class Scraper:
             self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
         print('Scraping complete\n\n')
+    
     def reload_retry(self, idealCount, searchText):
         reload_protect = 0
         reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
