@@ -12,6 +12,7 @@
 # DONE: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
 # DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: (OPTIONAL) implement a stop button
+# TODO: Multithreading so the program is not paused while running
 # DONE: (basically) make the terminal print out to the GUI's terminal.
 # DONE: (potentially) Add more filters that eHRAF already allows.
 # DONE: Add passage page number columns to the excel files - eHRAF_Scraper.py
@@ -33,6 +34,7 @@
 # DONE: Implement file saving which can be more concise should the file be too big.
 # DONE: filter cultural inputs for accented characters
 # DONE: make file names with filters shortened.
+# TODO: Based on eHRAF website chnages October, 2023, create a quick fix and make sure redundant code is removed.  
 
 
 
@@ -42,9 +44,14 @@ from URL_Generator import URL_Generator as ug
 import re
 from eHRAF_Scraper import Scraper
 
-import PyQt6
+
 from PyQt6 import uic, QtTest
-from PyQt6.QtCore import (QSize, QCoreApplication)
+from PyQt6.QtCore import (
+    QSize, 
+    QCoreApplication, 
+    QRunnable,
+    pyqtSlot,
+    QThreadPool)
 from PyQt6.QtWidgets import (
     QApplication,
     QCheckBox, 
@@ -52,16 +59,42 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QIcon, QColor
 
 
-# app = QtWidgets.QApplication(sys.argv)
 
-# window = uic.loadUi("untitled1/form.ui")
-# window.show()
-# app.exec()
+
+# Multithreading
+class Worker(QRunnable):
+    '''
+    Worker thread
+
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+    :param callback: The function callback to run on this worker thread. Supplied args and
+                     kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+
+    '''
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+    @pyqtSlot()
+    def run(self):
+        '''
+        Initialise the runner function with passed args, kwargs.
+        '''
+        self.fn(*self.args, **self.kwargs)
 
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.threadpool = QThreadPool() #for starting threads
         self.descript = ''
         self.URL = ''
         self.setFixedSize(QSize(880, 780))
@@ -274,7 +307,11 @@ class MainWindow(QMainWindow):
         self.URL = URL
         self.text_clear() #if success, clear out the windows
         self.textBox_URL_set()
-        self.web_scraper()
+
+        # Initiate web scraper through threading
+        worker = Worker(self.web_scraper) # Any other args, kwargs are passed to the run function
+        self.threadpool.start(worker) #execute
+
 
     def create_URL(self): #construct the URL from the inputs of the advanced search
         # extract all the advanced search input boxes and buttons
@@ -336,7 +373,11 @@ class MainWindow(QMainWindow):
         self.text_clear() #if success, clear out the windows
         self.textBrowser_Descript.append(f'{URL_gen.invalid_inputs()}\n') #Add invalid inputs and scraper count
         self.textBox_URL_set()
-        self.web_scraper()
+
+        # Initiate web scraper through threading
+        worker = Worker(self.web_scraper) # Any other args, kwargs are passed to the run function
+        self.threadpool.start(worker) # Execute
+
     def get_initialVars(self): # for redoing and getting variables if needed
         # Set Info
         user = self.plainTextEdit_NameInput.toPlainText()
@@ -363,17 +404,29 @@ class MainWindow(QMainWindow):
         
         return user, headless, rerun, cultureFiles
     
+    #get (optional) log in parameters
     def login(self):
+
+        # Initiate Log in
+        worker = Worker(self.initiate_login) # Any other args, kwargs are passed to the run function
+        self.threadpool.start(worker) 
+
+        self.text_clear()
+        self.textBrowser_Descript.append(f"Please log in, once finished, leave the browser open while you enter your search queries into the GUI\n\n\n If you are already on a registered institution Network or VPN, it is not necessary to log in")
+    
+    # Initiate Login, Only relevant to put the scraper into a thread
+    def initiate_login(self):
         user, headless, rerun, cultureFiles = self.get_initialVars()
         self.scraper = Scraper(headless=headless)
         self.scraper.login()
-        self.text_clear()
-        self.textBrowser_Descript.append(f"Please log in, once finished, leave the browser open while you enter your search queries into the GUI\n")
+
+
+    # Get initial web scraping culture counts
     def web_scraper(self):
         # get intitial variables for web scraping and starting up the
         user, headless, rerun, cultureFiles = self.get_initialVars()
 
-        # initialize the scraper if it does not exist yet (like if someone did not log in)
+        # initialize the scraper if it does not exist yet (if there is no current URL like if someone did not log in)
         try:
             self.scraper.driver.current_url
         except:
@@ -422,8 +475,16 @@ class MainWindow(QMainWindow):
 
         self.textBrowser_Descript.append("<br><font color='blue'>Press the <b>CONTINUE</b> button or else submit a new query</font><br><br>")
         self.pushButton_Continue.setEnabled(True)
-        
+    
+    # separate web_contine for multithreading
     def web_continue(self):
+        # Initiate Log in
+        worker = Worker(self.web_continue_initiate) # Any other args, kwargs are passed to the run function
+        self.threadpool.start(worker) 
+
+
+    # Continue web scraping and get actual web files
+    def web_continue_initiate(self):
         # Routine partial saving initialization. If checked, have no partial saving, else set the partial saving to what user specified (or default)
         if self.pushButton_PartialSave_None.isChecked():
             saveRate = None
@@ -436,7 +497,6 @@ class MainWindow(QMainWindow):
             pas_count_total = self.scraper.partial_file_return()[1]
             self.textBrowser_Descript.append(f'{pas_count_total} passages loaded from partial file\n')
             QCoreApplication.processEvents() #process the events then wait so that the text can be loaded. Likely it may be good to use Qthreads instead
-            QtTest.QTest.qWait(100)
         QCoreApplication.processEvents()
 
         # if "Close browser when finished" is marked "YES" then close browser when saving is done
@@ -447,6 +507,7 @@ class MainWindow(QMainWindow):
 
         # run the actual scraping. if it should fail, output the reason
         try:
+            # create new thread for doc_scraper
             self.scraper.doc_scraper(saveRate=saveRate, endClose=endClose)
         except:
             # if known failure occurred, print out, otherwise give unknown

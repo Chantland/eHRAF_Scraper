@@ -139,9 +139,9 @@ border-color: rgba(80, 110, 106, 80);
      <widget class="QLabel" name="label_Info">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>10</x>
         <y>220</y>
-        <width>471</width>
+        <width>551</width>
         <height>91</height>
        </rect>
       </property>
@@ -153,6 +153,9 @@ border-color: rgba(80, 110, 106, 80);
       </property>
       <property name="text">
        <string>Proceed to the Search tab once you have entered your Info</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QGroupBox" name="Login">
@@ -180,7 +183,7 @@ border-color: rgba(80, 110, 106, 80);
       <widget class="QPushButton" name="pushButton_Login">
        <property name="geometry">
         <rect>
-         <x>225</x>
+         <x>400</x>
          <y>10</y>
          <width>91</width>
          <height>32</height>
@@ -211,6 +214,50 @@ color: black;</string>
         <string>LOGIN</string>
        </property>
       </widget>
+      <widget class="QLabel" name="label_Name_2">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>10</y>
+         <width>371</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Login if you are not on a registered VPN or Network:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_Info_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>460</y>
+        <width>551</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>For more information, try hoving over the object in question</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="Search">
@@ -287,7 +334,7 @@ color: black;</string>
         <bool>true</bool>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt; Submit eHRAF URL&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Submit eHRAF URL. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;You may find such URL's from already scraped files or ones produced by eHRAF's own advanced search system.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="toolTipDuration">
         <number>-1</number>
@@ -343,7 +390,7 @@ color: black;</string>
         <cursorShape>CrossCursor</cursorShape>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You may enter in an eHRAF url directly here if you have a preconstructed one. Otherwise use the Advanced Search below. The only URL's that this input box allows are ones which contain search terms and filter queries. For example, any URL taken from the bottom box &amp;quot;URL in use&amp;quot; is valid&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Make sure you leave your computer on and it does not go to sleep while this scrapes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You may enter in an eHRAF url directly here if you have a preconstructed one. Otherwise use the Advanced Search below. The only URL's that this input box allows are ones which contain search terms and filter queries. For example, any URL taken from the bottom box &amp;quot;URL in use&amp;quot; is valid&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning, your computer shutting off or going to sleep may prematurally end the scraping.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="toolTipDuration">
         <number>-1</number>
@@ -561,6 +608,9 @@ border-style: outset;
             <family>Arial</family>
            </font>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in desired &lt;span style=&quot; font-weight:700;&quot;&gt;cultures&lt;/span&gt; separated by a comma.&lt;/p&gt;&lt;p&gt;If you feel that this application does not accept your cultures, consider checking for spelling or if you are putting your query in the wrong box. Additionally, check different forms of the word if they have an accent as it is unclear how eHRAF processes accents.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -750,6 +800,9 @@ border-color: rgb(82, 120, 120);
             <family>Arial</family>
            </font>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in your &lt;span style=&quot; font-weight:700;&quot;&gt;subjects&lt;/span&gt; separated by a comma. You may use whole words or OCM numbers. &lt;/p&gt;&lt;p&gt;If you feel that this application does not accept your subjects, consider checking for spelling or if you are putting your query in the wrong box (like if a culture)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -910,6 +963,9 @@ border-color: rgb(82, 120, 120);
             <family>Arial</family>
            </font>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in desired &lt;span style=&quot; font-weight:700;&quot;&gt;Keywords&lt;/span&gt; separated by a comma. Keywords are text found within passages. You may use special characters normally accepted by eHRAF.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -955,7 +1011,7 @@ border-color: rgb(82, 120, 120);
         <cursorShape>CrossCursor</cursorShape>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in an number of cultures, subjects and/or keywords separated by a comma. You may leave any number blank. When you are done, the valid searchable terms will be made into a URL and the eHRAF website will be scraped. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Make sure you leave your computer on and it does not go to sleep while this scrapes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in an number of cultures, subjects and/or keywords separated by a comma. You may leave any number blank. When you are done, the valid searchable terms will be made into a URL and the eHRAF website will be scraped. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning, your computer shutting off or going to sleep may prematurally end the scraping.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
@@ -3304,7 +3360,7 @@ color: Black;
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -5575,19 +5631,39 @@ color: rgb(60, 180, 170);
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
+  <buttongroup name="buttonGroup_Filter_DocumentTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
+  <buttongroup name="buttonGroup_Filter_Series">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
   <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
-  <buttongroup name="buttonGroup_Culture">
+  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
    <property name="exclusive">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_Subject"/>
   <buttongroup name="buttonGroup_Filter_PublishedDate">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
+  <buttongroup name="buttonGroup_ExtraClause"/>
+  <buttongroup name="buttonGroup_Filter_CulturalLevel">
    <property name="exclusive">
     <bool>false</bool>
    </property>
@@ -5597,44 +5673,24 @@ color: rgb(60, 180, 170);
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
   <buttongroup name="buttonGroup_Filter_Regions">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Filter_Series">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
+  <buttongroup name="buttonGroup_Culture">
    <property name="exclusive">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Filter_CulturalLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
-  <buttongroup name="buttonGroup_Subject"/>
-  <buttongroup name="buttonGroup_Filter_DocumentTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause"/>
-  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
   <buttongroup name="buttonGroup_Filter_DocumentLevel">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
+  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
  </buttongroups>
 </ui>

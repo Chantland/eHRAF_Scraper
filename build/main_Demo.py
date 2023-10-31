@@ -11,7 +11,7 @@
 # saveRate =    	<int: iteration of files scraped before a routine "safety save" occurs. Default is 5000>
 
 
-
+import time
 
 
 
@@ -25,12 +25,13 @@ Scraper = reload(eHRAF_Scraper)
 from eHRAF_Scraper import Scraper
 
 
-Scraper1 = Scraper()
+t1 = time.time()
+Scraper1 = Scraper(headless=False)
 
 # Scraper1.region_scraper(url=r"https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Hawaiians%22+AND+%28subjects%3A%22spirits+and+gods%22+AND+text%3AApple%29") #Rapid 4 doc test
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28Apple+OR+pear+OR+banana%29&fq=culture_level_samples%7CPSF') #medium scraping (11 minutes!)
-Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Trobriands%22+AND+text%3A%28Apple+OR+pear+OR+banana%29') #long test for next page
-# Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Navajo%22+AND+text%3A%28Apple+OR+pear+OR+banana%29', rerun = True) #Quick test for next page
+# Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Trobriands%22+AND+text%3A%28Apple+OR+pear+OR+banana%29') #long test for next page
+Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Navajo%22+AND+text%3A%28Apple+OR+pear+OR+banana%29', rerun = True) #Quick test for next page
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF') #standard Apple
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Serbs%22+AND+text%3AApple') #standard Apple one culture
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22%29&fq=culture_level_samples%7CPSF') # Demo scraper for 750 (actually does 750-759)
@@ -46,4 +47,6 @@ Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultu
 
 print(Scraper1.time_req()) #return the time required (optional)
 print(Scraper1.cult_count(by='culture'))
-Scraper1.doc_scraper2(saveRate=50) #scrape the documents taken from the region
+Scraper1.doc_scraper(saveRate=50) #scrape the documents taken from the region
+t2 = time.time()
+print("Time taken",str(int(t2-t1)), "seconds")

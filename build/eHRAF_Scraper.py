@@ -131,13 +131,21 @@ class Scraper:
 
     # Estimate the time this will take (no longer accurate)
     def time_req(self):
+
+
         import math
+        # # OLD calculation, current speeds are drastically slower for reasons I am not sure yet
+        # # time estimate in seconds, larger scrapings should be faster so they get a log reduction.
+        # if self.pas_count > 10000: 
+        #     time_sec = math.log(self.pas_count,1.005) + len(self.culture_dict.keys())
+        # else:
+        #     # time of standard loading of each culture
+        #     time_sec = (self.pas_count / 5) + len(self.culture_dict.keys())
+
+        
         # time estimate in seconds, larger scrapings should be faster so they get a log reduction.
-        if self.pas_count > 10000: 
-            time_sec = math.log(self.pas_count,1.005) + len(self.culture_dict.keys())
-        else:
-            # time of standard loading of each culture
-            time_sec = (self.pas_count / 5) + len(self.culture_dict.keys())
+        time_sec = (self.pas_count) + len(self.culture_dict.keys())
+        # NEW time of standard loading of each culture
         time_min = ""
         time_hour = ""
         if time_sec > 3600:
