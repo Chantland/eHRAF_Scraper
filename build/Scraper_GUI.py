@@ -12,7 +12,7 @@
 # DONE: implement "enter name" feature. This is easy to implement but hard to look nice without crowding.
 # DONE: implement better looking continue button which is unclicakble until the right time
 # TODO: (OPTIONAL) implement a stop button
-# TODO: Multithreading so the program is not paused while running
+# DONE: Multithreading so the program is not paused while running
 # DONE: (basically) make the terminal print out to the GUI's terminal.
 # DONE: (potentially) Add more filters that eHRAF already allows.
 # DONE: Add passage page number columns to the excel files - eHRAF_Scraper.py
@@ -34,9 +34,9 @@
 # DONE: Implement file saving which can be more concise should the file be too big.
 # DONE: filter cultural inputs for accented characters
 # DONE: make file names with filters shortened.
-# TODO: Based on eHRAF website chnages October, 2023, create a quick fix and make sure redundant code is removed.  
-
-
+# DONE: Make long file names EVEN shorter, potentially also give optional 
+# TODO: Based on eHRAF website changes October, 2023, create a quick fix and make sure redundant code is removed. This probably mainly focuses on resultTabs_Total
+# TODO: Web scraping threading does not work with setting text box, fix
 
 import sys
 import os
@@ -95,7 +95,7 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.threadpool = QThreadPool() #for starting threads
-        self.descript = ''
+
         self.URL = ''
         self.setFixedSize(QSize(880, 780))
         self.load_ui()
@@ -219,12 +219,13 @@ class MainWindow(QMainWindow):
         self.textBrowser_URL.setText(self.URL)
 
     def textBox_warning(self, warning:str, crash:bool=False): #give warning flag if user does something wrong
-        self.text_clear()
+        # self.text_clear()
         # if the scraper crashed, give a failure warning and close the webpage unless it is not already closed
         if crash:
             self.textBrowser_Descript.append("<font color='red'><b>THE SCRAPER HAS CRASHED</b></font><br>")
             self.textBrowser_Descript.setTextColor(QColor("black")) #put in to make sure this stays as black as for an unknown reason the text can become blue
             try:
+                pass
                 self.scraper.web_close()
             except:
                 pass
@@ -233,7 +234,6 @@ class MainWindow(QMainWindow):
         self.pushButton_Continue.setEnabled(False)
     
     def text_clear(self): #clear both boxes of text
-        self.descript = ''
         self.textBrowser_Descript.setText('')
         self.textBrowser_URL.setText('')
     
@@ -401,8 +401,13 @@ class MainWindow(QMainWindow):
             cultureFiles = True
         else:
             cultureFiles = False
+
+        if len(self.plainTextEdit_AlternativeFolderName.toPlainText().strip())>0:
+            user_folder_name = self.plainTextEdit_AlternativeFolderName.toPlainText()
+        else:
+            user_folder_name = False
         
-        return user, headless, rerun, cultureFiles
+        return user, headless, rerun, cultureFiles, user_folder_name
     
     #get (optional) log in parameters
     def login(self):
@@ -416,7 +421,8 @@ class MainWindow(QMainWindow):
     
     # Initiate Login, Only relevant to put the scraper into a thread
     def initiate_login(self):
-        user, headless, rerun, cultureFiles = self.get_initialVars()
+        # self.text_clear()
+        user, headless, rerun, cultureFiles, user_folder_name = self.get_initialVars()
         self.scraper = Scraper(headless=headless)
         self.scraper.login()
 
@@ -424,7 +430,7 @@ class MainWindow(QMainWindow):
     # Get initial web scraping culture counts
     def web_scraper(self):
         # get intitial variables for web scraping and starting up the
-        user, headless, rerun, cultureFiles = self.get_initialVars()
+        user, headless, rerun, cultureFiles, user_folder_name = self.get_initialVars()
 
         # initialize the scraper if it does not exist yet (if there is no current URL like if someone did not log in)
         try:
@@ -432,16 +438,16 @@ class MainWindow(QMainWindow):
         except:
             self.scraper = Scraper(headless=headless)
 
-        # Run the region scraper. If there is nothing to scrape, then escape and give warning
+        # Run the region scraper. If there is nothing to scrape, then escape and give warning 
         try:
-            warning = self.scraper.region_scraper(url=self.URL, user=user, rerun=rerun, cultureFiles=cultureFiles) 
-            if warning is not None:
+            warning = self.scraper.region_scraper(url=self.URL, user=user, rerun=rerun, cultureFiles=cultureFiles, user_folder_name=user_folder_name) 
+            if warning is not None: 
                 self.textBox_warning(warning)
-                self.textBrowser_URL.setText(self.URL)
+                # self.textBrowser_URL.setText(self.URL) #TODO this does not work with multithreading, fix
                 self.scraper.web_close()
                 return
         except:
-            self.textBox_warning(warning="Unable to load the initial webpage properly, please try resubmitting", failure=True)
+            self.textBox_warning(warning="Unable to load the initial webpage properly, please try resubmitting", crash=True)
             return
         
         # If the file name is too long, give a warning.
@@ -482,6 +488,9 @@ class MainWindow(QMainWindow):
         worker = Worker(self.web_continue_initiate) # Any other args, kwargs are passed to the run function
         self.threadpool.start(worker) 
 
+        self.pushButton_Continue.setEnabled(False)
+        self.textBrowser_Descript.setTextColor(QColor("black")) #put in to make sure this stays as black as for an unknown reason the text can become blue
+
 
     # Continue web scraping and get actual web files
     def web_continue_initiate(self):
@@ -518,8 +527,6 @@ class MainWindow(QMainWindow):
                 self.textBox_warning("Unknown failure has occurred. If you have a partial save, you may start where you left off", crash=True)
             return
         self.textBrowser_Descript.append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}\n')
-        self.pushButton_Continue.setEnabled(False)
-        self.textBrowser_Descript.setTextColor(QColor("black")) #put in to make sure this stays as black as for an unknown reason the text can become blue
         return
 
 # change text color within Python

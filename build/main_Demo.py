@@ -31,7 +31,7 @@ Scraper1 = Scraper(headless=False)
 # Scraper1.region_scraper(url=r"https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Hawaiians%22+AND+%28subjects%3A%22spirits+and+gods%22+AND+text%3AApple%29") #Rapid 4 doc test
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28Apple+OR+pear+OR+banana%29&fq=culture_level_samples%7CPSF') #medium scraping (11 minutes!)
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Trobriands%22+AND+text%3A%28Apple+OR+pear+OR+banana%29') #long test for next page
-Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Navajo%22+AND+text%3A%28Apple+OR+pear+OR+banana%29', rerun = True) #Quick test for next page
+# Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Navajo%22+AND+text%3A%28Apple+OR+pear+OR+banana%29', rerun = True) #Quick test for next page
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3AApple&fq=culture_level_samples%7CPSF') #standard Apple
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Serbs%22+AND+text%3AApple') #standard Apple one culture
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22sickness%22%29&fq=culture_level_samples%7CPSF') # Demo scraper for 750 (actually does 750-759)
@@ -43,7 +43,9 @@ Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=cultu
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22preventive+medicine%22+OR+%22theory+of+disease%22%29&fq=culture_level_samples%7CPSF') # check OCM 751 and 753 with PSF filter
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22preventive+medicine%22+OR+%22theory+of+disease%22%29') # check OCM 751 and 753 without PSF filter
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22preventive+medicine%22+AND+%22sorcery%22+AND+%22theory+of+disease%22%29&fq=culture_level_samples%7CPSF')
+# Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22magical+and+mental+therapy%22+AND+%22preventive+medicine%22+AND+%22theory+of+disease%22%29&fq=culture_level_samples%7CPSF')
 
+Scraper1.region_scraper(url=r"https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Hawaiians%22+AND+%28subjects%3A%22spirits+and+gods%22+AND+text%3AApple%29", user_folder_name="Testy Apple") #Rapid 4 doc test
 
 print(Scraper1.time_req()) #return the time required (optional)
 print(Scraper1.cult_count(by='culture'))

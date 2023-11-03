@@ -140,8 +140,8 @@ border-color: rgba(80, 110, 106, 80);
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>220</y>
-        <width>551</width>
+        <y>240</y>
+        <width>541</width>
         <height>91</height>
        </rect>
       </property>
@@ -242,14 +242,14 @@ color: black;</string>
        <rect>
         <x>10</x>
         <y>460</y>
-        <width>551</width>
+        <width>541</width>
         <height>51</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <family>Arial</family>
-        <pointsize>14</pointsize>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="text">
@@ -3360,13 +3360,13 @@ color: Black;
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>41</y>
-        <width>551</width>
-        <height>451</height>
+        <y>42</y>
+        <width>541</width>
+        <height>461</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -3378,7 +3378,9 @@ color: Black;
           </font>
          </property>
          <property name="toolTip">
-          <string>Choose whether to display the browser while scraping</string>
+          <string>Choose whether to display the browser while scraping
+
+Note that the scraping will be faster if the browser is hidden.</string>
          </property>
          <property name="title">
           <string/>
@@ -3409,9 +3411,9 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>300</x>
-            <y>20</y>
+            <y>12</y>
             <width>118</width>
-            <height>23</height>
+            <height>31</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_Option_Browser">
@@ -3502,12 +3504,15 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>300</x>
-            <y>20</y>
+            <y>12</y>
             <width>118</width>
-            <height>23</height>
+            <height>31</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_Option_CloseBrowser">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetFixedSize</enum>
+           </property>
            <item>
             <widget class="QRadioButton" name="radioButton_CloseBrowser_NO">
              <property name="font">
@@ -3589,9 +3594,9 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>300</x>
-            <y>20</y>
+            <y>12</y>
             <width>118</width>
-            <height>23</height>
+            <height>31</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_Option_PartialFiles">
@@ -3682,9 +3687,9 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>300</x>
-            <y>20</y>
+            <y>12</y>
             <width>118</width>
-            <height>23</height>
+            <height>31</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_Option_DisplayPassages">
@@ -3735,7 +3740,7 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>440</x>
-            <y>8</y>
+            <y>4</y>
             <width>71</width>
             <height>21</height>
            </rect>
@@ -3768,7 +3773,7 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>440</x>
-            <y>32</y>
+            <y>30</y>
             <width>71</width>
             <height>21</height>
            </rect>
@@ -3847,9 +3852,9 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>300</x>
-            <y>20</y>
+            <y>12</y>
             <width>118</width>
-            <height>23</height>
+            <height>31</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_Option_CultureIndividualFiles">
@@ -3940,7 +3945,7 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>440</x>
-            <y>15</y>
+            <y>12</y>
             <width>45</width>
             <height>31</height>
            </rect>
@@ -3982,7 +3987,7 @@ color: Black;
           <property name="geometry">
            <rect>
             <x>300</x>
-            <y>15</y>
+            <y>12</y>
             <width>111</width>
             <height>31</height>
            </rect>
@@ -4004,6 +4009,80 @@ color: Black;
           </property>
           <property name="centerOnScroll">
            <bool>false</bool>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_Option_AlternativeFolderName">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in your desired folder name which your scraping will be called. This is also what the scraper will look for when it tries to find partial files. Therefore, be careful what you name your folder as same named folders will be regarded as the same scraping even if they are not! &lt;/p&gt;&lt;p&gt;Leave blank if you want the defualt folder name. Text must be entered in BEFORE clicking &amp;quot;submit&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <widget class="QLabel" name="label_AlternativeFolderName">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>191</width>
+            <height>38</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(60, 180, 170);</string>
+          </property>
+          <property name="text">
+           <string>Alternative Folder Name</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::AutoText</enum>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QPlainTextEdit" name="plainTextEdit_AlternativeFolderName">
+          <property name="geometry">
+           <rect>
+            <x>200</x>
+            <y>15</y>
+            <width>331</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhMultiLine|Qt::ImhPreferNumbers</set>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+          <property name="backgroundVisible">
+           <bool>false</bool>
+          </property>
+          <property name="centerOnScroll">
+           <bool>false</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Enter desired folder name or leave blank for default</string>
           </property>
          </widget>
         </widget>
@@ -5631,24 +5710,8 @@ color: rgb(60, 180, 170);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
+  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
   <buttongroup name="buttonGroup_Filter_DocumentTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
-  <buttongroup name="buttonGroup_Filter_Series">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Keyword">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
    <property name="exclusive">
     <bool>false</bool>
    </property>
@@ -5659,38 +5722,54 @@ color: rgb(60, 180, 170);
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_PartialFile"/>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
-  <buttongroup name="buttonGroup_ExtraClause"/>
-  <buttongroup name="buttonGroup_Filter_CulturalLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="buttonGroup_Filter_RegionsALL">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
   <buttongroup name="buttonGroup_Filter_Regions">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
   <buttongroup name="buttonGroup_Culture">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_Filter_Series">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_PartialFile"/>
   <buttongroup name="buttonGroup_Filter_DocumentLevel">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
   <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
+  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
+  <buttongroup name="buttonGroup_ExtraClause"/>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
+  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Keyword">
+   <property name="exclusive">
+    <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Filter_CulturalLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
  </buttongroups>
 </ui>

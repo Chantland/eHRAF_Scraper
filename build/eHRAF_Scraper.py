@@ -21,7 +21,7 @@ import time                         # for waiting for the page to load
 import selenium                     #package for loading an autnomous browser
 import webdriver_manager            # manager, I am not sure what it does in relation to selenium but it is important, perhaps this is used to avoid downloading chrome
 from datetime import datetime
-
+import concurrent.futures           # for multithreading
 
 from selenium import webdriver      # load and run the webpage dynamically.
 from selenium.webdriver.chrome.service import Service
@@ -65,7 +65,7 @@ class Scraper:
         self.driver.get(self.homeURL) 
 
     # Reveal all the cultures relevant to your query then extarct URL links
-    def region_scraper(self, url=None, user=None, rerun=False, cultureFiles= False):
+    def region_scraper(self, url=None, user=None, rerun=False, cultureFiles= False, user_folder_name = False):
 
         if url is not None:
             self.URL = url
@@ -91,10 +91,16 @@ class Scraper:
         searchTokens = self.URL.split('/')[-1]
         self.driver.get(self.homeURL + searchTokens)
 
+        #Create folder name if not supplied, otherwise use what he user desire
+        folder_name = self.output_dir_cons() # Get folder name for saving in addition to setting up behind the scenes other text strings for the later excel file
+        if user_folder_name is not False and isinstance(user_folder_name, str): # if the user supplied a folder name, use this instead (still need output_dir_cons() for other file working)
+            folder_name = user_folder_name
+        folder_name = self.folderNameClean(folder_name) #clean folder name of illegal characters
+        assert len(folder_name) > 0, "ERROR, zero length folder name. Please supply Alphanumeric characters"
+        self.createDataDir(folder_name) # Create a data directory for saving and partial file checking
 
         # if a partial file is already present, append to that file
         self.querySkipper = False
-        self.output_dir_cons()
         if rerun is False:
             if os.path.isfile(self.file_Path):
                 print("File with the same search query found, skipping successfully scraped cultures")
@@ -313,6 +319,27 @@ class Scraper:
                     except RuntimeError:
                         self.reload_fail(df_eHRAF, pas_count_total, "Sources")
 
+
+                #### Leftover for multithreading, DELETE
+                # # We can use a with statement to ensure threads are cleaned up promptly
+                # with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                #     # Start the load operations and mark each future with its URL
+                #     future_to_click = {executor.submit(self.argumentClick, source_i): source_i for source_i in sourceTabs}
+                #     for future in concurrent.futures.as_completed(future_to_click):
+                #         future_to_click[future]
+
+                # # create a thread pool with 6 threads
+                # pool = concurrent.futures.ThreadPoolExecutor(max_workers=6)
+                
+                # # submit tasks to the pool
+                # for source_i in sourceTabs:
+                #     pool.submit(self.argumentClick, source_i)
+                # # wait for all tasks to complete
+                # pool.shutdown(wait=True)
+                
+                # print("Main thread continuing to run")
+
+
                 # Click every source tab
                 for source_i in sourceTabs:
                     self.driver.execute_script("arguments[0].click();", source_i)
@@ -324,7 +351,7 @@ class Scraper:
                 sourceCount_list = list(map(lambda x: int(x.text), sourceCount[0::3]))
                 resultsTabs_total = len(sourceCount_list)
                 # Check to make sure every source tab was clicked correctly by comparing the result tab numbers
-                try:
+                try: #NOTE: due to changes to eHRAF, this is superfluous as resultTabs never changes, nevertheless this is unlikely to harm the program by leaving it in, just know that this is not a valid check anymore!
                     resultsTabs = self.reload_retry(resultsTabs_total, 'trad-data__results')
                 except:
                     #try to reload the page, otherwise, pass
@@ -348,7 +375,7 @@ class Scraper:
                     resultsTabs = self.driver.find_elements(By.CLASS_NAME, 'trad-data__results')
                     # in case was not enough time, redo until all the result tabs are loaded again.
                     # Otherwise, try clicking and reseting the tab to try again
-                    if len(resultsTabs) != resultsTabs_total:
+                    if len(resultsTabs) != resultsTabs_total: #NOTE: due to changes to eHRAF, this is superfluous as resultTabs never changes, nevertheless this is unlikely to harm the program by leaving it in, just know that this is not a valid check anymore!
                         try:
                             resultsTabs = self.reload_retry(resultsTabs_total, 'trad-data__results')
                         except RuntimeError:
@@ -391,9 +418,9 @@ class Scraper:
                         # in case there is not enough time, attempt to extract result tabs.
                         # IF the tabs will not load properly within the HTML ebpage, close them
                         # then re-open them then find where was left off.
-                        if len(resultsTabs) != resultsTabs_total:
+                        if len(resultsTabs) != resultsTabs_total:   #NOTE: due to changes to eHRAF, this is superfluous as resultTabs never changes, nevertheless this is unlikely to harm the program by leaving it in, just know that this is not a valid check anymore!
                             try:
-                                resultsTabs = self.reload_retry(resultsTabs_total,
+                                resultsTabs = self.reload_retry(resultsTabs_total, 
                                                                 'trad-data__results')
                             except RuntimeError:
                                 # try retry results tabs and run through the tabs
@@ -403,7 +430,7 @@ class Scraper:
                                         self.driver.execute_script("arguments[0].click();", sourceTabs[i])
                                         time.sleep(1) #Buffering time, just in case
                                         self.driver.execute_script("arguments[0].click();", sourceTabs[i])
-                                        resultsTabs = self.reload_retry(resultsTabs_total,
+                                        resultsTabs = self.reload_retry(resultsTabs_total, 
                                                                         'trad-data__results')
                                         if sourceCount_list[i] > 10:
                                             expander = resultsTabs[i].find_elements(By.CLASS_NAME, 'mdc-list-item')
@@ -497,7 +524,7 @@ class Scraper:
                         else:
                             ## close sourcetab(this might save time in the long run)
                             self.driver.execute_script("arguments[0].click();", sourceTabs[i])
-                            # resultsTabs_total -= 1 #NOTE removing it to not change the counts but more work will need to be done to make this stable
+                            # resultsTabs_total -= 1 #NOTE commenting out as eHARF no longer changes counts but keeping it here in case things need to change back.
                             break #break from loop
                 # Run to the next page if necessary. Check to see if there are more source tabs left, if so, click the next page and continue scraping the page
                 source_total -= len(sourceCount_list)
@@ -534,7 +561,12 @@ class Scraper:
             self.web_close()
         print(f'{pas_count_total} passages out of a possible {self.pas_count} saved (also check file/dataframe)')
         print('Scraping complete\n\n')
-    
+    # function for executing clicks (used for multithreading.)
+    def argumentClick(self, driver_query):
+        print("Worker thread running")
+        self.driver.execute_script("arguments[0].click();", driver_query)
+        print("Worker thread complete")
+
     def reload_retry(self, idealCount, searchText):
         reload_protect = 0
         reloadTab = self.driver.find_elements(By.CLASS_NAME, searchText)
@@ -568,12 +600,10 @@ class Scraper:
                 next_page = self.driver.find_element(By.XPATH, "//button[@title='Next Page']")
                 self.driver.execute_script("arguments[0].click();", next_page)
                 next_page_count_loop -= 1
+    # Clean URL to use as a file name and to put it into the excel file as data
     def output_dir_cons(self):
-        # clean and strip the URL to be put into the excel document
         replace_dict = {'%28':'(', '%29':')', '%3A':':', '%7C':'|', '%3B':';', '%22':'\"', '%27':'\'', '\+':' '}
         remove_list = [self.homeURL, 'search', '\?q='] #some characters are redundantly changed above so that it is easier to see what the characters mean (like %7C)
-        replace_dict_file = {'fq=':'_FILTERS-', ':':'-', ' ':'_'}
-        remove_list_file = ['\"', '\'', ':','\|','&']
 
         folder_name = self.URL
 
@@ -617,15 +647,19 @@ class Scraper:
 
             # now add the corrected filters back to the URL file name,
             folder_name = re.sub(re.escape(reg[0]), folderFilter, folder_name)
+        return folder_name
 
-
-        # remove and replace the characters not good for a file name
+    # remove and replace the characters not good for a file name
+    def folderNameClean(self, folder_name):
+        replace_dict_file = {'fq=':'_FILTERS-', ':':'-', ' ':'_'}
+        remove_list_file = ['\"', '\'', ':','|','&', '\\', '/', '?', '!', '*', '^', '%', '$', '{', '}', '@', '#', '=', '+', ' ']
+        # replace illegal characters
         for key, val in replace_dict_file.items():
             folder_name = re.sub(key, val, folder_name)
         for i in remove_list_file:
-            folder_name = re.sub(i, '', folder_name)
+            folder_name = re.sub(re.escape(i), '', folder_name)
 
-        # if the file is too long
+        #Simply check to make sure the file name is a good length, otherwise snip it off
         self.file_length_warning = None
         if len(folder_name) > 240:
             folder_name = folder_name[:240]
@@ -637,9 +671,10 @@ class Scraper:
             #     folder_name = re.sub(reg2, '', folder_name)
             # # if file is still too long, go into basic cutting
             # if len(folder_name) > 240:
+        return folder_name
                 
-
-
+    # Create the dat directory, this is also used for the other functions to see if a partial file is already present
+    def createDataDir(self, folder_name:str):
         # output directory
         output_dir = "Data"  
 
@@ -655,8 +690,9 @@ class Scraper:
         output_dir_path = self.application_path + '/' + output_dir  # output directory path
         os.makedirs(output_dir_path, exist_ok=True)  # make Data folder if it does not exist
         self.folder_path = output_dir_path + '/' + folder_name   #find where the folder should be locate
-        self.file_Path = self.folder_path + '/_Altogether_Dataset.xlsx' #find where the altogether dataset should be loacted
-        # self.file_Path = output_dir_path + '/' + file_name + '_web_data.xlsx'
+        self.file_Path = self.folder_path + '/_Altogether_Dataset.xlsx' #find where the altogether dataset should be located
+
+
     # if there already exists a file that contains this specific search pattern, then load the data
     def partial_file_return(self):
 
