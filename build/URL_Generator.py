@@ -31,9 +31,9 @@ class URL_Generator:
             df = pd.read_excel(resource_path("Resources/Culture_Names.xlsx"))
             for culture in query_list:
                 # add valid found Cultures from the dataframe, otherwise add to invalid dictionary. 
-                if culture in df['Culture'].unique():
-                    found_culture = df[df['Culture'].isin([culture])]
-                    self.Search_dict['culture']['valid'].add(found_culture['Culture'].values[0]) #could be one line but split to reduce confusion
+                if culture in df['Culture_SansAccent'].unique():
+                    found_culture = df[df['Culture_SansAccent'].isin([culture])] #get Row of the culture without accents.
+                    self.Search_dict['culture']['valid'].add(found_culture['Culture'].values[0]) #add to dictionary the original culture name with accents
                 else:
                     self.Search_dict['culture']['invalid'].add(str(culture))
             self.Search_dict['culture']['valid'] = sorted(self.Search_dict['culture']['valid']) #sort the inputs/values
@@ -58,7 +58,7 @@ class URL_Generator:
         conj_list = [" ", " OR ", " AND "]
         # create phrase for query (will be combined with the rest and then turned in a URL
         if len(self.Search_dict[name]['valid']) > 0:
-            self.Search_dict[name]['phrase'] += search_param+':(' #TODO: fix this name as it does not create the query correctly.
+            self.Search_dict[name]['phrase'] += search_param+':(' #TODO: fix this name as it does not create the query correctly. (Is this still a problem? Seems like the scraping is accurate)
             multi_term = False
             for search_i in self.Search_dict[name]['valid']:
                 # Add a conjunction if there are more than 1 search terms
@@ -96,7 +96,7 @@ class URL_Generator:
         
         # create search phrase chunks which will be later combined and used for the URL
         if cultures != '':
-            unidecode(cultures) #remove accented characters
+            cultures = unidecode(cultures) #remove accented characters
             culture_list = self.word_strip(cultures)
             # Match cultures with the cultures that eHRAF uses
             self.culture_valid_extractor(culture_list)

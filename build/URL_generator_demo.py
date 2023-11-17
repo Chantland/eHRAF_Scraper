@@ -93,7 +93,7 @@ if multi_run == True:
 
 # Singlular run
 if single_run == True:
-    cultures = ""
+    cultures = "abipón"
     cult_conj =  1
     subjects = "751"
     subjects_conj = 1
