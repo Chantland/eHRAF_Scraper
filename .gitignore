@@ -11,3 +11,4 @@ _demo_terminal.py
 Sketch-Sheet.xlsx
 .DS_Store
 Build/eHRAF_Scraper.ipynb
+build/Scraper_GUI/*

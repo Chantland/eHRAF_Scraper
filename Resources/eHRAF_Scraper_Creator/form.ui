@@ -71,7 +71,7 @@ border-color: rgba(80, 110, 106, 80);
      </font>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="Info">
      <attribute name="title">
@@ -3360,7 +3360,7 @@ color: Black;
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -4021,7 +4021,7 @@ Note that the scraping will be faster if the browser is hidden.</string>
           </font>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in your desired folder name which your scraping will be called. This is also what the scraper will look for when it tries to find partial files. Therefore, be careful what you name your folder as same named folders will be regarded as the same scraping even if they are not! &lt;/p&gt;&lt;p&gt;Leave blank if you want the defualt folder name. Text must be entered in BEFORE clicking &amp;quot;submit&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in your desired folder name which your scraping will be called. This is also what the scraper will look for when it tries to find partial files. Therefore, be careful what you name your folder as same named folders will be regarded as the same scraping even if they are not! &lt;/p&gt;&lt;p&gt;Leave blank if you want the default folder name. Text must be entered in BEFORE clicking &amp;quot;submit&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string/>
@@ -5710,29 +5710,14 @@ color: rgb(60, 180, 170);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
-  <buttongroup name="buttonGroup_Filter_DocumentTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Subject"/>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
   <buttongroup name="buttonGroup_Filter_PublishedDate">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Filter_RegionsALL">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Filter_Regions">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Culture">
+  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
    </property>
@@ -5742,31 +5727,46 @@ color: rgb(60, 180, 170);
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_PartialFile"/>
-  <buttongroup name="buttonGroup_Filter_DocumentLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
-  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
-  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="buttonGroup_ExtraClause_Subject"/>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
+  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
   <buttongroup name="buttonGroup_ExtraClause"/>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
-  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Keyword">
+  <buttongroup name="buttonGroup_Culture">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
   <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Filter_DocumentTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
+  <buttongroup name="buttonGroup_Filter_DocumentLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Filter_RegionsALL">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_Subject"/>
   <buttongroup name="buttonGroup_Filter_CulturalLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
+  <buttongroup name="buttonGroup_Filter_Regions">
    <property name="exclusive">
     <bool>false</bool>
    </property>
