@@ -1,3 +1,13 @@
+import time
+import eHRAF_Scraper
+from eHRAF_Scraper import Scraper
+# for reloading the scraper module
+from importlib import reload
+Scraper = reload(eHRAF_Scraper)
+from eHRAF_Scraper import Scraper
+
+
+
 
 
 # # Scraper inputs:
@@ -11,22 +21,12 @@
 # saveRate =    	<int: iteration of files scraped before a routine "safety save" occurs. Default is 5000>
 
 
-import time
-
-
-
-
-import eHRAF_Scraper
-from eHRAF_Scraper import Scraper
-
-# for reloading the scraper module
-from importlib import reload
-Scraper = reload(eHRAF_Scraper)
-from eHRAF_Scraper import Scraper
-
-
 t1 = time.time()
 Scraper1 = Scraper(headless=False)
+
+#enter URL paramter here!
+Scraper1.region_scraper(url=r"https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Hawaiians%22+AND+%28subjects%3A%22spirits+and+gods%22+AND+text%3AApple%29")
+
 
 # Scraper1.region_scraper(url=r"https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Hawaiians%22+AND+%28subjects%3A%22spirits+and+gods%22+AND+text%3AApple%29") #Rapid 4 doc test
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=text%3A%28Apple+OR+pear+OR+banana%29&fq=culture_level_samples%7CPSF') #medium scraping (11 minutes!)
@@ -45,7 +45,8 @@ Scraper1 = Scraper(headless=False)
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22preventive+medicine%22+AND+%22sorcery%22+AND+%22theory+of+disease%22%29&fq=culture_level_samples%7CPSF')
 # Scraper1.region_scraper(url=r'https://ehrafworldcultures.yale.edu/search?q=subjects%3A%28%22magical+and+mental+therapy%22+AND+%22preventive+medicine%22+AND+%22theory+of+disease%22%29&fq=culture_level_samples%7CPSF')
 
-Scraper1.region_scraper(url=r"https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Hawaiians%22+AND+%28subjects%3A%22spirits+and+gods%22+AND+text%3AApple%29", user_folder_name="Testy Apple") #Rapid 4 doc test
+
+# Scraper1.region_scraper(url=r"https://ehrafworldcultures.yale.edu/search?q=cultures%3A%22Hawaiians%22+AND+%28subjects%3A%22spirits+and+gods%22+AND+text%3AApple%29", user_folder_name="Testy Apple") #Rapid 4 doc test
 
 print(Scraper1.time_req()) #return the time required (optional)
 print(Scraper1.cult_count(by='culture'))

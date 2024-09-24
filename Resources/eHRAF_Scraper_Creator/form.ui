@@ -71,7 +71,7 @@ border-color: rgba(80, 110, 106, 80);
      </font>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="Info">
      <attribute name="title">
@@ -383,6 +383,7 @@ color: black;</string>
         <font>
          <family>Arial Black</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -1004,6 +1005,7 @@ border-color: rgb(82, 120, 120);
         <font>
          <family>Arial Black</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -4191,6 +4193,7 @@ border-color: rgba(80, 110, 106, 80);
     <property name="font">
      <font>
       <family>Arial</family>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -5630,6 +5633,7 @@ color: rgb(60, 180, 170);
      <property name="font">
       <font>
        <family>Arial</family>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -5710,14 +5714,40 @@ color: rgb(60, 180, 170);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
+  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
+  <buttongroup name="buttonGroup_Filter_Regions">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
+  <buttongroup name="buttonGroup_Subject"/>
+  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
   <buttongroup name="buttonGroup_Filter_PublishedDate">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Keyword">
+  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
+  <buttongroup name="buttonGroup_Filter_DocumentTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_ExtraClause"/>
+  <buttongroup name="buttonGroup_Filter_DocumentLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
+  <buttongroup name="buttonGroup_Culture">
    <property name="exclusive">
     <bool>true</bool>
    </property>
@@ -5727,30 +5757,11 @@ color: rgb(60, 180, 170);
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
-  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
-  <buttongroup name="buttonGroup_ExtraClause"/>
-  <buttongroup name="buttonGroup_Culture">
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Filter_DocumentTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
-  <buttongroup name="buttonGroup_Filter_DocumentLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
-   <property name="exclusive">
-    <bool>false</bool>
    </property>
   </buttongroup>
   <buttongroup name="buttonGroup_Filter_RegionsALL">
@@ -5758,18 +5769,11 @@ color: rgb(60, 180, 170);
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_PartialFile"/>
-  <buttongroup name="buttonGroup_Subject"/>
   <buttongroup name="buttonGroup_Filter_CulturalLevel">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
-  <buttongroup name="buttonGroup_Filter_Regions">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
  </buttongroups>
 </ui>

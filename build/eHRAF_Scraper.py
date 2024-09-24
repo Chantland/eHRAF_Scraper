@@ -35,6 +35,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
+# # DEMO to test versions
+# import sys
+# print(sys.version)
+# print(sys.executable)
+# print(sys.path)
+
+
 class Scraper:
     def __init__(self, headless=False):
 
