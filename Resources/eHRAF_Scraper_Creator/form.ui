@@ -383,7 +383,6 @@ color: black;</string>
         <font>
          <family>Arial Black</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -1005,7 +1004,6 @@ border-color: rgb(82, 120, 120);
         <font>
          <family>Arial Black</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -1013,7 +1011,7 @@ border-color: rgb(82, 120, 120);
         <cursorShape>CrossCursor</cursorShape>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in an number of cultures, subjects and/or keywords separated by a comma. You may leave any number blank. When you are done, the valid searchable terms will be made into a URL and the eHRAF website will be scraped. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning, your computer shutting off or going to sleep may prematurally end the scraping.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in any number of cultures, subjects and/or keywords separated by a comma. You may leave any number blank. When you are done, the valid searchable terms will be made into a URL and the eHRAF website will be scraped. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning, your computer shutting off or going to sleep may prematurally end the scraping.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
@@ -3910,7 +3908,7 @@ Note that the scraping will be faster if the browser is hidden.</string>
           </font>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the iteration of passages you want scraped before a partial save will occur (note that the number will never be exact when actually saving). If you chose to save separate culture files, this only relates to the &amp;quot;Altogether Dataset&amp;quot;.&lt;/p&gt;&lt;p&gt;Because Scraping a website is incredibly beholden to the website working, sometimes there can be unexpected crashes that bypass even the partial save feature of the Scraper. Saving is quick but it takes time. If you trust in this program, select &amp;quot;None&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;NOTE: If the number is small (like 6 or less) in rare circumstances, &lt;/span&gt;the run_info column may create extra rows. The data, however, is not affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You are advised to leave this option unchanged. This is a legacy save feature that saves in between cultures and after X number of passages have been scraped. A new, better crash save feature has been implemented where no matter the number of passages scraped, the scraper will save all your data allowing you to start from where it crashed. Here is more info:&lt;/p&gt;&lt;p&gt;Enter the iteration of passages you want scraped before a partial save will occur (note that the number will never be exact when actually saving). If you chose to save separate culture files, this only relates to the &amp;quot;Altogether Dataset&amp;quot;.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;NOTE: If the number is small (like 6 or less) in rare circumstances, &lt;/span&gt;the run_info column may create extra rows. The data, however, is not affected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string/>
@@ -4004,7 +4002,7 @@ Note that the scraping will be faster if the browser is hidden.</string>
            <set>Qt::ImhMultiLine|Qt::ImhPreferNumbers</set>
           </property>
           <property name="plainText">
-           <string>5000</string>
+           <string>500</string>
           </property>
           <property name="backgroundVisible">
            <bool>false</bool>
@@ -4193,7 +4191,6 @@ border-color: rgba(80, 110, 106, 80);
     <property name="font">
      <font>
       <family>Arial</family>
-      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -5633,7 +5630,6 @@ color: rgb(60, 180, 170);
      <property name="font">
       <font>
        <family>Arial</family>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -5714,57 +5710,49 @@ color: rgb(60, 180, 170);
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
-  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
-  <buttongroup name="buttonGroup_Filter_Regions">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
-  <buttongroup name="buttonGroup_Subject"/>
-  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
-  <buttongroup name="buttonGroup_Filter_PublishedDate">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
-  <buttongroup name="buttonGroup_Filter_DocumentTypes">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause"/>
-  <buttongroup name="buttonGroup_Filter_DocumentLevel">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
-  <buttongroup name="buttonGroup_Culture">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="buttonGroup_Filter_Series">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Culture">
+   <property name="exclusive">
+    <bool>true</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Filter_DocumentLevel">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
+  <buttongroup name="buttonGroup_ExtraClause_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_ExtraClause_Keyword"/>
+  <buttongroup name="buttonGroup_Filter_RegionsALL">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Options_CultureIndividualFiles"/>
   <buttongroup name="buttonGroup_Options_PartialFile"/>
+  <buttongroup name="buttonGroup_ExtraClause"/>
   <buttongroup name="buttonGroup_Keyword">
    <property name="exclusive">
     <bool>true</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Filter_RegionsALL">
+  <buttongroup name="buttonGroup_Filter_SubsistenceTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_Filter_DocumentTypes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_SubjKey_Conj"/>
+  <buttongroup name="buttonGroup_Filter_PublishedDate">
    <property name="exclusive">
     <bool>false</bool>
    </property>
@@ -5774,6 +5762,14 @@ color: rgb(60, 180, 170);
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_Options_DisplayPassages_NoY"/>
+  <buttongroup name="buttonGroup_Options_DisplayPassages_CoC"/>
+  <buttongroup name="buttonGroup_ExtraClause_Subject"/>
+  <buttongroup name="buttonGroup_Subject"/>
+  <buttongroup name="buttonGroup_Options_ShowBrowser"/>
+  <buttongroup name="buttonGroup_Filter_Regions">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
  </buttongroups>
 </ui>

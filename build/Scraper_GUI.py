@@ -35,15 +35,23 @@
 # DONE: filter cultural inputs for accented characters
 # DONE: make file names with filters shortened.
 # DONE: Make long file names EVEN shorter, potentially also give optional 
-# TODO: Based on eHRAF website changes October, 2023, create a quick fix and make sure redundant code is removed. This probably mainly focuses on resultTabs_Total
+# DONE: Based on eHRAF website changes October, 2023, create a quick fix and make sure redundant code is removed. This probably mainly focuses on resultTabs_Total
 # TODO: Web scraping threading does not work with setting text box, fix
-
+# DONE: Implement better partial save where the file saves from the last place it crashed as well as able to return to that spot upon rerunning.
+# DONE: Implement recursive retry where should the scraper fail, it will retry after x attempts to scrape the data
+# DONE: After Recursive retry, make sure, the crash conditions still work as intended.
+# DONE: set save rate to 500 or lower
+# DONE: Allow for redoing of cultures should crash be indetermined.
+# TODO: Glitch found where jumbled searches (apple pear -> pear apple) are not the same despite the fact they should be. The program also crashes when attempting to do the same search terms.
+# TODO: Fix scraper crash when there are no valid results as it should return "No valid results found"
+# TODO: Redoing finished culture crashes the program or at best does not work. This is not specifically a terrible glitch since either they have the finished file or they can simply switch to not "use partiaal files if present", 
+# but still, the glitch is a problem and may be causing other downstream problems
 import sys
 import os
 from URL_Generator import URL_Generator as ug
 import re
 from eHRAF_Scraper import Scraper
-
+# from eHRAF_Scraper_beta import Scraper # use beta for testing, this should be removed when actual 
 
 from PyQt6 import uic, QtTest
 from PyQt6.QtCore import (
@@ -56,7 +64,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QCheckBox, 
     QMainWindow)
-from PyQt6.QtGui import QIcon, QColor
+from PyQt6.QtGui import QIcon, QColor, QPalette
 
 
 
@@ -223,12 +231,11 @@ class MainWindow(QMainWindow):
         # if the scraper crashed, give a failure warning and close the webpage unless it is not already closed
         if crash:
             self.textBrowser_Descript.append("<font color='red'><b>THE SCRAPER HAS CRASHED</b></font><br>")
-            self.textBrowser_Descript.setTextColor(QColor("black")) #put in to make sure this stays as black as for an unknown reason the text can become blue
-            try:
-                pass
-                self.scraper.web_close()
-            except:
-                pass
+            self.reset_text_color() #Reset Color back to original
+            # try:
+            #     self.scraper.web_close()
+            # except:
+            #     pass
         # Add text warning
         self.textBrowser_Descript.append(f'{warning}\n')
         self.pushButton_Continue.setEnabled(False)
@@ -423,7 +430,7 @@ class MainWindow(QMainWindow):
     def initiate_login(self):
         # self.text_clear()
         user, headless, rerun, cultureFiles, user_folder_name = self.get_initialVars()
-        self.scraper = Scraper(headless=headless)
+        self.scraper = Scraper(headless=headless, GuiInUse=True)
         self.scraper.login()
 
 
@@ -436,18 +443,22 @@ class MainWindow(QMainWindow):
         try:
             self.scraper.driver.current_url
         except:
-            self.scraper = Scraper(headless=headless)
+            self.scraper = Scraper(headless=headless, GuiInUse=True)
 
         # Run the region scraper. If there is nothing to scrape, then escape and give warning 
+        warning = None
         try:
             warning = self.scraper.region_scraper(url=self.URL, user=user, rerun=rerun, cultureFiles=cultureFiles, user_folder_name=user_folder_name) 
             if warning is not None: 
                 self.textBox_warning(warning)
+
                 # self.textBrowser_URL.setText(self.URL) #TODO this does not work with multithreading, fix
                 self.scraper.web_close()
                 return
         except:
-            self.textBox_warning(warning="Unable to load the initial webpage properly, please try resubmitting", crash=True)
+            if warning is None:
+                self.textBox_warning(warning="Unable to load the initial webpage properly, please try resubmitting", crash=True)
+            self.scraper.web_close()
             return
         
         # If the file name is too long, give a warning.
@@ -457,7 +468,9 @@ class MainWindow(QMainWindow):
 
 
         # Display time required to Scrape
+        self.reset_text_color() #Reset Color back to original
         self.textBrowser_Descript.append(f'{self.scraper.time_req()}\n')
+        
 
         # Display (optionally) all the cultures and passage counts
         if self.radioButton_DisplayPassages_YES.isChecked():
@@ -471,7 +484,7 @@ class MainWindow(QMainWindow):
             self.textBrowser_Descript.append(f'{self.scraper.cult_count(by=cultureCount)}\n')
 
         # If there is a matching query, output info
-        if self.scraper.querySkipper:
+        if self.scraper.restartCrashedQuery:
             self.textBrowser_Descript.append("File with the same search query found, skipping successfully scraped cultures\n")
             # also give a warning if you might be overwriting the wrong long file.
             if self.scraper.file_length_warning is not None:
@@ -489,7 +502,11 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker) 
 
         self.pushButton_Continue.setEnabled(False)
-        self.textBrowser_Descript.setTextColor(QColor("black")) #put in to make sure this stays as black as for an unknown reason the text can become blue
+        #TEST
+        from PyQt6.QtGui import QColor, QPalette
+
+        self.reset_text_color() #Reset Color back to original
+
 
 
     # Continue web scraping and get actual web files
@@ -502,9 +519,9 @@ class MainWindow(QMainWindow):
                 saveRate = int(self.plainTextEdit_PartialSave_DocCount.toPlainText())
             except:
                 saveRate = None
-        if self.scraper.querySkipper:
-            pas_count_total = self.scraper.partial_file_return()[1]
-            self.textBrowser_Descript.append(f'{pas_count_total} passages loaded from partial file\n')
+        if self.scraper.restartCrashedQuery:
+            self.scraper.partial_file_return()
+            # self.textBrowser_Descript.append(f'{self.scraper.pas_count_total} passages loaded from partial file\n')
             QCoreApplication.processEvents() #process the events then wait so that the text can be loaded. Likely it may be good to use Qthreads instead
         QCoreApplication.processEvents()
 
@@ -514,21 +531,60 @@ class MainWindow(QMainWindow):
         else:
             endClose = False
 
-        # run the actual scraping. if it should fail, output the reason
-        try:
-            # create new thread for doc_scraper
-            self.scraper.doc_scraper(saveRate=saveRate, endClose=endClose)
-        except:
-            # if known failure occurred, print out, otherwise give unknown
-            try:
-                self.textBox_warning(self.scraper.fail_text, crash=True)
-                self.textBrowser_Descript.append(f'{self.scraper.exception_text}\n')
+        allowableAttempts = 3
+        attempts = 0
+        while attempts < allowableAttempts:
+            attempts += 1
+            if attempts >1:
+                self.textBrowser_Descript.append(f'\n\n\n<b>ATTEMPT #{attempts}:</b>\n')
+            try: #Try to scrape, if we have an issue, display the issue
+                # self.scraper.doc_scraper(saveRate=saveRate, endClose=endClose)
+                # TODO: Fix this so it can end the browser and not fail when the search queries are already found
+                for scraper_text in self.scraper.doc_scraper(saveRate=saveRate, endClose=endClose):
+                    self.textBrowser_Descript.append(f"\n{scraper_text}\n")
+                    self.reset_text_color() #Reset Color back to original
             except:
-                self.textBox_warning("Unknown failure has occurred. If you have a partial save, you may start where you left off", crash=True)
-            return
-        self.textBrowser_Descript.append(f'Completed scraping. File saved to:\n{self.scraper.folder_path}\n')
-        return
+                try: #display the issue if possible
+                    self.textBox_warning(self.scraper.exception_text, crash=True)
+                    self.textBrowser_Descript.append(f'{self.scraper.fail_text}\n')
+                except:
+                    text= "Unknown failure has occurred. Partial file will need to restart at last routine autosave and thus be smaller\n"
+                    self.textBox_warning(text, crash=True)
+                    # self.scraper.logCrash(self, exception_text=text)
+                finally:
+                    self.scraper.restartCrashedQuery = True
+                    self.scraper.crashed = True
+            else: 
+                break #If scraper completes, then break from the loop
+        else: # If we tried enough attempts but the scraper still fails, quit
+            self.textBrowser_Descript.append("<font color='red'><b>\n\nRETRY ATTEMPTS EXCEEDED</b></font><br>")
+            self.reset_text_color() #Reset Color back to original
+            self.textBrowser_Descript.append("Please rerun the scraper and it will attempt to use any partial file that exists. Do not erase the partial file unless you want to restart from scratch. Note that if there are repeated failures with the same search term, the scraper may have an issue with the partial file and you might need set the \'Use partial files if present\'option to \'no\'")
+            return #break early as we did not complete the scraping
+    
 
+
+        # # run the actual scraping. if it should fail, output the reason
+        # try:
+        #     # create new thread for doc_scraper
+        #     self.scraper.doc_scraper(saveRate=saveRate, endClose=endClose)
+        # except:
+        #     # if known failure occurred, print out, otherwise give unknown
+        #     try:
+        #         self.textBox_warning(self.scraper.fail_text, crash=True)
+        #         self.textBrowser_Descript.append(f'{self.scraper.exception_text}\n')
+        #     except:
+        #         self.textBox_warning("Unknown failure has occurred. If you have a partial save, you may start where you left off", crash=True)
+        #         self.scraper.web_close()
+        #     return
+        
+        self.textBrowser_Descript.append(f'File saved to:\n{self.scraper.folder_path}\n\n')
+        # self.textBrowser_Descript.append(f'\n{self.scraper.pas_count_total} passages out of a possible {self.scraper.intendPas_count} saved (also check file/dataframe)\n')
+        return
+        #Reset the text color (defined outside any class)
+    def reset_text_color(self):
+        default_color = self.textBrowser_Descript.palette().color(QPalette.ColorRole.Text)
+        self.textBrowser_Descript.setTextColor(default_color)
 # change text color within Python
 # taken from Bacara at https://stackoverflow.com/questions/8924173/how-can-i-print-bold-text-in-python
 class color:
@@ -542,7 +598,7 @@ class color:
    BOLD = '\033[1m'
    UNDERLINE = '\033[4m'
    END = '\033[0m'
-
+#unused, don't remmeber its use
 def color_app(string, *args):
     text = string
     for i in args:

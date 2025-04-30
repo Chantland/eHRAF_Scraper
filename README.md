@@ -1,5 +1,7 @@
 # eHRAF_Scraper
 
+FIRST AND FOREMOST. This scraper will eventually stop working. It may not be today but it will be eventually. This is the truth for all web scrapers as they are beholden to the layout and design of the website and browser they are scraping. Websites will change and formats will too. Know that use of this scraper will require continuous maintenance if you want to use it in the long term.
+
 To use this Scraper, please click on Scraper_GUI and follow GUI_Instructions.docx. <br>
 Note that currently there is only a MAC version of the GUI application. If you want Windows or Linux, consider installing it on your desired machine (check installing below).
 
